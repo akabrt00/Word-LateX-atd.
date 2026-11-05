@@ -7,7 +7,9 @@ import { DATA_FILE, showData } from "./data";
 import { clearProblems, markProblemsInEditor } from "./problems";
 import { $, assignDirty, baseName, current, dirty, mainFile, renderCrumb, root, setCurrent, setDirty, setMainFile, setRoot, setStatus, showLog, VIEWABLE } from "./core";
 import { createEditorState, prefEffects, view } from "./editor";
-import { isNotebook, leaveNotebook, saveNotebook, stopKernel, updateNotebookView } from "./notebook";
+import { isNotebook, leaveNotebook, notebookContent, stopKernel, updateNotebookView } from "./notebook";
+import { readDocument, resolveFileConflict } from "./document-files";
+import type { DocumentSession } from "./document-session";
 import { resetPdf } from "./preview";
 import { setPaperless } from "./layout";
 import { closeReader, isPaper, openReader } from "./reader";
@@ -21,6 +23,8 @@ import { dropTabs, noteOpened, resetTabs, showNoFile, stashEditor, takeStashed }
 import { canRunFile, resetTerminal } from "./terminal";
 import { refreshIndex, refreshIndexSoon, VALUES_TEX } from "./texindex";
 import { getRecent, renderRecent, setRecent, showWelcome } from "./welcome";
+
+let documentSession: DocumentSession | null = null;
 
 export async function openFolder() {
   const picked = await open({ directory: true, multiple: false });
@@ -47,6 +51,7 @@ export async function openProject(path: string) {
   await stopKernel();
   await resetTerminal();
   setRoot(path);
+  documentSession = null;
   setCurrent(null);
   assignDirty(false);
   resetPdf();
@@ -95,6 +100,7 @@ export async function closeProject() {
   await resetTerminal();
   $("btn-run-file").hidden = true;
   setRoot(null);
+  documentSession = null;
   setCurrent(null);
   assignDirty(false);
   resetPdf();
@@ -204,8 +210,11 @@ export async function openFile(rel: string) {
     return;
   }
   let text: string;
+  let openedSession: DocumentSession;
   try {
-    text = await invoke<string>("read_file", { root, rel });
+    const snapshot = await readDocument(root, rel);
+    text = snapshot.content;
+    openedSession = snapshot.session;
   } catch (e) {
     // Gone or unreadable (deleted outside the app, say): don't leave a dead tab behind.
     setStatus(`Couldn't open ${rel}: ${e}`, "err");
@@ -225,6 +234,7 @@ export async function openFile(rel: string) {
     return;
   }
   setCurrent(rel);
+  documentSession = openedSession;
   const back = takeStashed(rel, text);
   if (back) {
     view.setState(back.state);
@@ -260,11 +270,33 @@ export async function save() {
   if (!root || !current) return;
   // A preview or a data table has nothing to write, and must never overwrite the file.
   if (VIEWABLE.test(current) || DATA_FILE.test(current)) return;
-  if (isNotebook()) {
-    await saveNotebook();
-  } else {
-    await invoke("write_file", { root, rel: current, content: view.state.doc.toString() });
-    setDirty(false);
+  if (!dirty) return;
+  const session = documentSession;
+  if (!session) throw new Error("Soubor nemá načtenou revizi. Znovu jej otevřete.");
+  const project = root, rel = current;
+  const content = isNotebook() ? notebookContent() : view.state.doc.toString();
+  try {
+    await session.save(content);
+  } catch (error) {
+    setStatus(`Neuloženo: ${rel}. Vaše úpravy zůstávají v editoru.`, "err");
+    await resolveFileConflict(error, rel, async () => {
+      if (root !== project || current !== rel || documentSession !== session) return;
+      const snapshot = await readDocument(project, rel);
+      documentSession = snapshot.session;
+      view.setState(createEditorState(snapshot.content, rel));
+      await updateNotebookView(snapshot.content);
+      setDirty(false);
+      markProblemsInEditor();
+      setStatus(`Načtena aktuální verze: ${rel}`, "ok");
+    });
+    // Abort tab/project closing and compilation, even after an explicit reload.
+    throw new Error(`Uložení ${rel} bylo zastaveno. ${String(error)}`);
+  }
+  // Typing while IPC is in flight must leave the new edits dirty.
+  if (root === project && current === rel && documentSession === session) {
+    const now = isNotebook() ? notebookContent() : view.state.doc.toString();
+    setDirty(now !== content);
+    if (dirty) throw new Error("Během ukládání přibyly další úpravy. Uložte soubor znovu.");
   }
   refreshIndexSoon(); // new labels, citations or figure cells
 }

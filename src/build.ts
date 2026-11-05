@@ -162,7 +162,11 @@ export async function compile({ quiet = false } = {}) {
 
 /** What ⌘S does: save, then compile if the project is set to compile on save. */
 export async function saveFile() {
-  if (sideFocused()) await saveSide();
-  else await save();
-  if (settings.compileOnSave && root && current && !VIEWABLE.test(current)) await compile();
+  try {
+    if (sideFocused()) await saveSide();
+    else await save();
+    if (settings.compileOnSave && root && current && !VIEWABLE.test(current)) await compile();
+  } catch (error) {
+    setStatus(String(error), "err");
+  }
 }

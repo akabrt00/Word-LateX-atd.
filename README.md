@@ -11,6 +11,8 @@ Vyžaduje Node.js 24+, Rust stable MSVC, Microsoft C++ Build Tools (Desktop deve
 
 Otevřete složku examples/first-project. Upravte main.tex, uložte Ctrl+S a zkompilujte Ctrl+Enter. Výsledek se zobrazí v pravém PDF panelu a uloží do build/main.pdf. Soubor sections/results.tex ověřuje vícesouborový projekt. V nabídce lze nastavit hlavní soubor. Projekt lze předat také argumentem --project ABSOLUTNI_CESTA výslednému EXE.
 
+Pokud otevřený soubor mezitím změní nebo odstraní jiný program, uložení se zastaví. Volba „Ponechat moje úpravy“ zachová váš text v editoru; před načtením jiné verze jej můžete zkopírovat. „Načíst z disku“ výslovně nahradí neuložený obsah aktuálním souborem. Totéž platí pro boční editor a notebooky. Automatické sledování změn na pozadí a obnova po pádu zatím nejsou implementované.
+
     npm test
     npm run check
     npm run build

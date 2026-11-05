@@ -1,7 +1,6 @@
 // Side pane: a second text file open beside the main one, or a read-only document such as a
 // diff. It has its own editor and its own unsaved state; notebooks always open in the main pane.
 import { EditorView } from "codemirror";
-import { invoke } from "@tauri-apps/api/core";
 import { $, clamp, current, root, setStatus, VIEWABLE } from "./core";
 import { createEditorState, prefEffects, view } from "./editor";
 import { activeCell, cellViews, isNotebook } from "./notebook";
@@ -9,6 +8,8 @@ import { ICONS } from "./icons";
 import { openFile } from "./project";
 import { saveSessionSoon } from "./session";
 import { FILE_ICON } from "./sidebar";
+import { readDocument, resolveFileConflict } from "./document-files";
+import type { DocumentSession } from "./document-session";
 
 const pane = $("work-side");
 const handle = $("split-handle");
@@ -19,6 +20,7 @@ const body = $("side-body");
 export let sideFile: string | null = null;
 export let sideView: EditorView | null = null;
 let sideDirty = false;
+let documentSession: DocumentSession | null = null;
 
 export const sideOpen = () => !pane.hidden;
 
@@ -61,18 +63,39 @@ function clear() {
   sideView = null;
   sideFile = null;
   sideDirty = false;
+  documentSession = null;
   body.replaceChildren();
 }
 
 export async function saveSide() {
   if (!root || !sideFile || !sideView || !sideDirty) return;
-  await invoke("write_file", { root, rel: sideFile, content: sideView.state.doc.toString() });
-  sideDirty = false;
+  const session = documentSession;
+  if (!session) throw new Error("Boční soubor nemá načtenou revizi.");
+  const project = root, rel = sideFile, editor = sideView;
+  const content = editor.state.doc.toString();
+  try {
+    await session.save(content);
+  } catch (error) {
+    setStatus(`Neuloženo: ${rel}. Vaše úpravy zůstávají v bočním editoru.`, "err");
+    await resolveFileConflict(error, rel, async () => {
+      if (root !== project || sideFile !== rel || sideView !== editor) return;
+      const snapshot = await readDocument(project, rel);
+      // Keep the editor's change/save callbacks when replacing its contents.
+      editor.dispatch({ changes: { from: 0, to: editor.state.doc.length, insert: snapshot.content } });
+      documentSession = snapshot.session;
+      sideDirty = false;
+      renderTitle(rel);
+    });
+    throw new Error(`Uložení ${rel} bylo zastaveno. ${String(error)}`);
+  }
+  if (root !== project || sideFile !== rel || sideView !== editor) return;
+  sideDirty = editor.state.doc.toString() !== content;
   renderTitle(sideFile);
+  if (sideDirty) throw new Error("Během ukládání přibyly další úpravy bočního souboru.");
 }
 
 export async function closeSide() {
-  await saveSide().catch((e) => setStatus(`Couldn't save ${sideFile}: ${e}`, "err"));
+  await saveSide(); // A failed save must leave the pane and its unsaved text intact.
   clear();
   pane.hidden = true;
   handle.hidden = true;
@@ -91,8 +114,11 @@ export async function openToSide(rel: string) {
     return;
   }
   let text: string;
+  let openedSession: DocumentSession;
   try {
-    text = await invoke<string>("read_file", { root, rel });
+    const snapshot = await readDocument(root, rel);
+    text = snapshot.content;
+    openedSession = snapshot.session;
   } catch (e) {
     setStatus(`Couldn't open ${rel}: ${e}`, "err");
     return;
@@ -108,6 +134,7 @@ export async function openToSide(rel: string) {
   await saveSide();
   clear();
   sideFile = rel;
+  documentSession = openedSession;
   show();
   sideView = new EditorView({
     parent: body,

@@ -48,6 +48,8 @@ Ponechat původní asset. Transformace ukládat jako crop v souřadnicích origi
 
 ## Soubory a bezpečnost
 
-Zachováváme atomický zápis a historii Scribe. Oprava resolve kontroluje nejbližší existující kanonický předek také u nových souborů. Ještě chybí session-bound projektové handles, ochrana TOCTOU, detekce externí změny a revize na disku. CSP je převzato null: před vydáním zavést CSP a sanitizaci všech nedůvěryhodných náhledů.
+Otevřené editory používají read_document/save_document a vlastní revizi bajtů (SHA-256); konflikt při uložení zachová buffer a zastaví navazující přechod či kompilaci. Backendový modul documents.rs a frontendový DocumentSession oddělují tuto revizi od pomocných čtení. Zápisy z jednoho procesu se serializují a používají jedinečný dočasný soubor. Hranice optimistické kontroly a zbývající integrační cesty popisuje ADR-007.
+
+Zachováváme historii Scribe. Oprava resolve kontroluje nejbližší existující kanonický předek také u nových souborů. Ještě chybí session-bound projektové handles, úplná ochrana TOCTOU a filesystem watcher. Detekce externích změn nyní probíhá při ukládání otevřených editorů. CSP je převzato null: před vydáním zavést CSP a sanitizaci všech nedůvěryhodných náhledů.
 
 Kompilace nyní neprovádí projektový Python automaticky; latexmk dostává -norc a -no-shell-escape. Přímý pdflatex dostává -no-shell-escape a dva průchody. Tectonic může přistupovat k síti kvůli balíčkům. Process sandbox, síťová izolace, cancel a timeout zůstávají nutným dalším krokem. Nepovažovat tuto verzi za bezpečný prohlížeč cizích projektů.

@@ -1,5 +1,25 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Ochrana otevřených dokumentů před přepsáním – 2026-11-05
+
+Scénář: soubor otevřený v editoru změní nebo odstraní jiný program a uživatel zkusí uložit, zavřít kartu/panel nebo kompilovat. Backend porovná SHA-256 načtených bajtů a odmítne zastaralý zápis. Rozsah: hlavní editor, boční editor a serializace notebooků; legacy integrační write_file volání a filesystem watcher zůstávají další etapou. Optimistická kontrola má omezení závodu s cizími procesy podle ADR-007.
+
+Prostředí: Windows x64, Node.js 24.15.0, npm 11.12.1, Rust/Cargo 1.99.1 MSVC, Visual Studio Build Tools 2022, MiKTeX pdflatex a WebView2. Rust příkazy běžely mimo sandbox s PATH doplněným o uživatelské .cargo/bin a MiKTeX bin.
+
+- `npm test`: 9 prošlo, 0 selhalo. Dva nové testy ověřují řazení překrývajících se uložení, použití navazující revize a zachování původní revize po opakovaném konfliktu.
+- `npm run check`: prošlo. `npm run build`: prošlo s dosavadními varováními o velikosti chunků a neúčinných dynamických importech.
+- První `cargo test --manifest-path src-tauri/Cargo.toml documents::tests -- --test-threads=1`: oba tehdejší nové testy prošly. Poté doplněn test souběžných editorů a spuštěna regresní sada níže.
+- `cargo test --manifest-path src-tauri/Cargo.toml --lib -- --test-threads=1 --skip lists_and_compiles_example --skip synctex_round_trip_on_example --skip export_is_plain_latex_that_compiles_on_its_own`: 27 prošlo, 0 selhalo, 1 upstream ignorovaný, 3 odfiltrováno. Tři vynechané testy patří k volitelnému Python/notebook/example toku, který nebyl součástí tohoto úkolu. Některé převzaté testy se při chybějícím volitelném nástroji vracejí předčasně; počet úspěchů neprokazuje plné pokrytí těchto integrací.
+- Nové Rust testy skutečně mění/smažou soubor na disku, ověřují nezměněný externí obsah při konfliktu, kontrolují BOM/CRLF snapshot, pomocné read_file čtení, nové revize, původní historii, zachování existujícího sourozence main.scribe-tmp a přesně jeden úspěšný zápis dvou souběžných editorů téže revize. Původní nativní open/edit/save/compile/PDF a history testy také prošly.
+- `npm run tauri build -- --debug --no-bundle`: prošlo. Vytvořeno nové DEBUG EXE; instalátor ani release build se pro tento úkol nevytvářely.
+- GUI test na oddělené kopii v `output/verification/conflict-project`: hlavní editor obsahoval LOCAL UNSAVED VERSION, zatímco externí zápis změnil main.tex na EXTERNAL VERSION MUST SURVIVE. Ctrl+S ukázalo český konfliktový dialog. Po volbě Ponechat moje úpravy zůstal lokální text i neuložený stav v editoru a externí obsah na disku byl ověřen příkazem Get-Content.
+- Ctrl+W znovu vyvolalo konflikt. Po výslovné volbě Načíst z disku se načetl externí obsah a karta zůstala otevřená. Následná nová editace a Ctrl+S uložily novou revizi bez konfliktu; Ctrl+Enter zobrazilo Compiled with pdflatex, 0 chyb, 0 varování a skutečné Page 1 of 1 PDF s novým textem „Conflict resolved. Normal save and PDF compilation work.“
+- GUI test bočního panelu: lokální text LOCAL SIDE UNSAVED VERSION a externí změna notes.txt. Zavření panelu ukázalo konflikt; Ponechat moje úpravy ponechalo panel otevřený i s lokálním textem. Disk stále obsahoval EXTERNAL SIDE VERSION MUST SURVIVE. Po explicitním načtení z disku a dalším zavření se panel zavřel normálně.
+- Živá notebooková editace a změna během IPC nebyly zvlášť simulovány v GUI; řazení IPC ověřují frontendové testy, revizní zápis sdílí stejný backend.
+- Logy v ignorovaném `output/verification/conflict-frontend-build.log`, `conflict-rust.log`, `conflict-rust-regression.log` a `conflict-native-build.log`. `git diff --check`: bez chyb whitespace. Testovací projekty a buildy nejsou určeny ke commitu.
+
+Záměrně se nedoplňuje vynucené přepsání konfliktního souboru. Uživatel může svůj text zkopírovat a načíst aktuální soubor. Nejde o úplnou obnovu neuložené práce po zavření celého OS okna/pádu ani o procesovou izolaci kompilátoru.
+
 ## Zprovoznění na druhém PC – 2026-11-05
 
 Čistý klon origin/main v `C:\Users\akabr\Documents\ChatGPT\TULWright\Word-LateX-atd`. Zdrojový kód aplikace se při zprovoznění neměnil.

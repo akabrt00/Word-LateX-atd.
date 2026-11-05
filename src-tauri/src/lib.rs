@@ -5,6 +5,7 @@
 //! symlinks pointing outside). That boundary matters once projects are shared.
 
 mod ai;
+mod documents;
 #[tauri::command]
 fn initial_project() -> Option<String> {
     let mut args = std::env::args();
@@ -186,7 +187,13 @@ fn read_file(root: String, rel: String) -> Result<String, String> {
 
 #[tauri::command]
 fn write_file(root: String, rel: String, content: String) -> Result<(), String> {
+    let _guard = documents::WRITE_LOCK.lock().map_err(|e| e.to_string())?;
+    write_file_checked(&root, &rel, &content, None)
+}
+
+fn write_file_checked(root: &str, rel: &str, content: &str, expected: Option<&str>) -> Result<(), String> {
     let path = resolve(&root, &rel)?;
+    if let Some(revision) = expected { documents::check_revision(&path, revision)?; }
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
     }
@@ -203,9 +210,14 @@ fn write_file(root: String, rel: String, content: String) -> Result<(), String> 
         }
     }
     // Write-then-rename so a crash mid-save never truncates the user's file.
-    let tmp = path.with_extension("scribe-tmp");
-    std::fs::write(&tmp, &content).map_err(|e| e.to_string())?;
-    std::fs::rename(&tmp, &path).map_err(|e| e.to_string())?;
+    // Unique temporary file: never overwrite a sibling file with a predictable name.
+    use std::io::Write;
+    let mut tmp = tempfile::NamedTempFile::new_in(path.parent().ok_or("missing parent")?).map_err(|e| e.to_string())?;
+    tmp.write_all(content.as_bytes()).map_err(|e| e.to_string())?;
+    tmp.as_file().sync_all().map_err(|e| e.to_string())?;
+    // Recheck after preparing the replacement, immediately before the atomic rename.
+    if let Some(revision) = expected { documents::check_revision(&path, revision)?; }
+    tmp.persist(&path).map_err(|e| e.to_string())?;
     if keep {
         if let Ok(root_dir) = Path::new(&root).canonicalize() {
             let _ = save_version(&root_dir, &rel, &content, now_secs(), true);
@@ -2722,7 +2734,7 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             initial_project, list_files, list_dirs, create_dir, rename_path, delete_path, import_files,
-            read_file, write_file, read_binary, compile, compile_snippet, pdf_to_svg, compile_diff, git_log,
+            read_file, write_file, documents::read_document, documents::save_document, read_binary, compile, compile_snippet, pdf_to_svg, compile_diff, git_log,
             ai::ai_stream, ai::ai_set_key, ai::ai_has_key, ai::ai_cancel, ai::ai_models,
             parse_notebook, run_notebook, generate_style,
             git_status, git_branch, git_overview, git_diff, git_commit, git_push, git_init, git_identity, search_project, read_settings, write_settings,

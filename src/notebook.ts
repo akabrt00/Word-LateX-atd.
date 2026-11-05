@@ -131,11 +131,8 @@ export function cellsToPy(): string {
   }).join("\n\n") + "\n";
 }
 
-export async function saveNotebook() {
-  if (!root || !current) return;
-  const content = current.endsWith(".ipynb") ? serializeIpynb(nbDoc ?? emptyIpynb()) : cellsToPy();
-  await invoke("write_file", { root, rel: current, content });
-  setDirty(false);
+export function notebookContent(): string {
+  return current?.endsWith(".ipynb") ? serializeIpynb(nbDoc ?? emptyIpynb()) : cellsToPy();
 }
 
 export function nextFigureId(): string {

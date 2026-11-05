@@ -1,5 +1,11 @@
 # Rozhodnutí
 
+## ADR-007 – Revize otevřeného souboru při uložení (2026-11-05)
+
+Přijato: hlavní editor, boční editor a notebook drží vlastní SHA-256 revizi bajtů načtených příkazem read_document. save_document vyžaduje tuto revizi; pomocná čtení read_file ji neposouvají. Změněný či odstraněný soubor vyvolá konflikt, editor zachová lokální text a nabídne explicitní načtení z disku. Zavření panelu či projektu a kompilace se při neúspěšném uložení zastaví. Souběžná uložení jednoho editoru se řadí a rozpracované změny vzniklé během zápisu zůstávají označené jako neuložené.
+
+Všechny write_file/save_document zápisy v jednom procesu sdílejí mutex. Náhrada souboru používá jedinečný dočasný soubor ve stejném adresáři, flush a atomický persist. Revize se ověřuje před přípravou i těsně před náhradou. Jde o optimistickou kontrolu: OS neposkytuje společný compare-and-swap s cizími editory, takže zůstává malé okno mezi poslední kontrolou a náhradou a ochrana proti nepřátelským změnám cest není vyřešena. Starší integrační write_file operace zatím nemají povinnou revizi; jejich převod, filesystem watcher a obnova po pádu jsou další práce.
+
 ## ADR-001 – Scribe jako pracovní základ (2026-11-05)
 
 Přijato: fork snapshotu 08168f3 pod MIT se zachováním Git historie a copyright. Důvody: Tauri 2, lokální soubory, TeX/PDF tok a modulární provider infrastruktura. Alternativy: vlastní kostra zahazuje hotové funkce; WordCraft má jiný model a renderer; Oleafly by vyžadoval AGPL rozhodnutí. Důsledky: postupně rozdělit lib.rs, nezávisle ověřovat funkce.

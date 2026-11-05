@@ -8,7 +8,8 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 | Zprovoznění na druhém Windows PC | Ověřeno sestavení DEBUG EXE a GUI tok editace → uložení → kompilace → PDF; podrobnosti v docs/TEST_REPORT.md |
 | Otevření složky, .tex soubory, více souborů | Ověřeno nativním integračním testem a načtením projektu v GUI |
 | CodeMirror úpravy, Ctrl+S, undo | Editace a Ctrl+S ověřeny v GUI; undo převzato |
-| Atomický zápis a historie | Převzato; rozšířit externí konflikty a recovery |
+| Atomický zápis a historie | Jedinečné dočasné soubory, zachovaná historie; regresní testy zápisů prošly |
+| Konflikt při uložení otevřeného souboru | Revize hlavního/bočního editoru a notebooku; odmítnutí novějšího nebo smazaného souboru, zachování bufferu a dialog pro načtení z disku; watchdog/recovery a starší integrační zápisy zbývají |
 | Kompilace a PDF.js | Převzato; doplněna přímá cesta pdflatex, dva průchody a odmítnutí stale PDF |
 | Shell escape a projektový latexmkrc | Explicitně vypnuty pro latexmk/pdflatex |
 | Python notebook při kompilaci | Automatické spuštění vypnuto; explicitní spuštění zůstává |

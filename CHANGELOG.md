@@ -4,6 +4,10 @@ Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
 ## Vývoj – 2026-11-05
 
+- Otevřené dokumenty používají kontrolu revize obsahu při ukládání; změna nebo odstranění na disku zastaví zápis a nabídne zachování lokálního textu nebo načtení z disku.
+- Opraveno zavírání bočního editoru po neúspěšném uložení; panel zůstane otevřený. Souběžná uložení respektují revize a další psaní během zápisu zůstává neuložené.
+- Jedinečné dočasné soubory při zápisu nahrazují předvídatelnou cestu .scribe-tmp; přidány regresní testy konfliktů a souběžných editorů.
+
 - Zprovozněno vývojové prostředí na druhém Windows PC; ověřeno nativní sestavení a GUI průchod editace, uložení, kompilace a PDF náhledu. Výsledky zaznamenány v docs/TEST_REPORT.md.
 
 - Propojení projektu s GitHub origin akabrt00/Word-LateX-atd. a větví main při zachování historie Scribe i původního GitHub commitu.
