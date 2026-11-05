@@ -13,7 +13,19 @@ Komunikujte česky. Kód a komentáře mohou být anglicky. Začněte README.md,
 7. Zaznamenejte přesné příkazy, prostředí, selhání a neprovedené kontroly do docs/TEST_REPORT.md.
 8. Aktualizujte FEATURES.md, ROADMAP.md a CHANGELOG.md. Architektonickou změnu přidejte do DECISIONS.md.
 9. Před lokálním commitem ověřte diff a nepřidávejte tajemství, target, node_modules či testovací výstupy.
-10. Nepublikujte ani nepushujte bez pokynu uživatele.
+10. Po dokončeném úkolu proveďte commit a push podle pravidel automatické synchronizace níže. Veřejné vydání aplikace a změny viditelnosti repozitáře nadále vyžadují samostatný pokyn uživatele.
+
+## Automatická synchronizace s GitHubem
+
+Uživatel dne 2026-11-05 výslovně povolil průběžné vytváření commitů a automatický push po každém dokončeném úkolu. Toto oprávnění platí i pro následující úkoly; nevyžadujte opakované potvrzení běžného commitu a push.
+
+- Hlavní vzdálené úložiště je origin: https://github.com/akabrt00/Word-LateX-atd..git. Výchozí pracovní větev je main, která sleduje origin/main. Remote upstream zachovává původní Scribe a není cílem nahrávání našich změn.
+- Uložte změny, zkontrolujte git status a diff, proveďte kontroly odpovídající úkolu a vylučte citlivé údaje i generované výstupy. Commitujte pouze změny související s úkolem; nepřidávejte cizí rozpracované změny.
+- Vytvořte Git commit s krátkým věcným popisem a proveďte git push origin main. Pokud uživatel zadal jinou větev nebo právě pracuje na jiné větvi, respektujte ji a její změny bezpečně synchronizujte; nepřepisujte main přes jinou historii.
+- Před push ověřte vzdálený stav. Pokud přibyly vzdálené commity, zachovejte je a bezpečně začleňte. Nepoužívejte force push ani nepřepisujte publikovanou historii bez výslovného souhlasu.
+- Po push porovnejte SHA lokálního commitu s SHA odpovídající vzdálené větve (git ls-remote origin refs/heads/main pro main) a ověřte stav tracking větve. Úspěch push není totéž jako úspěch GitHub Actions.
+- Jestliže není co commitovat, nevytvářejte prázdný commit; ověřte, zda již lokální stav odpovídá GitHubu.
+- Při chybě autorizace nebo push zachovejte lokální commit, jasně popište nedokončenou synchronizaci a potřebný krok uživatele. Tokeny ani hesla nevypisujte, neukládejte do projektu ani nevkládejte do remote URL.
 
 ## Bezpečnost a pravdivost
 

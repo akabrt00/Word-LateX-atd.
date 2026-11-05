@@ -24,5 +24,6 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 | Windows EXE/MSI | Sestavené testovací DEBUG EXE/MSI; instalace na čistém systému neověřena |
 | Podepsané aktualizace | Vypnuto; upstream aktualizace Scribe se neinstalují |
 | Kompletní české UI | Částečně; převzaté obrazovky zůstávají anglické |
+| GitHub synchronizace projektu | Origin akabrt00/Word-LateX-atd.; main a automatický commit/push po dokončených úkolech podle AGENTS.md |
 
 Není tvrzeno, že staticky auditované funkce jsou připraveny k veřejnému vydání. Neověřené části mají vlastní akceptační scénáře v roadmapě.

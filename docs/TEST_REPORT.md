@@ -65,3 +65,20 @@ EXE i MSI byly sestaveny ve Windows, ale nebyly instalovány/odinstalovány a ne
 Živé AI API, autonomní agent, file disclosure policy, Word Mode, obecná round-trip věrnost, izolovaný compiler worker, timeout/cancel, kompletní crash recovery, konflikty s externím editorem a oficiální TUL šablony zůstávají neimplementované nebo neověřené podle FEATURES.md. Současná verze není sandbox pro nedůvěryhodné TeX projekty.
 
 Build hlásí velké JS chunky a neúčinné dynamické importy z převzaté modulové struktury. Nejsou to chyby sestavení; optimalizace patří do další etapy. CI workflow bylo upraveno, ale nebylo spuštěno na GitHubu. Veřejný repozitář ani release nebyly publikovány.
+
+## Propojení s GitHubem – 2026-11-05
+
+Rozsah změn: Git remote/tracking, .gitignore, AGENTS.md a související projektová dokumentace. Funkční zdroje aplikace ani workflow nebyly změněny.
+
+- git status --short --branch: před úkolem čistá větev tul-writer/milestone-1 na c4d2b81.
+- gh auth status mimo sandbox: účet akabrt00 přihlášený, oprávnění repo a workflow; gh repo view ověřil soukromý repozitář a viewerPermission ADMIN. Token nebyl vypsán v otevřené podobě.
+- git ls-remote --symref https://github.com/akabrt00/Word-LateX-atd..git HEAD refs/heads/main: původní main na 5c44e576d5c9fd192740258e64941e4fb1abf059.
+- git remote add origin a git fetch --no-tags origin: úspěšné. Upstream Scribe zachován.
+- git switch main, git merge --ff-only tul-writer/milestone-1 a git merge --allow-unrelated-histories --no-commit origin/main: zachování obou historií. Jediný konflikt add/add v README.md vyřešen plnou projektovou dokumentací a doplněním hlavního GitHub repozitáře; původní GitHub README zůstává v jeho commitu.
+- Kontrola 835 dosažitelných Git blobů, z toho 812 textových, nezjistila shodu s kontrolovanými vzory privátních klíčů a známých GitHub/OpenAI/Anthropic/Google/AWS/Slack přístupových údajů. Jde o kontrolu známých vzorů, nikoli důkaz nepřítomnosti libovolného citlivého údaje.
+- git check-ignore --no-index nad 25 příklady: všechny očekávané citlivé/generované cesty ignorovány, zdrojové soubory, oba lockfiles a sanitizované .env příklady povoleny. Kontrola sledovaných cest: žádný node_modules, target, output ani kontrolované soubory s tajemstvími.
+- npm test: 7 prošlo, 0 selhalo. První pokus v sandboxu skončil na spawn EPERM před provedením testů; opakování mimo sandbox prošlo.
+- npm run check: prošlo. npm run build: prošlo s dosavadními varováními o velikosti chunků a importech. Lokální logy v ignorovaném output/github-sync/.
+- Rust testy a desktopový průchod se pro tento úkol neopakovaly: kód aplikace ani její chování se neměnily; jejich poslední výsledky jsou výše.
+
+Kritérium finálního ověření uploadu: úspěšný běžný git push origin main bez force a shoda git rev-parse HEAD s git ls-remote origin refs/heads/main; tracking větev musí být origin/main. Výsledek GitHub Actions se posuzuje odděleně od úspěchu uploadu.

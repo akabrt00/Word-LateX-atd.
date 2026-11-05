@@ -2,6 +2,12 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Vývoj – 2026-11-05
+
+- Propojení projektu s GitHub origin akabrt00/Word-LateX-atd. a větví main při zachování historie Scribe i původního GitHub commitu.
+- Rozšířen .gitignore o lokální konfiguraci, přihlašovací údaje, klíče, cache a dočasné soubory.
+- V AGENTS.md uloženo trvalé oprávnění automaticky commitovat a pushovat dokončené úkoly a ověřovat vzdálený commit.
+
 ## 0.1.0 – 2026-11-05
 
 - Založen vlastní pracovní fork Scribe 1.2.3 se zachovanou MIT licencí.

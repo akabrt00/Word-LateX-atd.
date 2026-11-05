@@ -42,6 +42,6 @@ Tauri může vytvořit NSIS EXE a WiX MSI v src-tauri/target/release/bundle. Pod
 ## Původ a licence
 
 Základ: Scribe-IDE/Scribe, commit 08168f3208c32609ae5404016e9306c185f69f37 (1.2.3).
-Původní MIT licence a copyright George Kiritsis zůstávají v LICENSE. Nový kód je poskytován za stejných podmínek MIT. Nebyl převzat kód Oleafly ani WordCraft. Přehled dalších licencí a hranic distribuce je v THIRD_PARTY_NOTICES.md. Git remote upstream slouží ke sledování originálu; veřejný vzdálený repozitář TUL Writeru zatím není založen.
+Původní MIT licence a copyright George Kiritsis zůstávají v LICENSE. Nový kód je poskytován za stejných podmínek MIT. Nebyl převzat kód Oleafly ani WordCraft. Přehled dalších licencí a hranic distribuce je v THIRD_PARTY_NOTICES.md. Hlavní vzdálené úložiště je soukromý GitHub repozitář [akabrt00/Word-LateX-atd.](https://github.com/akabrt00/Word-LateX-atd.) pod remote origin; větev main sleduje origin/main. Git remote upstream slouží ke sledování původního Scribe. Po dokončených úkolech se změny automaticky commitují a nahrávají podle AGENTS.md. Počáteční GitHub commit s původním označením Word-LateX-atd. zůstává součástí historie.
 
 AI je ve výchozím stavu vypnutá. Tento milník nevyžaduje API klíč a žádný nový provider adapter neodesílá požadavky. Převzaté integrační cesty nejsou potvrzením přístupu k modelům ani náhradou API účtu.
