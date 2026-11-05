@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { authorsFromLines } from "./semester-authors";
 
 interface WorkspaceSettings { documentsDir: string; defaultTemplate: string; }
 const starters = [
@@ -51,11 +52,12 @@ export async function showWorkspace(create: boolean, legacy?: () => Promise<void
         <legend class="sr-only">Údaje semestrální práce</legend>
         <label>Fakulta nebo součást TUL<select id="semester-faculty" required></select></label>
         <label>Název práce<input id="semester-title" type="text" maxlength="300" required placeholder="Název na titulní straně" /></label>
+        <label>Autoři práce<textarea id="semester-authors" rows="3" maxlength="4000" required placeholder="Jméno a příjmení&#10;Další jméno a příjmení" aria-describedby="semester-authors-hint"></textarea></label>
+        <p id="semester-authors-hint" class="semester-authors-hint">Každého autora napište na samostatný řádek. Může být i jediný; nejvýše 20 autorů.</p>
         <div class="semester-grid">
-          <label>Autor práce<input id="semester-author" type="text" maxlength="200" required autocomplete="name" placeholder="Jméno a příjmení" /></label>
           <label>Předmět<input id="semester-subject" type="text" maxlength="200" required placeholder="Název předmětu" /></label>
+          <label>Rok<input id="semester-year" type="number" min="1900" max="9999" step="1" required /></label>
         </div>
-        <label class="semester-year">Rok<input id="semester-year" type="number" min="1900" max="9999" step="1" required /></label>
         <details class="semester-extra"><summary>Datum a verze zadání</summary><div class="semester-grid">
           <label>Datum na titulní straně<input id="semester-date" type="date" min="1900-01-01" max="9999-12-31" required /></label>
           <label>Verze zadání<input id="semester-version" type="text" maxlength="40" value="1" required /></label>
@@ -131,14 +133,14 @@ export async function showWorkspace(create: boolean, legacy?: () => Promise<void
       return;
     }
     const semesterDetails = detailsStep ? {
-      faculty: faculty.value, title: title.value, author: field<HTMLInputElement>("#semester-author").value,
+      faculty: faculty.value, title: title.value, authors: authorsFromLines(field<HTMLTextAreaElement>("#semester-authors").value),
       subject: field<HTMLInputElement>("#semester-subject").value, year: field<HTMLInputElement>("#semester-year").valueAsNumber,
       date: field<HTMLInputElement>("#semester-date").value, assignmentVersion: field<HTMLInputElement>("#semester-version").value,
     } : null;
     busy = true;
     error.hidden = true;
     // Freeze settings while creating the project; the name is passed as one folder name.
-    for (const control of form.querySelectorAll<HTMLInputElement | HTMLButtonElement | HTMLSelectElement>("input,button,select")) control.disabled = true;
+    for (const control of form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | HTMLSelectElement>("input,textarea,button,select")) control.disabled = true;
     submit.textContent = create ? "Vytvářím…" : "Ukládám…";
     try {
       settings.defaultTemplate = select.value;
@@ -160,7 +162,7 @@ export async function showWorkspace(create: boolean, legacy?: () => Promise<void
       busy = false;
       error.textContent = String(e);
       error.hidden = false;
-      for (const control of form.querySelectorAll<HTMLInputElement | HTMLButtonElement | HTMLSelectElement>("input,button,select")) control.disabled = false;
+      for (const control of form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | HTMLSelectElement>("input,textarea,button,select")) control.disabled = false;
       update();
     }
   };

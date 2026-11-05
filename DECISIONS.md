@@ -2,7 +2,9 @@
 
 ## ADR-009 – Předvyplnění nové semestrální práce (2026-11-05)
 
-První metadata průvodce je omezen na pevně přibalenou semestrální šablonu 1.3. Dva kroky oddělují složku a šablonu od údajů titulní strany. Osobní údaje se neukládají jako globální předvolba. Datum se nabízí podle místního kalendáře a verze zadání jako 1; uživatel je může změnit.
+Průvodce metadaty je omezen na pevně přibalenou semestrální šablonu 1.3. Dva kroky oddělují složku a šablonu od údajů titulní strany. Osobní údaje se neukládají jako globální předvolba. Datum se nabízí podle místního kalendáře a verze zadání jako 1; uživatel je může změnit.
+
+Autoři jsou uspořádaný seznam 1–20 jmen, každé nejvýše 200 znaků. Víceřádkové pole převádí každý neprázdný řádek na jedno jméno; pořadí i shodná jména zachovává. Backend každé jméno samostatně validuje a escapuje, teprve potom přidá vlastní LaTeX zalomení řádku. Pro skupinu změní v nové kopii stylu pouze přesně očekávaný popisek Autor práce na Autoři práce. Neznámý nebo opakovaný vzor odmítne před založením složky. Původní archiv se nemění.
 
 Backend vyžaduje metadata pro nové semestrální projekty a odmítá je u ostatních typů. Před jakýmkoli založením adresáře ověří známou součást TUL, délku a jednořádkový text, čtyřciferný rok a skutečný kalendářní den. Text escapuje po jednotlivých znacích pro LaTeX. Transformuje jen sedm konkrétních deklarací před begin{document}, každou přesně jednou, pomocí původních rozsahů aplikovaných odzadu. Neznámá nebo změněná struktura je chyba, nikoli důvod ke generickému přepisu dokumentu. Originální ZIP i podklady zůstávají nezměněné; vlastní text, komentáře, BOM a konce řádků se zachovávají.
 

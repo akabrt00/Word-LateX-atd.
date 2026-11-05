@@ -1,5 +1,20 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Skupinoví autoři semestrální práce – 2026-11-05
+
+Na upřesnění uživatele rozšířen dosud nepublikovaný průvodce (1197c6f) o uspořádaný seznam 1–20 autorů. Každý neprázdný řádek tvoří jedno jméno, shodná jména se neslučují. Backend validuje každé jméno do 200 znaků a escapuje jej před spojením řízenými TeX zalomeními. V nové kopii stylu se pro skupinu změní jediný očekávaný popisek na Autoři práce; pro jednotlivce se styl nemění. Původní archivy zůstávají nedotčené.
+
+- Stejné Windows/Node/Rust/MiKTeX prostředí jako níže; bez instalace dalších závislostí či TeX balíčků.
+- `npm test`: 11 prošlo, 0 selhalo. `npm run check` a `npm run build`: prošly; dosavadní varování o importech/chuncích přetrvávají.
+- `cargo test --manifest-path src-tauri/Cargo.toml --lib -- --test-threads=1 --skip lists_and_compiles_example --skip synctex_round_trip_on_example --skip export_is_plain_latex_that_compiles_on_its_own`: 36 prošlo, 0 selhalo, 7 ignorováno, 3 odfiltrováno. Ignorované TeX integrace nejsou v tomto běhu vykazovány jako ověřené; upstream instalace a tři volitelné notebook/example integrace zůstaly vynechány.
+- `cargo test --manifest-path src-tauri/Cargo.toml wizard_pdf -- --ignored --test-threads=1`: 2 prošly, 0 selhalo, 13,60 s. Skutečný překlad pro jednoho autora se speciálními znaky a pro šest autorů; skupina bez Overfull vbox.
+- `npm run tauri build -- --debug --no-bundle`: prošlo, vytvořeno DEBUG EXE. Bez nového instalátoru.
+- GUI: zadáno šest fiktivních českých jmen po řádcích. Zpět a Pokračovat zachovaly celý seznam i předmět. Vytvořen projekt `C:\Users\akabr\Documents\TUL Writer\Ukázka skupinové semestrální práce`; zdroj na disku obsahuje šest jmen v původním pořadí oddělených TeX zalomením. Ctrl+Enter zobrazilo v PDF.js titulní stranu s popiskem Autoři práce a všemi šesti jmény pod sebou. Page 1 of 2, Compiled with pdflatex, 0 chyb a 0 varování. Aplikace zůstala otevřená nad touto ukázkou. Rozvržení extrémních seznamů s 20 dlouhými jmény není vizuálně ověřené.
+- Nové testy pokrývají rozdělení CR/LF/CRLF, prázdné řádky, pořadí a duplicity, escapování jednotlivých jmen, jednotné/množné číslo popisku a odmítnutí chybějících, prázdných, víceřádkových či nadměrných položek. `git diff --check`: bez chyb.
+- Dílčí pomocné pokusy: launch_app nejprve dostal nesprávný parametr path, opraveno na app; obecný python alias nebyl dostupný, použit konkrétní Python313. Pomocná aktualizace dokumentace skončila na přesné kontrole nenalezené věty v DECISIONS po uložení předchozích souborů; zbývající dokumentace upravena přímo a výsledný diff zkontrolován.
+
+Logy v ignorovaném output/verification: authors-frontend.log, authors-regression.log, authors-pdf.log a authors-native-build.log. Starší výsledky níže popisují předchozí podobu průvodce.
+
 ## Průvodce semestrální prací – 2026-11-05
 
 Rozsah: dvoukrokové založení nové semestrální práce s volbou TUL/FS/FT/FP/EF/FUA/FM/FZS/CXI, názvu, autora, předmětu, roku, data a verze zadání. Osobní údaje se zapisují pouze do nové kopie semestralni-prace.tex. Změny stávajících dokumentů a průvodci ostatními typy nejsou součástí úkolu. Před úkolem byla pracovní kopie čistá na commitu 3ed3d49.

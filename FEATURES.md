@@ -24,7 +24,7 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 | AI agent, paměť, file disclosure policy | Navrženo, neimplementováno |
 | Pracovní prostor | Výchozí složka Dokumenty / TUL Writer, změna složky a šablony pro celý počítač, nastavení přetrvává po restartu |
 | TUL šablony a zakládání dokumentů | Čtyři nezměněné offline balíčky z portálu TUL × LaTeX; nová vlastní podsložka bez přepisování, volba šablony a nastavení enginu/bibliografie |
-| Průvodce semestrální prací | Dva kroky, výběr TUL / sedmi fakult / CXI, název, autor, předmět, rok a volitelné nastavení data/verze. Předvyplní pouze novou kopii, ošetří speciální znaky; nativní i PDF ověření prošlo. Ostatní typy zatím bez průvodce |
+| Průvodce semestrální prací | Dva kroky, výběr TUL / sedmi fakult / CXI, název, 1–20 autorů po řádcích, předmět, rok a volitelné nastavení data/verze. Předvyplní pouze novou kopii, ošetří speciální znaky; nativní i PDF ověření prošlo. Ostatní typy zatím bez průvodce |
 | Překladač podle šablony | Explicitní pdfLaTeX / XeLaTeX / LuaLaTeX, BibTeX / Biber a navazující průchody; původní projekty zachovávají dosavadní automatickou detekci |
 | Windows EXE/MSI | Sestavené testovací DEBUG EXE/MSI; instalace na čistém systému neověřena |
 | Podepsané aktualizace | Vypnuto; upstream aktualizace Scribe se neinstalují |

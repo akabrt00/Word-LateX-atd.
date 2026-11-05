@@ -144,7 +144,10 @@ fn create_starter_with_details(parent: &Path, name: &str, template_id: &str, det
         let mut original = String::new();
         use std::io::Read;
         archive.by_name(starter.main).map_err(|e| e.to_string())?.read_to_string(&mut original).map_err(|e| e.to_string())?;
-        Some(details.render(&original)?)
+        let source = details.render(&original)?;
+        let mut style = String::new();
+        archive.by_name("tul-semestralni.sty").map_err(|e| e.to_string())?.read_to_string(&mut style).map_err(|e| e.to_string())?;
+        Some((source, details.render_style(&style)?))
     } else { None };
     std::fs::create_dir_all(parent).map_err(|e| format!("Nelze vytvořit složku dokumentů: {e}"))?;
     let parent = parent.canonicalize().map_err(|e| e.to_string())?;
@@ -154,7 +157,10 @@ fn create_starter_with_details(parent: &Path, name: &str, template_id: &str, det
     let result = (|| {
         if let Some(bytes) = starter.archive { unpack(bytes, &target)?; }
         else { std::fs::write(target.join("main.tex"), "\\documentclass{article}\n\\begin{document}\nMuj novy dokument.\n\\end{document}\n").map_err(|e| e.to_string())?; }
-        if let Some(source) = personalized { std::fs::write(target.join(starter.main), source).map_err(|e| e.to_string())?; }
+        if let Some((source, style)) = personalized {
+            std::fs::write(target.join(starter.main), source).map_err(|e| e.to_string())?;
+            std::fs::write(target.join("tul-semestralni.sty"), style).map_err(|e| e.to_string())?;
+        }
         let build = ProjectBuild { main: starter.main.into(), engine: starter.engine.into(), bibliography: starter.bibliography.map(String::from), template: starter.id.into() };
         std::fs::create_dir(target.join(".tulwriter")).map_err(|e| e.to_string())?;
         std::fs::write(target.join(".tulwriter/project.json"), serde_json::to_vec_pretty(&build).map_err(|e| e.to_string())?).map_err(|e| e.to_string())?;
@@ -237,7 +243,7 @@ mod tests {
     fn invalid_details_create_nothing_and_existing_projects_are_preserved() {
         let dir = tempfile::tempdir().unwrap();
         let parent = dir.path().join("Documents");
-        let mut details = crate::semester::example_details(); details.author.clear();
+        let mut details = crate::semester::example_details(); details.authors.clear();
         assert!(create_starter_with_details(&parent, "invalid", "tul-semester", Some(&details)).is_err());
         assert!(!parent.exists());
         details = crate::semester::example_details();
@@ -257,6 +263,20 @@ mod tests {
         let project = create_starter_with_details(dir.path(), "Práce s údaji", "tul-semester", Some(&crate::semester::example_details())).unwrap();
         let result = crate::compile_blocking(&project.to_string_lossy(), "semestralni-prace.tex").unwrap();
         assert!(result.ok, "{}", result.log);
+        assert!(std::fs::read(project.join(result.pdf.unwrap())).unwrap().starts_with(b"%PDF-"));
+    }
+
+    #[test]
+    #[ignore = "Requires pdfLaTeX, BibTeX and semester template packages"]
+    fn semester_group_wizard_pdf() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut details = crate::semester::example_details();
+        details.title = "Společná semestrální práce".into();
+        details.authors = vec!["Zkušební autorka Jana Novotná", "Zkušební autor Petr Dvořák", "Zkušební autorka Kateřina Procházková", "Zkušební autor Jiří Veselý", "Zkušební autorka Tereza Černá", "Zkušební autor Tomáš Svoboda"].into_iter().map(String::from).collect();
+        let project = create_starter_with_details(dir.path(), "Skupinová práce", "tul-semester", Some(&details)).unwrap();
+        let result = crate::compile_blocking(&project.to_string_lossy(), "semestralni-prace.tex").unwrap();
+        assert!(result.ok, "{}", result.log);
+        assert!(!result.log.contains("Overfull \\vbox"), "{}", result.log);
         assert!(std::fs::read(project.join(result.pdf.unwrap())).unwrap().starts_with(b"%PDF-"));
     }
 

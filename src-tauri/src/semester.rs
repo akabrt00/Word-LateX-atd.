@@ -6,7 +6,7 @@ use serde::Deserialize;
 pub(crate) struct SemesterDetails {
     pub faculty: String,
     pub title: String,
-    pub author: String,
+    pub authors: Vec<String>,
     pub subject: String,
     pub year: u16,
     pub date: String,
@@ -46,6 +46,26 @@ fn czech_date(iso: &str) -> Result<String, String> {
 }
 
 impl SemesterDetails {
+    fn authors_tex(&self) -> Result<String, String> {
+        if self.authors.is_empty() || self.authors.len() > 20 {
+            return Err("Vyplňte alespoň jednoho autora, nejvýše 20 jmen.".into());
+        }
+        self.authors.iter().enumerate().map(|(index, author)|
+            plain(author, &format!("Autor {}", index + 1), 200).map(|text| tex_text(&text)))
+            .collect::<Result<Vec<_>, _>>().map(|names| names.join("\\\\ "))
+    }
+
+    pub(crate) fn render_style(&self, original: &str) -> Result<String, String> {
+        self.authors_tex()?;
+        let marker = "\\tul@coverrow{Autor práce}{\\AutorPrace}";
+        if original.matches(marker).count() != 1 {
+            return Err("Tato verze titulní strany nepodporuje průvodce autory. Nebyl vytvořen žádný dokument.".into());
+        }
+        Ok(if self.authors.len() > 1 {
+            original.replacen(marker, "\\tul@coverrow{Autoři práce}{\\AutorPrace}", 1)
+        } else { original.to_owned() })
+    }
+
     pub(crate) fn render(&self, original: &str) -> Result<String, String> {
         if !["TUL", "FS", "FT", "FP", "EF", "FUA", "FM", "FZS", "CXI"].contains(&self.faculty.as_str()) {
             return Err("Vyberte součást TUL z nabídky.".into());
@@ -55,7 +75,8 @@ impl SemesterDetails {
             ("\\Fakulta{TUL}".to_string(), format!("\\Fakulta{{{}}}", self.faculty)),
             declaration("Predmet", "Modelování a simulace", &plain(&self.subject, "Předmět", 200)?),
             declaration("NazevPrace", "Semestrální práce", &plain(&self.title, "Název práce", 300)?),
-            declaration("AutorPrace", "Ukázkový autor", &plain(&self.author, "Autor", 200)?),
+            // Escape each name before inserting our own controlled line breaks.
+            ("\\newcommand{\\AutorPrace}{Ukázkový autor}".into(), format!("\\newcommand{{\\AutorPrace}}{{{}}}", self.authors_tex()?)),
             declaration("DatumPrace", "20. října 2026", &czech_date(&self.date)?),
             declaration("RokPrace", "2026", &self.year.to_string()),
             declaration("VerzeZadani", "2", &plain(&self.assignment_version, "Verze zadání", 40)?),
@@ -84,7 +105,7 @@ fn declaration(name: &str, previous: &str, value: &str) -> (String, String) {
 #[cfg(test)]
 pub(crate) fn example_details() -> SemesterDetails {
     SemesterDetails { faculty: "FM".into(), title: "Měření & modelování 50%: vzorek_1 #2 $x$ ~ ^ \\ {test}".into(),
-        author: "Zkušební autor".into(), subject: "Modelování a simulace".into(), year: 2026,
+        authors: vec!["Zkušební autor".into()], subject: "Modelování a simulace".into(), year: 2026,
         date: "2026-11-05".into(), assignment_version: "1".into() }
 }
 
@@ -125,7 +146,7 @@ mod tests {
         for date in ["2026-02-29", "2026-04-31", "1900-02-29", "2026-00-05", "2026-11-00", "2026-1-05", "2026-11-05x"] { assert!(czech_date(date).is_err(), "{date}"); }
         let mut details = example_details(); details.faculty = "FM}\\input{x}".into();
         assert!(details.render(&source()).is_err());
-        details = example_details(); details.author = " \n ".into();
+        details = example_details(); details.authors = vec![" \n ".into()];
         assert!(details.render(&source()).is_err());
         details = example_details(); details.title = "x\ny".into();
         assert!(details.render(&source()).is_err());
@@ -140,5 +161,25 @@ mod tests {
         assert!(result.contains("\\newcommand{\\AutorPrace}{Zkušební autor}"));
         assert!(details.render(&original.replace("\\Fakulta{TUL}", "\\Fakulta{FS}")).is_err());
         assert!(details.render(&(original + "\n\\Fakulta{TUL}")).is_err());
+    }
+
+    #[test]
+    fn teams_keep_order_duplicates_and_escape_names_before_line_breaks() {
+        let mut details = example_details();
+        details.authors = vec!["Jana Nová & Petr 50%".into(), "Jiří_1 {\\input{x}}".into(), "Jana Nová & Petr 50%".into()];
+        let result = details.render(&source()).unwrap();
+        assert!(result.contains("\\newcommand{\\AutorPrace}{Jana Nová \\& Petr 50\\%\\\\ Jiří\\_1 \\{\\textbackslash{}input\\{x\\}\\}\\\\ Jana Nová \\& Petr 50\\%}"));
+        let style = "prefix\r\n\\tul@coverrow{Autor práce}{\\AutorPrace}%\r\nsuffix";
+        assert_eq!(details.render_style(style).unwrap(), style.replace("{Autor práce}", "{Autoři práce}"));
+        assert_eq!(example_details().render_style(style).unwrap(), style);
+        assert!(details.render_style("unknown style").is_err());
+    }
+
+    #[test]
+    fn author_lists_reject_missing_blank_multiline_or_excessive_entries() {
+        for authors in [vec![], vec![" ".into()], vec!["First".into(), "".into()], vec!["First\nSecond".into()], vec!["a".repeat(201)], vec!["Author".into(); 21]] {
+            let mut details = example_details(); details.authors = authors;
+            assert!(details.render(&source()).is_err());
+        }
     }
 }

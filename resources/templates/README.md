@@ -14,4 +14,6 @@ Přesné URL, velikosti a SHA-256 jsou v provenance.json. Archivy jsou univerzit
 
 Původní readme, třídy, styly a licenční texty zůstávají uvnitř archivů i vytvořených projektů. Původní tul/tulthesis/TULpresentation deklarují CC BY. Přiložená písma Inter mají vlastní SIL OFL texty v balíčcích. Další fontové a grafické podklady si zachovávají původní podmínky; archivy nejsou přelicencované pod MIT aplikace. Značky TUL se používají jako součást dokumentových šablon, nikoli jako identita aplikace.
 
+Semestrální průvodce předvyplní sedm deklarací v nové kopii zdroje. U více autorů navíc v nové kopii tul-semestralni.sty změní pouze popisek Autor práce na Autoři práce; původní ZIP zůstává nedotčený.
+
 Projekty obsahují ukázkové údaje a texty, které je potřeba vyplnit nebo nahradit. Požadavky konkrétní fakulty se ověřují podle původních návodů. Starší obecné startovní projekty Scribe zůstávají dostupné přes Další šablony.

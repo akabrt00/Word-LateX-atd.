@@ -4,8 +4,8 @@ Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
 ## Vývoj – 2026-11-05
 
-- Průvodce novou semestrální prací rozdělen na výběr projektu a údaje titulní strany. Volba celé TUL, sedmi fakult nebo CXI, názvu, autora, předmětu, roku a data/verze zadání; tlačítko Zpět zachová vyplnění.
-- Předvyplnění nové kopie mění pouze sedm očekávaných deklarací; speciální TeX znaky jsou ošetřené jako text. Neplatné údaje či nepodporovaná struktura šablony se odmítnou před založením složky. Původní archivy, styly, literatura a text práce zůstávají zachované.
+- Průvodce novou semestrální prací rozdělen na výběr projektu a údaje titulní strany. Volba celé TUL, sedmi fakult nebo CXI, názvu, jednoho či více autorů (po řádcích), předmětu, roku a data/verze zadání; tlačítko Zpět zachová vyplnění.
+- Předvyplnění nové kopie mění sedm očekávaných deklarací a pro skupinu popisek autorů v nové kopii stylu; speciální TeX znaky jsou ošetřené jako text. Neplatné údaje či nepodporovaná struktura šablony se odmítnou před založením složky. Původní archivy, literatura a text práce zůstávají zachované.
 
 - Nastavitelný pracovní prostor pro nové dokumenty, uložený pro celý počítač; nový český dialog názvu a šablony. Každý projekt vzniká ve vlastní složce bez přepsání existujícího obsahu.
 - Přibaleny nezměněné TUL předvolby semestrální práce, závěrečné práce, prezentace a posteru z uživatelského portálu včetně původních podkladů a licencí; uložena provenance a SHA-256.
