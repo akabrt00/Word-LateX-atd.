@@ -1,5 +1,11 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Dokončení EXE s popisky šablony – 2026-11-06
+
+`npm run tauri build -- --debug --no-bundle` nakonec prošlo: vytvořeno src-tauri/target/debug/tul-writer.exe, Rust build 14,32 s, frontend 983 ms. Bez instalátoru a bez živého GUI ověření nových popisků. Zdroj aplikace se v tomto kroku neměnil; předchozí testy zůstávají níže.
+
+Dva předchozí pokusy (v omezeném prostředí a mimo něj) skončily Windows chybou 5 při přepsání EXE. Omezený výpis procesů běžící aplikaci neukázal; kontrola mimo omezené prostředí nalezla TUL Writer z přesné projektové cesty. CloseMainWindow běžně uzavřel okno, následná kontrola potvrdila ukončení procesu a nový build prošel. Nebylo použito násilné ukončení. Logy: tree-labels-native-final.log, tree-labels-native-elevated.log a úspěšný tree-labels-native-completed.log v ignorovaném output/verification.
+
 ## Srozumitelné názvy podkladů ve stromu – 2026-11-05
 
 Pouze zobrazovací změna v sidebar.ts: podklady → Vzhled šablony, podklady/pisma (také písma nebo fonts) → Vzhled šablony / Písma. Nápověda vysvětluje účel a obsahuje skutečnou cestu. Dataset, kliknutí, přesuny, přejmenování i diskové cesty používají původní hodnotu. Ostatní složky zachovávají dosavadní popisek.
