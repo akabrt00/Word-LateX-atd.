@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="cs">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scribe</title>
+  <title>TUL Writer</title>
   <link rel="stylesheet" href="/src/style.css" />
   <!-- light or dark before the first paint; appearance.ts applies the full theme moments later -->
   <script>try { if (localStorage.getItem("scribe.themeBase") === "light") document.documentElement.dataset.theme = "light"; } catch {}</script>
@@ -11,35 +11,35 @@
 <body>
   <section id="welcome">
     <div class="welcome-drag" data-tauri-drag-region></div>
-    <div class="welcome-panel">
+    <div class="welcome-panel"><p class="tul-eyebrow">Psaní · LaTeX · Výzkum</p><h1 class="tul-brand">TUL <span>Writer</span></h1><p class="tul-subtitle">Váš dokument. Skutečný LaTeX.<br>Lokální pracovní prostředí pro odborné psaní.</p>
       <div class="welcome-actions">
         <button id="welcome-open" class="btn btn-primary btn-lg">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4.25a1 1 0 011-1h3l1.5 1.5H13a1 1 0 011 1v6.5a1 1 0 01-1 1H3a1 1 0 01-1-1v-8z"/></svg>
-          Open project <kbd>⌘O</kbd>
+          Otevřít projekt <kbd>⌘O</kbd>
         </button>
         <button id="welcome-import" class="btn btn-outline btn-lg" title="Bring in a project from Overleaf (its zip download or git link) or any git repository">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.75v7.5M5 7.25l3 3 3-3"/><path d="M2.75 10.5v1.75a1 1 0 001 1h8.5a1 1 0 001-1V10.5"/></svg>
-          Import from Overleaf
+          Importovat z Overleafu
         </button>
         <button id="welcome-new" class="btn btn-outline btn-lg" title="Pick or create a folder and start it with a paper and a notebook">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.25v9.5M3.25 8h9.5"/></svg>
-          New project
+          Nový projekt
         </button>
       </div>
       <p id="welcome-error" class="welcome-error" role="alert" hidden></p>
       <section id="recent" class="welcome-section" hidden>
-        <h2>Recent projects</h2>
+        <h2>Poslední projekty</h2>
         <ul id="recent-list" class="welcome-list"></ul>
       </section>
       <section class="welcome-section">
-        <h2>On this computer</h2>
+        <h2>Na tomto počítači</h2>
         <ul id="setup-list" class="welcome-list setup"></ul>
       </section>
       <section class="welcome-section">
-        <h2>Shortcuts</h2>
+        <h2>Klávesové zkratky</h2>
         <ul id="shortcut-list" class="welcome-list shortcuts"></ul>
       </section>
-      <p class="welcome-version">Version <span class="app-version"></span> <span aria-hidden="true">·</span> © 2026 Georgios Kiritsis</p>
+      <p class="welcome-version">TUL Writer <span class="app-version"></span> · Základ Scribe (MIT)</p><p class="tul-independent">Nezávislý studentský projekt. Nejde o oficiální software Technické univerzity v Liberci.</p>
     </div>
     <div class="welcome-stage" aria-hidden="true">
       <pre id="typewriter" class="typewriter"></pre>
@@ -48,7 +48,7 @@
   </section>
 
   <div id="app" class="hidden">
-    <header id="titlebar" data-tauri-drag-region>
+    <header id="titlebar" data-tauri-drag-region><span class="tul-wordmark">TUL Writer</span>
       <span class="tb-drag" data-tauri-drag-region></span>
       <button id="btn-open" class="crumb-project" title="Open another project (⌘O)">
         <span id="project-name"></span>
@@ -60,13 +60,13 @@
     </header>
     <header id="toolbar">
       <nav id="menubar" aria-label="Application menu"></nav>
-      <span class="tb-spacer"></span>
+      <span class="tb-spacer"></span><span id="tul-mode-label">LaTeX + PDF</span><button id="tul-ai-toggle" class="btn" aria-controls="tul-ai-center" aria-expanded="false">AI centrum</button>
       <button id="btn-run-file" class="btn" title="Run this Python file in the terminal (⌘R)" hidden>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4.5 2.8v10.4a.6.6 0 00.9.5l8.4-5.2a.6.6 0 000-1L5.4 2.3a.6.6 0 00-.9.5z"/></svg>
         Run file
       </button>
       <button id="btn-run" class="btn" title="Run every notebook that produces figures (⇧⌘↵)">Run notebooks</button>
-      <button id="btn-compile" class="btn btn-primary" title="Save and compile (⌘↵)">Compile <kbd>⌘↵</kbd></button>
+      <button id="btn-compile" class="btn btn-primary" title="Save and compile (⌘↵)">Kompilovat <kbd>⌘↵</kbd></button>
       <button id="btn-settings" class="icon-btn" title="Settings" aria-label="Settings" aria-haspopup="true">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2.5 5h5.5M12 5h1.5M2.5 11h1.5M8 11h5.5"/><circle cx="10" cy="5" r="1.75"/><circle cx="6" cy="11" r="1.75"/></svg>
       </button>
@@ -377,13 +377,13 @@
       <header class="about-head">
         <img id="about-icon" alt="" width="44" height="44" />
         <div>
-          <h2 id="about-name">Scribe</h2>
+          <h2 id="about-name">TUL Writer</h2>
           <p class="about-version">Version <span class="app-version"></span></p>
         </div>
         <button id="about-close" class="icon-btn" aria-label="Close"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
       </header>
       <p class="about-motto">Papers that run their own figures.</p>
-      <p class="about-story">I wrote Scribe after finishing my thesis. While writing the papers that followed, I found that the tools available didn't suit the way I work, so I decided to build my own.</p>
+      <p class="about-story">Nezávislý studentský projekt založený na Scribe od George Kiritsis (MIT). Univerzitní logo ani TUL Mono nejsou součástí aplikace.</p>
       <p class="about-sign">Georgios Kiritsis</p>
     </div>
     <footer class="about-foot">
@@ -411,5 +411,6 @@
   </dialog>
 
   <script type="module" src="/src/main.ts"></script>
+<aside id="tul-ai-center" hidden aria-labelledby="tul-ai-title"><div class="tul-ai-head"><h2 id="tul-ai-title">AI centrum</h2><button id="tul-ai-close" class="icon-btn" aria-label="Zavřít AI centrum">×</button></div><p class="tul-independent">Poskytovatele i model vybíráte vy. Bez nastavení se nic neodesílá.</p><div class="tul-ai-modes"><span>Chat</span><span>Editace</span><span>Agent · plán</span></div><section class="tul-ai-card"><h3>Asistent dokumentu</h3><p>Převzatý chat a návrhy úprav: OpenAI, Claude, Gemini, Ollama a kompatibilní služby. Připojení v tomto milníku nebylo testováno.</p><button id="tul-ai-chat" class="btn">Otevřít asistenta</button><br><button id="tul-ai-settings" class="btn">Nastavit poskytovatele a model</button></section><section class="tul-ai-card"><h3>Agentní úkoly · připravujeme</h3><ul><li>Plán a schválené projektové zdroje</li><li>Návrhy změn s porovnáním</li><li>Kompilace a kontrola citací</li><li>Schválení a vrácení změn</li></ul><p>Autonomní agent, jeho oprávnění a projektová paměť zatím nejsou implementovány.</p></section></aside>
 </body>
 </html>

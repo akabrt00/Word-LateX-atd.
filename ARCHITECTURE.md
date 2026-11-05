@@ -1,0 +1,53 @@
+# Architektura
+
+Stav 0.1: pracovní fork Scribe 1.2.3. Tauri 2 + Rust; frontend TypeScript/DOM + Vite, CodeMirror 6, PDF.js, MathLive, KaTeX. Frameworkový přepis není pro první etapu opodstatněný.
+
+## Současný tok
+
+Nativní dialog → projektová složka → list_files/read_file → CodeMirror → write_file a historie → compile → lokální TeX → read_binary → PDF.js canvas a textová vrstva.
+
+Backend src-tauri/src/lib.rs obsahuje velkou část funkcí v jediném modulu; postupně jej dělíme pod krytím testů. Současné moduly src/project.ts, build.ts, preview.ts, editor.ts, ai.ts, ai-center.ts a document-core.ts tvoří počáteční hranice.
+
+## Cílové vrstvy
+
+| Modul | Odpovědnost |
+|---|---|
+| Desktop Application | Okna, nativní dialogy, instalátor a capability IPC |
+| Project Management | Kanonický root, inventář, hlavní soubor, externí změny |
+| Document Core | Původní text, revize, CST/AST s rozsahy, identity uzlů |
+| Synchronization Engine | Transakce, mapování rozsahů, konflikty a undo |
+| Visual Editor | Tiptap/ProseMirror projekce podporovaných uzlů |
+| LaTeX Editor | CodeMirror, completions, diagnostika, více souborů |
+| PDF Compiler | Řízený proces, fronta, cancel, timeout, enginy a build profil |
+| PDF Viewer | PDF.js, textová vrstva, vyhledávání, SyncTeX |
+| Image Editor | Původní asset, Cropper.js viewport, metadatové transformace |
+| AI Provider Manager | Provider adapters, model capabilities, credential store |
+| AI Agent Runtime | Nástroje přes policy broker, evidence, diff a checkpoint |
+| Project Context Manager | Transparentní instrukce, terminologie, index a provenience |
+| Bibliography Manager | BibTeX, DOI metadata, ověřování a citace |
+| Academic Templates | Verzované šablony, metadata a pravidla |
+| Settings / Design System | Lokální nastavení, tokeny a přístupné komponenty |
+
+## Bezpečná vizuální editace
+
+Diskové zdroje jsou jediná autorita. Parser vytváří CST s přesnými původními úseky včetně whitespace a komentářů; AST je pouze odvozený sémantický pohled. unified-latex je kandidát pro analýzu, nikoli automatický serializer celého souboru. Neexpandujeme uživatelská makra jako předpoklad pro editaci.
+
+ProseMirror schema bude mít Paragraph, Heading, Text, Equation, Figure, Table, Citation a OpaqueLatex. Opaque uzel zachová původní rozsah a nabídne přechod do zdroje. Při nejasném parsování, změnách catcode, verbatim či vlastním makro jazyce se vizuální zásah odmítne.
+
+Každá operace je SourceTransaction: fileId, baseRevision/hash, seznam původních rozsahů, expected source, nový text, původce a inverse edits. Podporovaný lokální serializer generuje pouze měněný úsek. Nekolidující úpravy se aplikují odzadu, pod jedinou revizní kontrolou; překryvy a zastaralá revize se odmítají. Backend musí tutéž revizi ověřit při atomickém zápisu; frontendová kontrola sama nestačí.
+
+Po zdrojové změně se invalidují ovlivněné projekce; nová revize se parsuje a mapuje do obou editorů. PDF může patřit starší revizi: UI musí ukazovat stav zastaralosti. SyncTeX mapuje PDF/zdroj, neslouží jako dokumentový model ani garance stejného zalomení vizuální stránky.
+
+## Experiment 0.1
+
+src/document-core.ts ověřuje lokální zdrojové transakce s UTF-16 rozsahy CodeMirroru, očekávaným textem a úplným base snapshotem. Testy pokrývají neznámá makra, prostředí, citace, komentáře, TikZ, verbatim, BOM, CRLF, Unicode a inverse transakci. plainTextEdit přijímá pouze explicitní prostý rozsah. Neurčuje samo, zda rozsah leží v bezpečném TeX kontextu; zatím se nepřipojuje k vizuálnímu UI. To je záměrný experiment, nikoli obecné bezpečnostní rozhraní nebo hotový round-trip parser.
+
+## Obrázky
+
+Ponechat původní asset. Transformace ukládat jako crop v souřadnicích originálu, rozměr, rotace, popisek, label a sémantické umístění. Základ LaTeXu: graphicx width/angle/trim/clip. Pořadí trim je left,bottom,right,top; ořez Cropper viewportu nelze bez přepočtu měřítka a rotace opsat. Vedle sebe minipage/subcaption; obtékání přes podporovaný profil wrapfig s vysvětlením omezení. Žádná garance libovolných plovoucích souřadnic Wordu.
+
+## Soubory a bezpečnost
+
+Zachováváme atomický zápis a historii Scribe. Oprava resolve kontroluje nejbližší existující kanonický předek také u nových souborů. Ještě chybí session-bound projektové handles, ochrana TOCTOU, detekce externí změny a revize na disku. CSP je převzato null: před vydáním zavést CSP a sanitizaci všech nedůvěryhodných náhledů.
+
+Kompilace nyní neprovádí projektový Python automaticky; latexmk dostává -norc a -no-shell-escape. Přímý pdflatex dostává -no-shell-escape a dva průchody. Tectonic může přistupovat k síti kvůli balíčkům. Process sandbox, síťová izolace, cancel a timeout zůstávají nutným dalším krokem. Nepovažovat tuto verzi za bezpečný prohlížeč cizích projektů.

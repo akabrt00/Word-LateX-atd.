@@ -1,0 +1,28 @@
+# Stav funkcí
+
+Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živým testem; testováno = konkrétní evidence v docs/TEST_REPORT.md.
+
+| Funkce | Stav 0.1 |
+|---|---|
+| Tauri 2, Rust, TypeScript | Nativní EXE sestavené a spuštěné na Windows |
+| Otevření složky, .tex soubory, více souborů | Ověřeno nativním integračním testem a načtením projektu v GUI |
+| CodeMirror úpravy, Ctrl+S, undo | Editace a Ctrl+S ověřeny v GUI; undo převzato |
+| Atomický zápis a historie | Převzato; rozšířit externí konflikty a recovery |
+| Kompilace a PDF.js | Převzato; doplněna přímá cesta pdflatex, dva průchody a odmítnutí stale PDF |
+| Shell escape a projektový latexmkrc | Explicitně vypnuty pro latexmk/pdflatex |
+| Python notebook při kompilaci | Automatické spuštění vypnuto; explicitní spuštění zůstává |
+| Vlastní identita, Inter, light/dark | Implementováno; ověření UI viz test report |
+| AI centrum | Implementovaná struktura a navigace, agent označen jako plán |
+| AI chat a editace výběru | Převzato, žádné živé API ověření |
+| Source-preserving transakce | Experiment; 7 automatických testů |
+| Word Mode, paginace, bezpečný parser | Plánováno, není hotový převod |
+| Resize/crop/rotate obrázků | Plánováno; Cropper.js je kandidát |
+| Tabulky a rovnice | Převzaté dialogy Scribe; Word-like integrace plán |
+| Citace, Zotero, DOI, TikZ | Převzaté implementace; vyžadují dílčí ověření |
+| AI agent, paměť, file disclosure policy | Navrženo, neimplementováno |
+| TUL šablony a průvodce | Identifikován tul/tulthesis; zatím nebaleno |
+| Windows EXE/MSI | Sestavené testovací DEBUG EXE/MSI; instalace na čistém systému neověřena |
+| Podepsané aktualizace | Vypnuto; upstream aktualizace Scribe se neinstalují |
+| Kompletní české UI | Částečně; převzaté obrazovky zůstávají anglické |
+
+Není tvrzeno, že staticky auditované funkce jsou připraveny k veřejnému vydání. Neověřené části mají vlastní akceptační scénáře v roadmapě.

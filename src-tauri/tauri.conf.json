@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Scribe",
-  "version": "1.2.3",
-  "identifier": "com.georgekiritsis.scribe",
+  "productName": "TUL Writer",
+  "version": "0.1.0",
+  "identifier": "cz.tulwriter.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -12,17 +12,11 @@
   "app": {
     "windows": [
       {
-        "title": "Scribe",
+        "title": "TUL Writer",
         "width": 1400,
         "height": 860,
         "minWidth": 820,
-        "minHeight": 520,
-        "titleBarStyle": "Overlay",
-        "hiddenTitle": true,
-        "trafficLightPosition": {
-          "x": 14,
-          "y": 20
-        }
+        "minHeight": 520
       }
     ],
     "security": {
@@ -41,14 +35,12 @@
     ],
     "macOS": {
       "signingIdentity": "-"
+    },
+    "resources": {
+      "../LICENSE": "licenses/TUL-Writer-MIT.txt",
+      "../THIRD_PARTY_NOTICES.md": "licenses/THIRD_PARTY_NOTICES.md",
+      "../licenses/": "licenses/dependencies/"
     }
   },
-  "plugins": {
-    "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVFMUE2QTU2OEIwODhDMTcKUldRWGpBaUxWbW9hWGgzWjhyZG8rMll5RVduc3dUMDNGUlRiM1FCZDVOWWdqTkU3NERQYzdVbWMK",
-      "endpoints": [
-        "https://github.com/Scribe-IDE/Scribe/releases/latest/download/latest.json"
-      ]
-    }
-  }
+  "plugins": {}
 }

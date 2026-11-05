@@ -1,0 +1,14 @@
+{
+  "copied_files": 670,
+  "installed_rust_packages_without_root_license_file": [
+    "alloc-stdlib-0.3.0",
+    "clipboard-win-5.4.1",
+    "defmt-parser-1.0.0",
+    "selectors-0.38.0",
+    "tauri-plugin-2.7.1",
+    "webview2-com-0.39.1",
+    "webview2-com-macros-0.8.1",
+    "webview2-com-sys-0.39.1"
+  ],
+  "scope": "Installed npm packages and downloaded Rust sources; review before public release"
+}

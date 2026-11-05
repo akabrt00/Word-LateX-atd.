@@ -1,0 +1,24 @@
+% Unknown constructs must survive exactly.
+\documentclass{article}
+\newcommand{\privateMacro}[2][default]{\textbf{#1}: #2}
+\newenvironment{laboratory}[1]{\par\textit{#1}}{\par}
+\begin{document}
+% Comment with \fake{syntax}
+\section{Results}\label{sec:results}
+
+An ordinary paragraph with measured value 42.
+
+\privateMacro[custom]{Value \cite{verified2026}} % keep this spacing
+\begin{laboratory}{Custom environment}
+\begin{align}
+  E &= mc^2 \label{eq:energy}\\
+  F &= ma
+\end{align}
+\end{laboratory}
+\begin{tikzpicture}
+  \draw (0,0) -- (1,1); % opaque
+\end{tikzpicture}
+\begin{verbatim}
+\notEvenLatex{ % unbalanced { }
+\end{verbatim}
+\end{document}

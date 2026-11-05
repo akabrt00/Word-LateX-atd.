@@ -1,0 +1,230 @@
+[
+  {
+    "name": "@codemirror/autocomplete",
+    "version": "6.20.3",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@codemirror/commands",
+    "version": "6.11.1",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@codemirror/lang-markdown",
+    "version": "6.5.2",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@codemirror/lang-python",
+    "version": "6.2.1",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@codemirror/language",
+    "version": "6.13.1",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@codemirror/language-data",
+    "version": "6.5.2",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@codemirror/legacy-modes",
+    "version": "6.5.5",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@codemirror/lint",
+    "version": "6.9.7",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@codemirror/search",
+    "version": "6.7.2",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@codemirror/state",
+    "version": "6.7.6",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@codemirror/view",
+    "version": "6.43.14",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@fontsource-variable/albert-sans",
+    "version": "5.3.0",
+    "license": "OFL-1.1",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@fontsource-variable/fira-code",
+    "version": "5.3.0",
+    "license": "OFL-1.1",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@fontsource-variable/inter",
+    "version": "5.3.0",
+    "license": "OFL-1.1",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@fontsource-variable/jetbrains-mono",
+    "version": "5.3.0",
+    "license": "OFL-1.1",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@fontsource-variable/source-code-pro",
+    "version": "5.3.1",
+    "license": "OFL-1.1",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@fontsource/ibm-plex-mono",
+    "version": "5.3.0",
+    "license": "OFL-1.1",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@fontsource/iosevka",
+    "version": "5.3.0",
+    "license": "OFL-1.1",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@fontsource/playfair-display",
+    "version": "5.3.0",
+    "license": "OFL-1.1",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@lezer/highlight",
+    "version": "1.2.5",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@replit/codemirror-vim",
+    "version": "6.4.0",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@tauri-apps/api",
+    "version": "2.12.3",
+    "license": "Apache-2.0 OR MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@tauri-apps/plugin-clipboard-manager",
+    "version": "2.4.2",
+    "license": "MIT OR Apache-2.0",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@tauri-apps/plugin-dialog",
+    "version": "2.8.2",
+    "license": "MIT OR Apache-2.0",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@tauri-apps/plugin-opener",
+    "version": "2.7.1",
+    "license": "MIT OR Apache-2.0",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@tauri-apps/plugin-process",
+    "version": "2.4.0",
+    "license": "MIT OR Apache-2.0",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@tauri-apps/plugin-updater",
+    "version": "2.14.1",
+    "license": "MIT OR Apache-2.0",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@xterm/addon-fit",
+    "version": "0.11.0",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@xterm/xterm",
+    "version": "6.0.0",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "codemirror",
+    "version": "6.0.2",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "katex",
+    "version": "0.19.0",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "marked",
+    "version": "18.1.1",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "mathlive",
+    "version": "0.111.1",
+    "license": "MIT",
+    "kind": "dependencies"
+  },
+  {
+    "name": "pdfjs-dist",
+    "version": "4.10.38",
+    "license": "Apache-2.0",
+    "kind": "dependencies"
+  },
+  {
+    "name": "@tauri-apps/cli",
+    "version": "2.12.2",
+    "license": "Apache-2.0 OR MIT",
+    "kind": "devDependencies"
+  },
+  {
+    "name": "@types/katex",
+    "version": "0.16.8",
+    "license": "MIT",
+    "kind": "devDependencies"
+  },
+  {
+    "name": "typescript",
+    "version": "5.9.3",
+    "license": "Apache-2.0",
+    "kind": "devDependencies"
+  },
+  {
+    "name": "vite",
+    "version": "8.3.6",
+    "license": "MIT",
+    "kind": "devDependencies"
+  }
+]

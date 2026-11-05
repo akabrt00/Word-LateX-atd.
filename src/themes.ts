@@ -28,6 +28,16 @@ export const COLOR_GROUPS: { title: string; keys: [keyof ThemeColors, string][] 
 const t = (id: string, name: string, base: Theme["base"], colors: ThemeColors): Theme => ({ id, name, base, colors });
 
 export const BUILT_IN: Theme[] = [
+  t("tul-light", "TUL Writer Light", "light", {
+    desk: "#EBEDF2", bg: "#FFFFFF", panel: "#F6F7FA", surface: "#F0F1F5", raised: "#FFFFFF", border: "#DCDFE8", borderHi: "#B8BDCB",
+    fg: "#20232E", fgDim: "#454B5C", muted: "#606879", faint: "#6B7181", accent: "#5948AD", err: "#B32638", ok: "#26734A",
+    synKw: "#5948AD", synCmd: "#5948AD", synStr: "#26734A", synNum: "#8B447B", synCmt: "#687182", synType: "#624C90", synMath: "#155F83", synMeta: "#526077",
+  }),
+  t("tul-dark", "TUL Writer Dark", "dark", {
+    desk: "#111219", bg: "#191B24", panel: "#1E202B", surface: "#252835", raised: "#2B2E3D", border: "#343848", borderHi: "#51596D",
+    fg: "#F1F2F7", fgDim: "#CBCEDA", muted: "#A5ACBF", faint: "#9099AE", accent: "#BCADF5", err: "#FF99A5", ok: "#8AD2AA",
+    synKw: "#BCADF5", synCmd: "#BCADF5", synStr: "#8AD2AA", synNum: "#E3ADD7", synCmt: "#9099AE", synType: "#C4B6EA", synMath: "#98CBE5", synMeta: "#B2C0DB",
+  }),
   t("scribe-dark", "Scribe Dark", "dark", {
     desk: "#0b0b0a", bg: "#111110", panel: "#171716", surface: "#1c1c1a", raised: "#242422", border: "#2b2a28", borderHi: "#3d3b38",
     fg: "#e8e6e3", fgDim: "#c4c2be", muted: "#a3a09b", faint: "#807d78", accent: "#d4a556", err: "#e0706b", ok: "#8fbf6f",

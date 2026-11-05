@@ -22,7 +22,7 @@ export interface Appearance {
 }
 
 export const DEFAULT_APPEARANCE: Appearance = {
-  theme: "scribe-dark", light: "scribe-light", dark: "scribe-dark", accent: null, custom: [],
+  theme: "system", light: "tul-light", dark: "tul-dark", accent: null, custom: [],
   font: "system", ligatures: true, lineHeight: 1.65, uiScale: 1, pdfDark: false,
 };
 

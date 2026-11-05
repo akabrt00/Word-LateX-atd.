@@ -127,7 +127,7 @@ export async function compile({ quiet = false } = {}) {
     await saveSide(); // the side pane may hold part of the paper
 
     // auto-run stale notebooks before compiling
-    if (!(await runStaleNotebooks())) return;
+    // Notebook execution is an explicit user action in TUL Writer.
 
     setStatus(`Compiling ${mainFile}…`, "busy");
     const res = await invoke<CompileResult>("compile", { root, main: mainFile });

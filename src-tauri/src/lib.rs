@@ -5,6 +5,15 @@
 //! symlinks pointing outside). That boundary matters once projects are shared.
 
 mod ai;
+#[tauri::command]
+fn initial_project() -> Option<String> {
+    let mut args = std::env::args();
+    while let Some(arg) = args.next() {
+        if arg == "--project" { return args.next(); }
+    }
+    None
+}
+
 
 use serde::{Deserialize, Serialize};
 use std::path::{Component, Path, PathBuf};
@@ -25,10 +34,14 @@ fn resolve(root: &str, rel: &str) -> Result<PathBuf, String> {
     }
     let full = root.join(rel_path);
     // If the file exists, also make sure symlinks don't lead outside the root.
-    if let Ok(real) = full.canonicalize() {
-        if !real.starts_with(&root) {
-            return Err(format!("path outside project: {rel}"));
+    // Also validate existing ancestors of new paths: a symlinked parent must not escape.
+    let mut ancestor = full.as_path();
+    loop {
+        if let Ok(real) = ancestor.canonicalize() {
+            if !real.starts_with(&root) { return Err(format!("path outside project: {rel}")); }
+            break;
         }
+        ancestor = ancestor.parent().ok_or_else(|| format!("bad path: {rel}"))?;
     }
     Ok(full)
 }
@@ -439,29 +452,43 @@ fn run_tex(root_dir: &Path, input: &str, outdir: &str, synctex: bool) -> Result<
         ("tectonic", c)
     } else if has("latexmk") {
         let mut c = tool_command("latexmk");
-        c.args(["-pdf", "-interaction=nonstopmode", "-halt-on-error", "-file-line-error", &format!("-outdir={outdir}")]);
+        c.args(["-norc", "-no-shell-escape", "-pdf", "-interaction=nonstopmode", "-halt-on-error", "-file-line-error", &format!("-outdir={outdir}")]);
         if synctex {
             c.arg("-synctex=1");
         }
         c.arg(input);
         ("latexmk", c)
+    } else if has("pdflatex") {
+        let mut c = tool_command("pdflatex");
+        c.args(["-no-shell-escape", "-interaction=nonstopmode", "-halt-on-error", "-file-line-error",
+            &format!("-output-directory={outdir}")]);
+        if synctex { c.arg("-synctex=1"); }
+        c.arg(input);
+        ("pdflatex", c)
     } else {
-        return Err("No TeX engine found. Install Tectonic (recommended) or TeX Live with latexmk.".into());
+        return Err("No TeX engine found. Install Tectonic, latexmk with Perl, or MiKTeX pdflatex.".into());
     };
 
     let out = cmd.current_dir(root_dir).output().map_err(|e| format!("{engine}: {e}"))?;
     let mut log = String::from_utf8_lossy(&out.stdout).into_owned();
     log.push_str(&String::from_utf8_lossy(&out.stderr));
+    // Direct pdfLaTeX needs a second pass for labels. BibTeX/biber require latexmk.
+    let success = if engine == "pdflatex" && out.status.success() {
+        let second = cmd.output().map_err(|e| format!("{engine}: {e}"))?;
+        log.push_str(&String::from_utf8_lossy(&second.stdout));
+        log.push_str(&String::from_utf8_lossy(&second.stderr));
+        second.status.success()
+    } else { out.status.success() };
 
     let stem = Path::new(input).file_stem().unwrap_or_default().to_string_lossy();
     let pdf_rel = format!("{outdir}/{stem}.pdf");
     let pdf_exists = root_dir.join(&pdf_rel).is_file();
 
     Ok(CompileResult {
-        ok: out.status.success() && pdf_exists,
+        ok: success && pdf_exists,
         engine: engine.into(),
         log,
-        pdf: pdf_exists.then_some(pdf_rel),
+        pdf: (success && pdf_exists).then_some(pdf_rel),
     })
 }
 
@@ -1042,7 +1069,15 @@ fn find_python() -> Result<String, String> {
             return Ok(bin.to_string());
         }
     }
-    Err("No Python found. Install Python 3 and ensure python3 is on PATH.".into())
+    // Standard Windows Python installs often expose only the py launcher.
+    #[cfg(target_os = "windows")]
+    if let Ok(out) = tool_command("py").args(["-3", "-c", "import sys; print(sys.executable)"]).output() {
+        let exe = String::from_utf8_lossy(&out.stdout).trim().to_string();
+        if out.status.success() && Path::new(&exe).is_file() && has(&exe) {
+            return Ok(exe);
+        }
+    }
+    Err("No Python found. Install Python 3 (including the Windows py launcher) or add python3/python to PATH.".into())
 }
 
 #[derive(Serialize)]
@@ -2490,7 +2525,7 @@ struct Tools {
 
 fn find_tools() -> Tools {
     Tools {
-        tex: ["tectonic", "latexmk"].into_iter().find(|bin| has(bin)).map(String::from),
+        tex: ["tectonic", "latexmk", "pdflatex"].into_iter().find(|bin| has(bin)).map(String::from),
         python: find_python().ok(),
     }
 }
@@ -2683,10 +2718,10 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         // updates from GitHub releases, checked against the public key in tauri.conf.json
-        .plugin(tauri_plugin_updater::Builder::new().build())
+        // Upstream updater disabled for this fork.
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
-            list_files, list_dirs, create_dir, rename_path, delete_path, import_files,
+            initial_project, list_files, list_dirs, create_dir, rename_path, delete_path, import_files,
             read_file, write_file, read_binary, compile, compile_snippet, pdf_to_svg, compile_diff, git_log,
             ai::ai_stream, ai::ai_set_key, ai::ai_has_key, ai::ai_cancel, ai::ai_models,
             parse_notebook, run_notebook, generate_style,
@@ -2707,6 +2742,28 @@ mod tests {
 
     /// Tests that run the example's notebook or compile it share one folder; take turns.
     static EXAMPLE: Mutex<()> = Mutex::new(());
+
+    #[test]
+    fn tul_writer_open_edit_save_compile_pdf() {
+        let dir = std::env::temp_dir().join(format!("tul-writer-žluťoučký-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let root = dir.to_string_lossy().to_string();
+        let source = "\\documentclass{article}\n\\begin{document}\nTUL Writer milestone.\\end{document}\n";
+        write_file(root.clone(), "main.tex".into(), source.into()).unwrap();
+        assert!(list_files(root.clone()).unwrap().contains(&"main.tex".to_string()));
+        assert_eq!(read_file(root.clone(), "main.tex".into()).unwrap(), source);
+        let changed = source.replace("milestone", "edited and saved");
+        write_file(root.clone(), "main.tex".into(), changed.clone()).unwrap();
+        assert_eq!(read_file(root.clone(), "main.tex".into()).unwrap(), changed);
+        let result = compile_blocking(&root, "main.tex").unwrap();
+        assert!(result.ok, "{}", result.log);
+        assert!(std::fs::read(dir.join(result.pdf.unwrap())).unwrap().starts_with(b"%PDF-"));
+        std::fs::write(dir.join("main.tex"), "\\undefinedTulWriterCommand").unwrap();
+        let failed = compile_blocking(&root, "main.tex").unwrap();
+        assert!(!failed.ok);
+        assert!(failed.pdf.is_none(), "must not report old PDF as current");
+        std::fs::remove_dir_all(dir).unwrap();
+    }
 
     fn example() -> String {
         concat!(env!("CARGO_MANIFEST_DIR"), "/../example").to_string()

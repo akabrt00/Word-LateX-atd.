@@ -30,22 +30,22 @@ export const WELCOME_DOC: { src: string; html?: string }[] = [
 \\usepackage{scribe-figures}`,
   },
   {
-    src: `\\title{Scribe: Papers That\\\\
+    src: `\\title{TUL Writer: Papers That\\\\
   Run Their Own Figures}
 \\author{You}
 
 \\begin{document}
 \\maketitle`,
-    html: `<h1>Scribe: Papers That<br>Run Their Own Figures</h1><p class="paper-author">You</p>`,
+    html: `<h1>TUL Writer: Papers That<br>Run Their Own Figures</h1><p class="paper-author">You</p>`,
   },
   {
     src: `\\begin{abstract}
-Scribe is a desktop editor for LaTeX
+TUL Writer is a desktop editor for LaTeX
 and Python. Write the paper, run the
 notebook, and the figures land in the
 PDF, already up to date.
 \\end{abstract}`,
-    html: `<div class="paper-abstract"><strong>Abstract</strong><p>Scribe is a desktop editor for LaTeX and Python. Write the paper, run the notebook, and the figures land in the PDF, already up to date.</p></div>`,
+    html: `<div class="paper-abstract"><strong>Abstract</strong><p>TUL Writer is a desktop editor for LaTeX and Python. Write the paper, run the notebook, and the figures land in the PDF, already up to date.</p></div>`,
   },
   {
     src: `\\section{Write}

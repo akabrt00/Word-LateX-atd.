@@ -1,0 +1,23 @@
+/* Independent identity. University logo and proprietary fonts are not bundled. */
+:root { --font: "Inter Variable", Inter, "Segoe UI", system-ui, sans-serif; --font-display: var(--font); }
+.tul-brand { margin: 0 0 12px; font-size: 34px; line-height: 1.1; font-weight: 700; letter-spacing: -.8px; }
+.tul-brand span { color: #5948AD; }
+.tul-subtitle { color: var(--fg-dim); line-height: 1.6; margin: 0 0 28px; max-width: 33em; }
+.tul-independent { color: var(--muted); font-size: 12px; line-height: 1.6; }
+.tul-eyebrow { color: var(--accent); font-size: 11px; font-weight: 650; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+.tul-wordmark { color: var(--fg); font-weight: 650; padding-left: 14px; white-space: nowrap; }
+#tul-ai-center { position: fixed; right: 0; top: 76px; bottom: 24px; width: min(380px, 48vw);
+  z-index: 25; background: var(--panel); color: var(--fg); border-left: 1px solid var(--border-hi);
+  box-shadow: -12px 0 32px #0002; overflow: auto; padding: 22px; }
+#tul-ai-center[hidden] { display: none; }
+.tul-ai-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.tul-ai-head h2 { font-size: 18px; }
+.tul-ai-modes { display: flex; gap: 7px; margin: 14px 0; }
+.tul-ai-modes span { border: 1px solid var(--border); padding: 5px 10px; border-radius: 5px; font-size: 12px; }
+.tul-ai-card { border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin: 14px 0; line-height: 1.65; }
+.tul-ai-card p { margin: 8px 0; color: var(--fg-dim); }
+.tul-ai-card ul { padding-left: 18px; color: var(--fg-dim); }
+#tul-ai-center .btn { margin-top: 8px; }
+#tul-mode-label { color: var(--muted); font-size: 11px; white-space: nowrap; padding: 0 8px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }

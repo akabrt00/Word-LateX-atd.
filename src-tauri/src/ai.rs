@@ -12,7 +12,7 @@ use std::time::Duration;
 use tauri::ipc::Channel;
 
 /// The keychain service the keys are stored under, one entry per provider kind.
-const SERVICE: &str = "com.georgekiritsis.scribe.ai";
+const SERVICE: &str = "cz.tulwriter.desktop.ai";
 
 #[derive(Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]

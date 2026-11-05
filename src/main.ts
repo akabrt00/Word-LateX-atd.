@@ -1,5 +1,6 @@
+import "./tul-writer.css";
 /// <reference types="vite/client" />
-import "@fontsource-variable/albert-sans";
+import "@fontsource-variable/inter";
 import "@fontsource/playfair-display/700.css";
 import { EditorView } from "codemirror";
 import { redo, selectAll, toggleComment, undo } from "@codemirror/commands";
@@ -52,6 +53,8 @@ import { renderProblemCount } from "./statusbar";
 import { closeTab, openTabs } from "./tabs";
 import { canRunFile, runFile, shellAlive, showTerminal, stopTerminal, termPanel } from "./terminal";
 import { getRecent, importProject, installLatex, newProject, renderRecent, renderSetup, renderShortcuts, setRecent, startTypewriter } from "./welcome";
+
+import { initAiCenter } from "./ai-center";
 
 // ---------- log ----------
 function toggleLog() {
@@ -252,7 +255,7 @@ register(
   { id: "file.review", group: "Notes", title: "Review Cards", enabled: hasProject, run: () => reviewCards() },
   { id: "file.anki", group: "Notes", title: "Export Cards for Anki…", enabled: hasProject, run: exportForAnki },
   {
-    id: "help.about", group: "Help", title: "About Scribe",
+    id: "help.about", group: "Help", title: "O aplikaci TUL Writer",
     run: () => { $<HTMLDialogElement>("about").showModal(); },
   },
 );
@@ -530,3 +533,6 @@ renderRecent();
 renderShortcuts();
 renderSetup();
 startTypewriter();
+
+initAiCenter();
+invoke<string | null>("initial_project").then(path => { if (path) return openProject(path); }).catch(e => setStatus(String(e), "err"));
