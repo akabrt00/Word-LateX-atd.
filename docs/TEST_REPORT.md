@@ -1,5 +1,13 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Srozumitelné názvy podkladů ve stromu – 2026-11-05
+
+Pouze zobrazovací změna v sidebar.ts: podklady → Vzhled šablony, podklady/pisma (také písma nebo fonts) → Vzhled šablony / Písma. Nápověda vysvětluje účel a obsahuje skutečnou cestu. Dataset, kliknutí, přesuny, přejmenování i diskové cesty používají původní hodnotu. Ostatní složky zachovávají dosavadní popisek.
+
+`npm test`: 11 prošlo, 0 selhalo. `npm run check` a `npm run build`: prošly, dosavadní varování importů/chunků. `git diff --check`: bez chyb. Rust testy nebyly opakovány, backend se neměnil; nové testy pro prosté popisky nebyly přidávány. Živé GUI ověření této změny nebylo provedeno. Logy v output/verification/tree-labels-*.log.
+
+`npm run tauri build -- --debug --no-bundle`: frontend prošel, nativní sestavení selhalo při odstranění existujícího target/debug/tul-writer.exe s Windows chybou Přístup byl odepřen (os error 5); dosavadní aplikace zůstala otevřená. Nové EXE proto není dokončeno a změna zatím není vidět v běžící aplikaci.
+
 ## Skupinoví autoři semestrální práce – 2026-11-05
 
 Na upřesnění uživatele rozšířen dosud nepublikovaný průvodce (1197c6f) o uspořádaný seznam 1–20 autorů. Každý neprázdný řádek tvoří jedno jméno, shodná jména se neslučují. Backend validuje každé jméno do 200 znaků a escapuje jej před spojením řízenými TeX zalomeními. V nové kopii stylu se pro skupinu změní jediný očekávaný popisek na Autoři práce; pro jednotlivce se styl nemění. Původní archivy zůstávají nedotčené.

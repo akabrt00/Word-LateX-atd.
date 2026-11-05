@@ -14,6 +14,8 @@ Samostatná identita, Tauri konfigurace, ukázkový vícesouborový projekt, př
 
 ## Bezprostřední další etapa – 0.2
 
+Zpřehledněny popisky podkladů a písem ve stromu souborů jako Vzhled šablony; fyzické cesty se nemění.
+
 Pracovní prostor a základní TUL předvolby: implementována globální složka nových dokumentů, trvalá výchozí šablona a vytvoření samostatné kopie čtyř univerzitních balíčků. Doplněn výběr překladače a bibliografie podle projektu. Semestrální práce má dvoukrokový průvodce součástí TUL a údaji titulní strany včetně seznamu autorů pro skupinové práce, ověřený až do PDF. Navazující práce: obdobný průvodce závěrečnou prací, prezentací a posterem a správa verzí šablon. Originální archivy zůstávají nezměněné.
 
 1. Nativní smoke test, Rust regresní sada a DEBUG EXE/MSI build jsou dokončené. Navázat release buildem a ověřením instalace/odinstalace na čistém Windows účtu bez vývojových nástrojů.

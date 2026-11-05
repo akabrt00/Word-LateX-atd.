@@ -363,7 +363,11 @@ export function dirRow(dir: string): HTMLElement {
   d.innerHTML = ICON_CHEVRON + ICON_FOLDER;
   const label = document.createElement("span");
   label.className = "name";
-  label.textContent = dir;
+  // Friendly display names only; all file operations retain the original path.
+  const templateFolder = dir === "podklady" ? "Vzhled šablony"
+    : /^podklady\/(?:pisma|písma|fonts)$/.test(dir) ? "Vzhled šablony / Písma" : null;
+  label.textContent = templateFolder ?? dir;
+  if (templateFolder) d.title = `${templateFolder} — loga, grafika a písma dokumentu. Složka: ${dir}`;
   d.appendChild(label);
   d.dataset.rel = dir;
   d.onclick = () => {
