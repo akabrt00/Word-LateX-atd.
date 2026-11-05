@@ -1,5 +1,13 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## České popisky panelu Soubory – 2026-11-06
+
+Překlad zobrazovaných řetězců v index.html, sidebar.ts a místní nabídce prázdné části stromu v main.ts. Zahrnuje nadpis, title/aria-label tlačítek, nabídky souborů/složek, zadávání názvů, validace, přidávání souborů a potvrzení koše. Windows popisek odkazuje na Průzkumníka. ID, příkazy, cesty, souborové operace a ochrany zůstávají stejné. Ostatní panely a hlavní nabídka nejsou součástí překladu.
+
+- `npm test`: 11 prošlo, 0 selhalo. `npm run check` a `npm run build`: prošly. Po doplnění místní nabídky kořene zopakováno `npm run check`; finální Tauri build znovu sestavuje frontend. Dosavadní varování statických/dynamických importů přetrvávají.
+- Pouze textová změna: nové testy nepřidávány, Rust testy neopakovány. Živé GUI ověření překladu nebylo provedeno. Kontrola diffu ověřila zachování obsluh a identifikátorů; `git diff --check` bez chyb.
+- První `npm run tauri build -- --debug --no-bundle` prošlo (19,21 s); finální build zahrnující i nabídku prázdné části panelu také prošel (15,07 s, frontend 973 ms). Vytvořeno DEBUG EXE, bez instalátoru. Logy v ignorovaném output/verification/files-czech-*.log.
+
 ## Dokončení EXE s popisky šablony – 2026-11-06
 
 `npm run tauri build -- --debug --no-bundle` nakonec prošlo: vytvořeno src-tauri/target/debug/tul-writer.exe, Rust build 14,32 s, frontend 983 ms. Bez instalátoru a bez živého GUI ověření nových popisků. Zdroj aplikace se v tomto kroku neměnil; předchozí testy zůstávají níže.

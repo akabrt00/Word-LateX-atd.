@@ -469,11 +469,11 @@ $("files").oncontextmenu = (e) => {
   e.preventDefault();
   if (!root) return;
   openContextMenu(e.clientX, e.clientY, [
-    { title: "New File…", icon: COMMAND_ICONS["file.new"], run: () => newFile() },
-    { title: "New Notebook…", icon: ICONS.notebook, run: () => newFile("", "untitled.ipynb") },
-    { title: "New Folder…", icon: COMMAND_ICONS["file.newFolder"], run: () => newFolder() },
+    { title: "Nový soubor…", icon: COMMAND_ICONS["file.new"], run: () => newFile() },
+    { title: "Nový notebook…", icon: ICONS.notebook, run: () => newFile("", "untitled.ipynb") },
+    { title: "Nová složka…", icon: COMMAND_ICONS["file.newFolder"], run: () => newFolder() },
     "-",
-    { title: "Reveal in Finder", icon: ICONS.out, run: () => revealItemInDir(root!) },
+    { title: "Zobrazit v Průzkumníku", icon: ICONS.out, run: () => revealItemInDir(root!) },
   ]);
 };
 $("log-close").onclick = () => { logPanel.hidden = true; };

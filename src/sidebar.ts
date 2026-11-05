@@ -36,13 +36,13 @@ export async function newFile(dir = "", suggestion = "") {
   const taken = await takenPaths();
   const prefill = (dir ? `${dir}/` : "") + suggestion;
   promptInput({
-    placeholder: suggestion.endsWith(".ipynb") ? "New notebook name" : "New file name",
-    hint: "Path inside the project. .tex for LaTeX, .py for a Python script, .ipynb for a notebook.",
+    placeholder: suggestion.endsWith(".ipynb") ? "Název nového notebooku" : "Název nového souboru",
+    hint: "Cesta v projektu. .tex pro LaTeX, .py pro Python, .ipynb pro notebook.",
     value: prefill || undefined,
     validate: (rel) => {
-      if (!insideProject(rel)) return "The file has to live inside the project.";
-      if (!CREATABLE.test(rel)) return "Use one of these extensions: .tex, .py, .ipynb, .bib, .sty, .cls, .txt, .md, .csv";
-      if (taken.has(rel)) return `${rel} already exists.`;
+      if (!insideProject(rel)) return "Soubor musí být uvnitř projektu.";
+      if (!CREATABLE.test(rel)) return "Použijte jednu z přípon: .tex, .py, .ipynb, .bib, .sty, .cls, .txt, .md, .csv";
+      if (taken.has(rel)) return `${rel} již existuje.`;
       return null;
     },
     submit: async (rel) => {
@@ -57,15 +57,15 @@ export async function newFile(dir = "", suggestion = "") {
 /** Copy files from elsewhere on the computer into the project (into `dir`, or the root). */
 export async function uploadFiles(dir = "") {
   if (!root) return;
-  const picked = await open({ multiple: true, title: dir ? `Add files to ${dir}` : "Add files to the project" });
+  const picked = await open({ multiple: true, title: dir ? `Přidat soubory do ${dir}` : "Přidat soubory do projektu" });
   const sources = Array.isArray(picked) ? picked : picked ? [picked] : [];
   if (!sources.length) return;
   try {
     const added = await invoke<string[]>("import_files", { root, dir, sources });
     collapsedDirs.delete(dir);
-    setStatus(added.length === 1 ? `Added ${added[0]}` : `Added ${added.length} files`, "ok");
+    setStatus(added.length === 1 ? `Přidáno: ${added[0]}` : `Počet přidaných souborů: ${added.length}`, "ok");
   } catch (e) {
-    setStatus(`Couldn't add the files: ${e}`, "err");
+    setStatus(`Soubory se nepodařilo přidat: ${e}`, "err");
   }
   await refreshFiles();
 }
@@ -74,19 +74,19 @@ export async function newFolder(dir = "") {
   if (!root) return;
   const taken = await takenPaths();
   promptInput({
-    placeholder: "New folder name",
-    hint: "Path inside the project, for example sections or figures/raw",
+    placeholder: "Název nové složky",
+    hint: "Cesta v projektu, například kapitoly nebo obrazky/zdroje",
     value: dir ? `${dir}/` : undefined,
     validate: (rel) => {
-      if (!insideProject(rel)) return "The folder has to live inside the project.";
-      if (taken.has(rel)) return `${rel} already exists.`;
+      if (!insideProject(rel)) return "Složka musí být uvnitř projektu.";
+      if (taken.has(rel)) return `${rel} již existuje.`;
       return null;
     },
     submit: async (rel) => {
       try {
         await invoke("create_dir", { root, rel });
       } catch (e) {
-        setStatus(`Couldn't create ${rel}: ${e}`, "err");
+        setStatus(`Nepodařilo se vytvořit ${rel}: ${e}`, "err");
       }
       await refreshFiles();
     },
@@ -97,15 +97,15 @@ export async function renameEntry(from: string, isDir: boolean) {
   if (!root) return;
   const taken = await takenPaths();
   promptInput({
-    placeholder: isDir ? "Rename or move folder" : "Rename or move file",
-    hint: "Edit the path. Changing the folder part moves it.",
+    placeholder: isDir ? "Přejmenovat nebo přesunout složku" : "Přejmenovat nebo přesunout soubor",
+    hint: "Upravte cestu. Změnou složky položku přesunete.",
     value: from,
     validate: (to) => {
-      if (to === from) return "That is the current name.";
-      if (!insideProject(to)) return "It has to stay inside the project.";
-      if (isDir && to.startsWith(`${from}/`)) return "A folder can't be moved inside itself.";
-      if (!isDir && !listed(to)) return "Keep a supported extension, or the file disappears from the list.";
-      if (taken.has(to)) return `${to} already exists.`;
+      if (to === from) return "Toto je současný název.";
+      if (!insideProject(to)) return "Položka musí zůstat uvnitř projektu.";
+      if (isDir && to.startsWith(`${from}/`)) return "Složku nelze přesunout do sebe samé.";
+      if (!isDir && !listed(to)) return "Ponechte podporovanou příponu, jinak soubor zmizí ze seznamu.";
+      if (taken.has(to)) return `${to} již existuje.`;
       return null;
     },
     submit: async (to) => {
@@ -113,7 +113,7 @@ export async function renameEntry(from: string, isDir: boolean) {
       try {
         await invoke("rename_path", { root, from, to });
       } catch (e) {
-        setStatus(`Couldn't rename ${from}: ${e}`, "err");
+        setStatus(`Nepodařilo se přejmenovat ${from}: ${e}`, "err");
         return;
       }
       applyMove(from, to, isDir);
@@ -138,15 +138,15 @@ export async function deleteEntry(rel: string, isDir: boolean) {
   if (!root) return;
   const confirmed = await ask(
     isDir
-      ? `Move the folder “${rel}” and everything in it to the Trash?`
-      : `Move “${rel}” to the Trash?`,
-    { title: "Scribe", kind: "warning", okLabel: "Move to Trash", cancelLabel: "Cancel" },
+      ? `Přesunout složku „${rel}“ včetně celého obsahu do koše?`
+      : `Přesunout „${rel}“ do koše?`,
+    { title: "TUL Writer", kind: "warning", okLabel: "Přesunout do koše", cancelLabel: "Zrušit" },
   );
   if (!confirmed) return;
   try {
     await invoke("delete_path", { root, rel });
   } catch (e) {
-    setStatus(`Couldn't delete ${rel}: ${e}`, "err");
+    setStatus(`Nepodařilo se odstranit ${rel}: ${e}`, "err");
     return;
   }
   // Tabs on deleted files close without saving them back into existence.
@@ -160,8 +160,8 @@ export async function quickOpen() {
   if (!root) return;
   const files = (await listFiles()).filter(listed);
   openPalette({
-    placeholder: "Go to file",
-    empty: "This project has no files to open yet.",
+    placeholder: "Přejít na soubor",
+    empty: "Tento projekt zatím nemá žádné soubory k otevření.",
     items: files.map((f) => {
       const cut = f.lastIndexOf("/") + 1;
       return { label: f.slice(cut), detail: f.slice(0, cut), run: () => openFile(f) };
@@ -202,17 +202,17 @@ export function fileRow(f: string, dir: string, gitMap: Map<string, string>): HT
     e.preventDefault();
     e.stopPropagation();
     openContextMenu(e.clientX, e.clientY, [
-      { title: "Open", icon: ICONS.page, run: () => openFile(f) },
-      { title: "Open to the Side", icon: ICONS.split, enabled: !VIEWABLE.test(f), run: () => openToSide(f) },
+      { title: "Otevřít", icon: ICONS.page, run: () => openFile(f) },
+      { title: "Otevřít vedle", icon: ICONS.split, enabled: !VIEWABLE.test(f), run: () => openToSide(f) },
       "-",
-      { title: "New File…", icon: COMMAND_ICONS["file.new"], run: () => newFile(dir) },
-      { title: "New Notebook…", icon: ICONS.notebook, run: () => newFile(dir, "untitled.ipynb") },
-      { title: "New Folder…", icon: COMMAND_ICONS["file.newFolder"], run: () => newFolder(dir) },
+      { title: "Nový soubor…", icon: COMMAND_ICONS["file.new"], run: () => newFile(dir) },
+      { title: "Nový notebook…", icon: ICONS.notebook, run: () => newFile(dir, "untitled.ipynb") },
+      { title: "Nová složka…", icon: COMMAND_ICONS["file.newFolder"], run: () => newFolder(dir) },
       "-",
-      { title: "Rename…", icon: ICONS.pencil, run: () => renameEntry(f, false) },
-      { title: "Move to Trash", icon: ICONS.trash, run: () => deleteEntry(f, false) },
+      { title: "Přejmenovat…", icon: ICONS.pencil, run: () => renameEntry(f, false) },
+      { title: "Přesunout do koše", icon: ICONS.trash, run: () => deleteEntry(f, false) },
       "-",
-      { title: "Reveal in Finder", icon: ICONS.out, run: () => revealItemInDir(`${root}/${f}`) },
+      { title: "Zobrazit v Průzkumníku", icon: ICONS.out, run: () => revealItemInDir(`${root}/${f}`) },
     ]);
   };
 
@@ -380,15 +380,15 @@ export function dirRow(dir: string): HTMLElement {
     e.preventDefault();
     e.stopPropagation();
     openContextMenu(e.clientX, e.clientY, [
-      { title: "New File…", icon: COMMAND_ICONS["file.new"], run: () => newFile(dir) },
-      { title: "New Notebook…", icon: ICONS.notebook, run: () => newFile(dir, "untitled.ipynb") },
-      { title: "New Folder…", icon: COMMAND_ICONS["file.newFolder"], run: () => newFolder(dir) },
-      { title: "Upload Files Here…", icon: COMMAND_ICONS["file.upload"], run: () => uploadFiles(dir) },
+      { title: "Nový soubor…", icon: COMMAND_ICONS["file.new"], run: () => newFile(dir) },
+      { title: "Nový notebook…", icon: ICONS.notebook, run: () => newFile(dir, "untitled.ipynb") },
+      { title: "Nová složka…", icon: COMMAND_ICONS["file.newFolder"], run: () => newFolder(dir) },
+      { title: "Přidat soubory sem…", icon: COMMAND_ICONS["file.upload"], run: () => uploadFiles(dir) },
       "-",
-      { title: "Rename…", icon: ICONS.pencil, run: () => renameEntry(dir, true) },
-      { title: "Move to Trash", icon: ICONS.trash, run: () => deleteEntry(dir, true) },
+      { title: "Přejmenovat…", icon: ICONS.pencil, run: () => renameEntry(dir, true) },
+      { title: "Přesunout do koše", icon: ICONS.trash, run: () => deleteEntry(dir, true) },
       "-",
-      { title: "Reveal in Finder", icon: ICONS.out, run: () => revealItemInDir(`${root}/${dir}`) },
+      { title: "Zobrazit v Průzkumníku", icon: ICONS.out, run: () => revealItemInDir(`${root}/${dir}`) },
     ]);
   };
   return d;
@@ -417,7 +417,7 @@ export async function refreshFiles() {
   // Folders show even when empty, so a newly created one has somewhere to be.
   const dirs = [...new Set([...dirList, ...byDir.keys()])].filter(Boolean).sort();
   if (!byDir.size && !dirs.length) {
-    box.innerHTML = '<div class="empty">This folder is empty. Right-click here to add a file or folder.</div>';
+    box.innerHTML = '<div class="empty">Složka je prázdná. Pravým tlačítkem přidáte soubor nebo složku.</div>';
     return;
   }
 
@@ -445,7 +445,7 @@ const PANEL: Record<SidebarTab, string> = {
 };
 
 const PANEL_NAME: Record<SidebarTab, string> = {
-  files: "File tree", search: "Search", figures: "Figures and values", git: "Git", references: "References",
+  files: "Soubory", search: "Search", figures: "Figures and values", git: "Git", references: "References",
   symbols: "Symbols", notes: "Notes", history: "History", review: "Review", assistant: "Assistant",
 };
 

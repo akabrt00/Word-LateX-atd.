@@ -4,6 +4,7 @@ Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
 ## Vývoj – 2026-11-05
 
+- Panel Soubory, jeho tlačítka a místní nabídky jsou česky včetně zadávání názvů, validací a potvrzení přesunu do koše. Windows akce nově uvádí Průzkumníka místo Finderu.
 - Strom souborů zobrazuje podklady jako Vzhled šablony a podsložku písem jako Vzhled šablony / Písma. Skutečné cesty a odkazy LaTeXu se nemění; původní cesta je v nápovědě.
 - Průvodce novou semestrální prací rozdělen na výběr projektu a údaje titulní strany. Volba celé TUL, sedmi fakult nebo CXI, názvu, jednoho či více autorů (po řádcích), předmětu, roku a data/verze zadání; tlačítko Zpět zachová vyplnění.
 - Předvyplnění nové kopie mění sedm očekávaných deklarací a pro skupinu popisek autorů v nové kopii stylu; speciální TeX znaky jsou ošetřené jako text. Neplatné údaje či nepodporovaná struktura šablony se odmítnou před založením složky. Původní archivy, literatura a text práce zůstávají zachované.
