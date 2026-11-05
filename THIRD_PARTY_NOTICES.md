@@ -1,6 +1,6 @@
 # Původ a licence
 
-Scribe od George Kiritsis (2026), MIT: plné původní znění v LICENSE. Zdrojová historie zůstává zachována. Nové vlastní úpravy jsou pod stejnými MIT podmínkami.
+Scribe od George Kiritsis (2026), MIT: plné původní znění v LICENSE. Zdrojová historie zůstává zachována. Nové vlastní úpravy kódu aplikace jsou pod stejnými MIT podmínkami. Přibalené dokumentové šablony a jejich podklady mají samostatné podmínky uvedené níže a v jejich archivech.
 
 ## Používané komponenty
 
@@ -18,7 +18,9 @@ unified-latex: MIT kandidát, zatím není instalovaný.
 
 ## Univerzitní materiály
 
-Grafický manuál je referenční zdroj. Oficiální loga a TUL Mono se nedistribuují. Licence zdrojového kódu aplikace nezahrnuje oprávnění k univerzitním ochranným známkám. TUL/tulthesis archiv dosud není součástí distribuce. Veřejné vydání vyžaduje samostatnou kontrolu těchto práv.
+Na výslovný pokyn uživatele jsou přibalené čtyři nezměněné dokumentové ZIP šablony z jeho portálu TUL × LaTeX: semestrální práce, komunitní uspořádání TULthesis, TULpresentation a TULposter. Původní autorství, podklady, readme i přiložené licence zůstávají v archivech a v kopiích nových projektů. resources/templates/README.md a provenance.json uvádějí původ, konkrétní URL a kontrolní součty. Původní tul/tulthesis/TULpresentation deklarují CC BY; přiložené Inter fonty mají SIL OFL. Fonty TUL Mono a grafické značky jsou součástí původních šablon a zachovávají své podmínky.
+
+Licence MIT zdrojového kódu aplikace nepřelicencovává tyto podklady a nezahrnuje oprávnění k univerzitním ochranným známkám. Identita aplikace zůstává nezávislá. Veřejné vydání stále vyžaduje samostatnou kontrolu distribuovaných podkladů a práv.
 
 ## Přibalená znění
 

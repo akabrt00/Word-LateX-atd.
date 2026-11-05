@@ -4,6 +4,10 @@ Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
 ## Vývoj – 2026-11-05
 
+- Nastavitelný pracovní prostor pro nové dokumenty, uložený pro celý počítač; nový český dialog názvu a šablony. Každý projekt vzniká ve vlastní složce bez přepsání existujícího obsahu.
+- Přibaleny nezměněné TUL předvolby semestrální práce, závěrečné práce, prezentace a posteru z uživatelského portálu včetně původních podkladů a licencí; uložena provenance a SHA-256.
+- Nastavení překladače podle šablony, přímý XeLaTeX/LuaLaTeX a zpracování BibTeXu/Biberu. Diagnostika vícenásobného překladu zobrazuje poslední průchod a úplný log zůstává dostupný.
+
 - Otevřené dokumenty používají kontrolu revize obsahu při ukládání; změna nebo odstranění na disku zastaví zápis a nabídne zachování lokálního textu nebo načtení z disku.
 - Opraveno zavírání bočního editoru po neúspěšném uložení; panel zůstane otevřený. Souběžná uložení respektují revize a další psaní během zápisu zůstává neuložené.
 - Jedinečné dočasné soubory při zápisu nahrazují předvídatelnou cestu .scribe-tmp; přidány regresní testy konfliktů a souběžných editorů.

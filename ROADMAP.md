@@ -14,6 +14,8 @@ Samostatná identita, Tauri konfigurace, ukázkový vícesouborový projekt, př
 
 ## Bezprostřední další etapa – 0.2
 
+Pracovní prostor a základní TUL předvolby: implementována globální složka nových dokumentů, trvalá výchozí šablona a vytvoření samostatné kopie čtyř univerzitních balíčků. Doplněn výběr překladače a bibliografie podle projektu. Navazující práce: fakultní průvodce, vyplnění metadat a správa verzí šablon; původní zdroje se zatím nemění.
+
 1. Nativní smoke test, Rust regresní sada a DEBUG EXE/MSI build jsou dokončené. Navázat release buildem a ověřením instalace/odinstalace na čistém Windows účtu bez vývojových nástrojů.
 2. Revizní read/save pro hlavní a boční editor i notebooky implementován v documents.rs, včetně konfliktového dialogu a zastavení zavření po chybě. Další krok: převést starší integrační write_file volání na povinné revize, doplnit filesystem watcher, obnovu po pádu a dále vyjmout files/compiler z lib.rs. Optimistická kontrola neřeší celý TOCTOU závod s cizími procesy (ADR-007).
 3. Compiler worker: fronta, timeout, cancel, stdout/stderr limit, bezpečný profil prostředí, trust pro projekt a samostatná konfigurace enginu. Test: nekonečný TeX se ukončí, cizí soubor se nepřepíše, starý PDF není nový výsledek.

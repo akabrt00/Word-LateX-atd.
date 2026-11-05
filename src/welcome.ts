@@ -8,12 +8,14 @@ import { openPalette, promptInput } from "./palette";
 import { profile } from "./profile";
 import { openProject } from "./project";
 import { TEMPLATES } from "./templates";
+import { refreshWorkspaceLabel, showWorkspace } from "./workspace";
 
 export function showWelcome(show: boolean) {
   welcomeEl.classList.toggle("hidden", !show);
   appEl.classList.toggle("hidden", show);
   if (show) startTypewriter();
   else stopTypewriter();
+  if (show) void refreshWorkspaceLabel();
 }
 
 // ---------- welcome: typed LaTeX becomes a page ----------
@@ -395,6 +397,10 @@ function signed(content: string): string {
 // Pick (or create) a folder. A folder that already has a paper just opens; an empty one is
 // started from a template.
 export async function newProject() {
+  await showWorkspace(true, legacyNewProject);
+}
+
+async function legacyNewProject() {
   const picked = await open({ directory: true, multiple: false, title: "Choose or create a folder for the project" });
   if (typeof picked !== "string") return;
   const fail = (e: unknown) => {

@@ -24,6 +24,11 @@ const ON_INPUT_LINE = /on input line (\d+)/;
 const NOISE = /^(==>|Emergency stop|Fatal error)|There were undefined references|Label\(s\) may have changed|Rerun to get|^(Overfull|Underfull) \\[hv]box/;
 
 export function parseLog(log: string, mainFile: string): Problem[] {
+  // Earlier direct-engine passes may contain citations resolved by BibTeX/Biber.
+  // Keep all output in the raw log, but show diagnostics from the latest TeX pass.
+  const passMarker = "\n--- TUL Writer TeX pass ---\n";
+  const lastPass = log.lastIndexOf(passMarker);
+  if (lastPass !== -1) log = log.slice(lastPass + passMarker.length);
   const lines = log.split(/\r?\n/);
   const problems: Problem[] = [];
   const seen = new Set<string>();

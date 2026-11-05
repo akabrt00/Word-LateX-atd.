@@ -4,6 +4,16 @@ Nezávislý studentský desktopový textový procesor pro Windows. Pracovní for
 
 ## Spuštění ve Windows
 
+### Pracovní prostor a nové dokumenty
+
+Na úvodní obrazovce zvolte **Nastavit složku a šablonu…**; stejné nastavení je dostupné přes ozubené kolečko v editoru. Výchozí složka je systémová složka Dokumenty / TUL Writer. Nastavení se ukládá do uživatelské konfigurace aplikace a platí i po restartu pro všechny nové projekty na tomto PC.
+
+**Nový dokument** požádá o název a šablonu a vytvoří vlastní podsložku ve zvoleném pracovním prostoru. Existující složku nepřepisuje ani neslučuje. Předvolená je TUL semestrální práce; k dispozici jsou také závěrečná práce, prezentace, poster a prázdný LaTeX dokument. Čtyři TUL balíčky jsou nezměněné offline kopie z portálu https://latex-tul.adamkabrt.chatgpt.site/templates; původ a kontrolní součty jsou v resources/templates/. Původní obecné šablony jsou pod **Další šablony…**.
+
+Nový projekt obsahuje .tulwriter/project.json s hlavním souborem a nastavením překladače. Semestrální práce používá pdfLaTeX + BibTeX, závěrečná práce XeLaTeX + Biber, prezentace XeLaTeX a poster LuaLaTeX. Tyto nástroje a potřebné TeX balíčky musí být lokálně dostupné. Pomocné skripty ani latexmkrc z balíčků se automaticky nespouštějí. Ukázkové údaje nahraďte vlastními podle návodů uvnitř projektu.
+
+### Vývojové spuštění
+
 Vyžaduje Node.js 24+, Rust stable MSVC, Microsoft C++ Build Tools (Desktop development with C++), Windows SDK a WebView2. Pro dokumenty nainstalujte MiKTeX nebo TeX Live. Tectonic je alternativní cesta s vlastním stahováním balíčků. MiKTeX latexmk vyžaduje Perl; bez něj aplikace použije pdflatex.
 
     npm ci

@@ -21,11 +21,12 @@
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.75v7.5M5 7.25l3 3 3-3"/><path d="M2.75 10.5v1.75a1 1 0 001 1h8.5a1 1 0 001-1V10.5"/></svg>
           Importovat z Overleafu
         </button>
-        <button id="welcome-new" class="btn btn-outline btn-lg" title="Pick or create a folder and start it with a paper and a notebook">
+        <button id="welcome-new" class="btn btn-outline btn-lg" title="Založit dokument ve výchozí složce z vybrané šablony">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.25v9.5M3.25 8h9.5"/></svg>
-          Nový projekt
+          Nový dokument
         </button>
       </div>
+      <section class="welcome-section welcome-workspace"><h2>Pracovní prostor</h2><p id="welcome-workspace-path">Načítám složku dokumentů…</p><button id="welcome-workspace" class="btn btn-outline">Nastavit složku a šablonu…</button></section>
       <p id="welcome-error" class="welcome-error" role="alert" hidden></p>
       <section id="recent" class="welcome-section" hidden>
         <h2>Poslední projekty</h2>
@@ -225,6 +226,8 @@
   </div>
 
   <div id="settings-popover" role="dialog" aria-label="Settings" hidden>
+    <h3 class="settings-group">Pracovní prostor</h3>
+    <div class="settings-row"><span>Nové dokumenty</span><button id="setting-workspace" class="btn settings-mini">Složka a šablona…</button></div>
     <h3 class="settings-group">Appearance</h3>
     <label class="settings-row">
       <span>Theme</span>

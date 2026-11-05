@@ -55,6 +55,7 @@ import { canRunFile, runFile, shellAlive, showTerminal, stopTerminal, termPanel 
 import { getRecent, importProject, installLatex, newProject, renderRecent, renderSetup, renderShortcuts, setRecent, startTypewriter } from "./welcome";
 
 import { initAiCenter } from "./ai-center";
+import { refreshWorkspaceLabel, showWorkspace } from "./workspace";
 
 // ---------- log ----------
 function toggleLog() {
@@ -122,7 +123,7 @@ register(
   { id: "file.notePdf", group: "Notes", title: "Export Note as PDF", run: exportNotePdf, enabled: () => isNote(activeEditor()?.dom.dataset.path) },
   { id: "file.open", group: "File", title: "Open Project…", keys: "Mod-o", run: openFolder },
   { id: "file.import", group: "File", title: "Import from Overleaf or Git…", run: importProject },
-  { id: "file.newProject", group: "File", title: "New Project…", run: newProject },
+  { id: "file.newProject", group: "File", title: "Nový dokument…", run: newProject },
   { id: "file.save", group: "File", title: "Save", keys: "Mod-s", run: saveFile, enabled: () => !!current && !VIEWABLE.test(current) && !/\.(csv|tsv)$/i.test(current) },
   {
     id: "file.reveal", group: "File", title: "Reveal in Finder", enabled: hasProject,
@@ -441,6 +442,9 @@ $("btn-run").onclick = runNotebook;
 $("btn-settings").onclick = () => toggleSettings();
 $("welcome-open").onclick = openFolder;
 $("welcome-new").onclick = newProject;
+$("welcome-workspace").onclick = () => showWorkspace(false);
+$("setting-workspace").onclick = () => showWorkspace(false);
+void refreshWorkspaceLabel();
 $("tab-files").onclick = () => showSidebar("files");
 $("tab-search").onclick = () => showSidebar("search");
 $("tab-figures").onclick = () => showSidebar("figures");

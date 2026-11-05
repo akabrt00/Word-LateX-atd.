@@ -6,6 +6,7 @@
 
 mod ai;
 mod documents;
+mod workspace;
 #[tauri::command]
 fn initial_project() -> Option<String> {
     let mut args = std::env::args();
@@ -454,8 +455,16 @@ fn compile_blocking(root: &str, main: &str) -> Result<CompileResult, String> {
 /// Runs TeX on `input` (relative to the project) from the project folder, writing into `outdir`.
 fn run_tex(root_dir: &Path, input: &str, outdir: &str, synctex: bool) -> Result<CompileResult, String> {
     std::fs::create_dir_all(root_dir.join(outdir)).map_err(|e| e.to_string())?;
+    let configured = workspace::project_build(root_dir)?;
 
-    let (engine, mut cmd) = if has("tectonic") {
+    let (engine, mut cmd) = if let Some(build) = &configured {
+        if !has(&build.engine) { return Err(format!("Šablona potřebuje {}. Nainstalujte tento překladač v MiKTeXu nebo TeX Live.", build.engine)); }
+        let mut c = tool_command(&build.engine);
+        c.args(["-no-shell-escape", "-interaction=nonstopmode", "-halt-on-error", "-file-line-error", &format!("-output-directory={outdir}")]);
+        if synctex { c.arg("-synctex=1"); }
+        c.arg(input);
+        (build.engine.as_str(), c)
+    } else if has("tectonic") {
         let mut c = tool_command("tectonic");
         c.args(["-X", "compile", input, "--outdir", outdir, "--keep-logs"]);
         if synctex {
@@ -484,13 +493,32 @@ fn run_tex(root_dir: &Path, input: &str, outdir: &str, synctex: bool) -> Result<
     let out = cmd.current_dir(root_dir).output().map_err(|e| format!("{engine}: {e}"))?;
     let mut log = String::from_utf8_lossy(&out.stdout).into_owned();
     log.push_str(&String::from_utf8_lossy(&out.stderr));
-    // Direct pdfLaTeX needs a second pass for labels. BibTeX/biber require latexmk.
-    let success = if engine == "pdflatex" && out.status.success() {
-        let second = cmd.output().map_err(|e| format!("{engine}: {e}"))?;
-        log.push_str(&String::from_utf8_lossy(&second.stdout));
-        log.push_str(&String::from_utf8_lossy(&second.stderr));
-        second.status.success()
-    } else { out.status.success() };
+    let mut success = out.status.success();
+    let bibliography = configured.as_ref().filter(|build| build.main == input).and_then(|build| build.bibliography.as_deref());
+    if success {
+        if let Some(tool) = bibliography {
+            if !has(tool) { return Err(format!("Šablona potřebuje {tool} pro zpracování literatury. Nainstalujte jej v MiKTeXu nebo TeX Live.")); }
+            let stem = Path::new(input).file_stem().ok_or("Chybí název hlavního souboru")?.to_string_lossy();
+            let mut bib = tool_command(tool);
+            if tool == "biber" { bib.arg(format!("--input-directory={outdir}")).arg(format!("--output-directory={outdir}")).arg(stem.as_ref()); }
+            else { bib.arg(format!("{outdir}/{stem}")); }
+            let result = bib.current_dir(root_dir).output().map_err(|e| format!("{tool}: {e}"))?;
+            log.push_str(&format!("\n--- {tool} ---\n"));
+            log.push_str(&String::from_utf8_lossy(&result.stdout));
+            log.push_str(&String::from_utf8_lossy(&result.stderr));
+            success = result.status.success();
+        }
+    }
+    // Direct engines need another pass for references; bibliography needs two.
+    let passes = if bibliography.is_some() { 2 } else if ["pdflatex", "xelatex", "lualatex"].contains(&engine) { 1 } else { 0 };
+    for _ in 0..passes {
+        if !success { break; }
+        let next = cmd.output().map_err(|e| format!("{engine}: {e}"))?;
+        log.push_str("\n--- TUL Writer TeX pass ---\n");
+        log.push_str(&String::from_utf8_lossy(&next.stdout));
+        log.push_str(&String::from_utf8_lossy(&next.stderr));
+        success = next.status.success();
+    }
 
     let stem = Path::new(input).file_stem().unwrap_or_default().to_string_lossy();
     let pdf_rel = format!("{outdir}/{stem}.pdf");
@@ -2734,6 +2762,7 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             initial_project, list_files, list_dirs, create_dir, rename_path, delete_path, import_files,
+            workspace::read_workspace_settings, workspace::write_workspace_settings, workspace::create_template_project,
             read_file, write_file, documents::read_document, documents::save_document, read_binary, compile, compile_snippet, pdf_to_svg, compile_diff, git_log,
             ai::ai_stream, ai::ai_set_key, ai::ai_has_key, ai::ai_cancel, ai::ai_models,
             parse_notebook, run_notebook, generate_style,

@@ -1,5 +1,42 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Pracovní prostor a TUL předvolby – 2026-11-05
+
+Scénář: nastavit jednu složku pro všechny nové dokumenty, zvolit výchozí šablonu, založit novou samostatnou pracovní kopii a přeložit ji. Existující adresář ani projekt se nesmí přepsat. Přidány čtyři nezměněné univerzitní balíčky z uživatelova portálu a prázdný dokument; fakultní průvodce není součástí tohoto kroku.
+
+### Zdroje a prostředí
+
+- Katalog a čtyři detailní stránky na `https://latex-tul.adamkabrt.chatgpt.site/templates` byly načteny přes Invoke-WebRequest. Webový čtecí nástroj URL nezpřístupnil, HTTP požadavky z hosta vrátily 200. ZIP soubory `/downloads/faculties/{semester,thesis,presentation,poster}-tul.zip` jsou beze změn v resources/templates; SHA-256 všech čtyř souhlasí s provenance.json. Původní podklady, skripty a licence byly zachovány, žádný projektový skript nebyl spuštěn.
+- Windows x64, Node.js 24.15.0, npm 11.12.1, Rust/Cargo 1.99.1 MSVC, MiKTeX 24.1 s postupně aktualizovanými balíčky, WebView2. Příkazy Cargo/TeX běžely mimo sandbox s PATH doplněným o .cargo/bin a MiKTeX bin.
+- První Rust sestavení odhalilo dva typové problémy: ZIP 9 vrací název jako Result a argument Biberu měl nesourodé reference String/Cow. Opraveno před dalšími kontrolami.
+
+### Automatické kontroly
+
+- `npm test`: 10 prošlo, 0 selhalo. Nový test diagnostiky ověřuje odstranění již vyřešených varování z dřívějších TeX průchodů i zachování skutečných problémů posledního průchodu.
+- `npm run check`: prošlo. `npm run build` i finální `npm run tauri build -- --debug --no-bundle`: prošly s dosavadními varováními o velikosti chunků a kombinaci statických/dynamických importů. Vytvořeno DEBUG EXE, nikoli nový instalátor nebo veřejný release.
+- `cargo test --manifest-path src-tauri/Cargo.toml --lib -- --test-threads=1 --skip lists_and_compiles_example --skip synctex_round_trip_on_example --skip export_is_plain_latex_that_compiles_on_its_own`: 30 prošlo, 0 selhalo, 5 ignorováno, 3 odfiltrováno. Čtyři ignorované jsou nové explicitní TeX integrační testy, pátý je upstream instalace Tectonicu. Tři odfiltrované volitelné notebook/example integrace nejsou tímto úkolem ověřeny; interní předčasné návraty některých převzatých testů nejsou důkazem pokrytí jejich volitelných nástrojů.
+- Tři nové běžné Rust testy ověřují odmítnutí neplatných názvů a cest, nepřepsání existující práce, úplnost všech rozbalených předvoleb, nezávislost dvou kopií a odmítnutí libovolného programu či cesty mimo projekt v konfiguraci překladače.
+- Přímé integrační testy se spouštějí přes `cargo test --manifest-path src-tauri/Cargo.toml workspace::tests::template_pdf -- --ignored --test-threads=1`. Každý zakládá skutečný nový projekt, používá jeho engine/bibliografii a kontroluje PDF hlavičku. Finální společný běh: 4 prošly, 0 selhalo, 43,43 s; zaznamenán v workspace-four-templates-final.log.
+- `git diff --check`: bez chyb whitespace. Archivy jsou vstupní zdroje, testovací projekty a logy zůstávají v ignorovaném output/verification.
+
+### Oprava místního TeX prostředí během ověření
+
+Počáteční běh: semestrální práce a poster prošly, prezentace a závěrečná práce selhaly na starém XeLaTeX formátu (LaTeX 2023) s novější Polyglossií. Samotné `miktex formats build --engine=xetex` problém nevyřešilo. `miktex packages update --package-id-file=...` nejprve odmítlo neexistující název latex-base; správné ID je ltxbase. Poté byly aktualizovány ltxbase, l3kernel a l3packages, zatímco starý samostatný l3backend z roku 2024 stále překrýval novou kopii v l3kernel. Po ověření obou fyzických cest byl starý samostatný balíček odstraněn, l3kernel znovu nainstalován (`miktex packages install l3kernel`) a obnovena databáze (`miktex fndb refresh`). `miktex packages verify l3kernel` následně potvrdilo integritu.
+
+`miktex formats build` obnovilo potřebné formáty, ale celý příkaz skončil chybou Windows API 2 u volitelných hilatex/hilatex-dev kvůli chybějícímu HiTeXu. To není vykazováno jako úspěšná obnova všech formátů. pdfLaTeX, XeLaTeX a LuaLaTeX byly ověřeny skutečnými překlady. Dílčí aktualizační příkazy také odmítly ID biber (správně biber-windows-x64) a nenainstalovaný caption; tyto pokusy se nevykazují jako úspěšné aktualizace.
+
+Kvůli dalším nesouladům starých balíčků s novým jádrem byly následně úspěšně aktualizovány biblatex, fontspec, babel, hyperref, pgf, graphics, latex-tools, amsmath, fancyhdr, biber-windows-x64 a etoolbox. Počet opakování PDF testů souvisel s konkrétními chybami této smíšené instalace, nikoli se změnami zdrojů šablon. Konečná závěrečná práce úspěšně prošla XeLaTeXem a Biberem; původní ZIP nebyl upravován.
+
+### Desktopové ověření
+
+- Na úvodní obrazovce se zobrazila výchozí systémová složka `C:\Users\akabr\Documents\TUL Writer`. Nový český formulář obsahuje název, změnu složky, pět předvoleb, vysvětlení šablony a cílovou cestu. Při prvním vizuálním ověření bylo opraveno centrování dialogu a výška input/select polí; konečná podoba byla vizuálně zkontrolovaná.
+- Přes formulář skutečně vytvořen dokument `Ukázková semestrální práce` v této složce a automaticky otevřen semestralni-prace.tex. Na disku ověřen zdroj i .tulwriter/project.json s pdflatex/bibtex. Knihovna podkladů a původní readme zůstaly přítomné.
+- Nastavení bylo otevřeno také z ozubeného kolečka v editoru. Systémovým výběrem složky změněn pracovní prostor na ignorovaný testovací adresář output/verification/workspace-documents a výchozí šablona na prázdný dokument. Po úplném restartu se zobrazila uložená cesta a formulář nabídl prázdnou šablonu. Po ověření vráceno pouze toto testované nastavení na Dokumenty / TUL Writer a tul-semester; ostatní uživatelská nastavení se neměnila.
+- GUI kompilace ukázkové práce zobrazila skutečné dvoustránkové PDF v PDF.js. První verze diagnostiky ukazovala i přechodná varování o citacích z prvního průchodu; opraveno výběrem posledního průchodu při zachování celého surového logu. Finální nové EXE nad ukázkovou prací zobrazilo Compiled with pdflatex, 0 chyb, 0 varování a Page 1 of 2. PDF má 203 712 bajtů. Aplikace zůstala otevřená nad ukázkou; výchozí nastavení na disku bylo ověřeno jako Dokumenty / TUL Writer a tul-semester.
+- Fakultní výběr, vyplnění osobních metadat, automatické aktualizace šablon, instalátor na čistém PC, Word Mode a AI nebyly tímto úkolem implementovány ani ověřeny.
+
+Logy: workspace-frontend.log, workspace-rust.log, workspace-regression-final.log, workspace-four-templates-final.log, workspace-final-native.log; jednotlivé neúspěšné pokusy a aktualizace mají v output/verification samostatné workspace-* logy. Starší oddíly níže zachovávají výsledky předchozích úkolů a prostředí.
+
 ## Ochrana otevřených dokumentů před přepsáním – 2026-11-05
 
 Scénář: soubor otevřený v editoru změní nebo odstraní jiný program a uživatel zkusí uložit, zavřít kartu/panel nebo kompilovat. Backend porovná SHA-256 načtených bajtů a odmítne zastaralý zápis. Rozsah: hlavní editor, boční editor a serializace notebooků; legacy integrační write_file volání a filesystem watcher zůstávají další etapou. Optimistická kontrola má omezení závodu s cizími procesy podle ADR-007.

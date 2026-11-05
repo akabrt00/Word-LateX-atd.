@@ -22,7 +22,9 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 | Tabulky a rovnice | Převzaté dialogy Scribe; Word-like integrace plán |
 | Citace, Zotero, DOI, TikZ | Převzaté implementace; vyžadují dílčí ověření |
 | AI agent, paměť, file disclosure policy | Navrženo, neimplementováno |
-| TUL šablony a průvodce | Identifikován tul/tulthesis; zatím nebaleno |
+| Pracovní prostor | Výchozí složka Dokumenty / TUL Writer, změna složky a šablony pro celý počítač, nastavení přetrvává po restartu |
+| TUL šablony a zakládání dokumentů | Čtyři nezměněné offline balíčky z portálu TUL × LaTeX; nová vlastní podsložka bez přepisování, volba šablony a nastavení enginu/bibliografie. Fakultní průvodce zatím není implementovaný |
+| Překladač podle šablony | Explicitní pdfLaTeX / XeLaTeX / LuaLaTeX, BibTeX / Biber a navazující průchody; původní projekty zachovávají dosavadní automatickou detekci |
 | Windows EXE/MSI | Sestavené testovací DEBUG EXE/MSI; instalace na čistém systému neověřena |
 | Podepsané aktualizace | Vypnuto; upstream aktualizace Scribe se neinstalují |
 | Kompletní české UI | Částečně; převzaté obrazovky zůstávají anglické |

@@ -1,5 +1,13 @@
 # Rozhodnutí
 
+## ADR-008 – Pracovní prostor a offline TUL předvolby (2026-11-05)
+
+Přijato na pokyn uživatele: globální složka nových dokumentů (výchozí systémové Dokumenty / TUL Writer) a výchozí šablona v konfiguraci aplikace, nikoli v nastavení právě otevřeného projektu. Založení vytváří výhradně novou podsložku; nepřebírá existující obsah a neprovádí automatické skripty. Při chybě rozbalení se částečná nová složka ponechá s chybovou zprávou, aby se automaticky neodstraňovala případná uživatelská data.
+
+Čtyři nezměněné univerzitní ZIP balíčky z uživatelova portálu se přibalují do EXE přes include_bytes, včetně původních textů a podkladů. provenance.json zachycuje zdroj a SHA-256. Aktualizace balíčků je vědomá změna distribuce, nikoli síťová operace při každém založení. Původní obecné šablony zůstávají jako samostatná volba.
+
+Nový projekt dostane .tulwriter/project.json (main, engine, bibliography, template). Engine je omezen na pdflatex/xelatex/lualatex a bibliografie na bibtex/biber; neznámý program je odmítnut. Přímé enginy zachovávají vypnutý shell escape a nečtou projektový latexmkrc. Bibliografie vybrané hlavní šablony běží mezi TeX průchody. Projekty bez této konfigurace zachovávají původní detekci Tectonic/latexmk/pdfLaTeX. Jde o podporu nových předvoleb, nikoli o kompletní compiler worker, timeout či obecnou automatickou detekci všech TeX projektů.
+
 ## ADR-007 – Revize otevřeného souboru při uložení (2026-11-05)
 
 Přijato: hlavní editor, boční editor a notebook drží vlastní SHA-256 revizi bajtů načtených příkazem read_document. save_document vyžaduje tuto revizi; pomocná čtení read_file ji neposouvají. Změněný či odstraněný soubor vyvolá konflikt, editor zachová lokální text a nabídne explicitní načtení z disku. Zavření panelu či projektu a kompilace se při neúspěšném uložení zastaví. Souběžná uložení jednoho editoru se řadí a rozpracované změny vzniklé během zápisu zůstávají označené jako neuložené.

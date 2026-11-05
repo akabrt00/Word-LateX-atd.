@@ -4,6 +4,8 @@ Stav 0.1: pracovní fork Scribe 1.2.3. Tauri 2 + Rust; frontend TypeScript/DOM +
 
 ## Současný tok
 
+Pracovní prostor se ukládá mimo projekty přes Tauri app_config_dir/workspace.json; výchozí umístění odvozuje systémová složka Dokumenty. Backend workspace.rs vytváří výhradně novou pojmenovanou podsložku a rozbaluje do ní jednu z pevně přibalených ZIP šablon. .tulwriter/project.json přidává allowlistované nastavení překladače a bibliografie. Archivy se za běhu nestahují ani neupravují; vytvořené projekty jsou nezávislé kopie. Podrobnosti v ADR-008.
+
 Nativní dialog → projektová složka → list_files/read_file → CodeMirror → write_file a historie → compile → lokální TeX → read_binary → PDF.js canvas a textová vrstva.
 
 Backend src-tauri/src/lib.rs obsahuje velkou část funkcí v jediném modulu; postupně jej dělíme pod krytím testů. Současné moduly src/project.ts, build.ts, preview.ts, editor.ts, ai.ts, ai-center.ts a document-core.ts tvoří počáteční hranice.

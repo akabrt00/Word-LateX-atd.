@@ -1,0 +1,30 @@
+[
+  {
+    "id": "tul-semester",
+    "url": "https://latex-tul.adamkabrt.chatgpt.site/downloads/faculties/semester-tul.zip",
+    "retrieved": "2026-11-05",
+    "sha256": "a3151efe40ecec03031069ca678f55c883a61d0c940005775c50f2969238d0c8",
+    "bytes": 7383033
+  },
+  {
+    "id": "tul-thesis",
+    "url": "https://latex-tul.adamkabrt.chatgpt.site/downloads/faculties/thesis-tul.zip",
+    "retrieved": "2026-11-05",
+    "sha256": "d398b5a8ae23b4388fd55ec61e392910fc057c28d9394dc7437fd7404c66536a",
+    "bytes": 2285710
+  },
+  {
+    "id": "tul-presentation",
+    "url": "https://latex-tul.adamkabrt.chatgpt.site/downloads/faculties/presentation-tul.zip",
+    "retrieved": "2026-11-05",
+    "sha256": "f7c1514afc18c53954cd9ea7e4a019ecb1ca7f8fbabfa4248991aaef085541fe",
+    "bytes": 2402652
+  },
+  {
+    "id": "tul-poster",
+    "url": "https://latex-tul.adamkabrt.chatgpt.site/downloads/faculties/poster-tul.zip",
+    "retrieved": "2026-11-05",
+    "sha256": "7b42b811b4a0dd124fb22de38f8941fa4fceab44689fb5f4b6e4a6a00d747975",
+    "bytes": 2994162
+  }
+]
