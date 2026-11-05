@@ -1,5 +1,24 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Průvodce semestrální prací – 2026-11-05
+
+Rozsah: dvoukrokové založení nové semestrální práce s volbou TUL/FS/FT/FP/EF/FUA/FM/FZS/CXI, názvu, autora, předmětu, roku, data a verze zadání. Osobní údaje se zapisují pouze do nové kopie semestralni-prace.tex. Změny stávajících dokumentů a průvodci ostatními typy nejsou součástí úkolu. Před úkolem byla pracovní kopie čistá na commitu 3ed3d49.
+
+- Prostředí: Windows x64, Node.js 24.15.0, npm 11.12.1, Rust/Cargo 1.99.1 MSVC a MiKTeX s balíčky opravenými v předchozím úkolu. Nebyly instalovány nové závislosti ani měněny TeX balíčky.
+- `npm test`: 10 prošlo, 0 selhalo. `npm run check`: prošlo. `npm run build`: prošlo s dosavadními varováními o velikosti chunků a statických/dynamických importech.
+- `cargo test --manifest-path src-tauri/Cargo.toml semester -- --test-threads=1`: první cílený běh ověřil 3 nové testy rendereru, bez selhání; PDF testy byly v tomto běhu ignorované.
+- `cargo test --manifest-path src-tauri/Cargo.toml --lib -- --test-threads=1 --skip lists_and_compiles_example --skip synctex_round_trip_on_example --skip export_is_plain_latex_that_compiles_on_its_own`: 34 prošlo, 0 selhalo, 6 ignorováno, 3 odfiltrováno. Ignorované zahrnují pět explicitních TeX/šablonových integrací a upstream instalaci Tectonicu; odfiltrované jsou tři volitelné notebook/example integrace. Podmíněné návraty některých převzatých testů nadále nejsou důkazem úplného pokrytí volitelných nástrojů.
+- `cargo test --manifest-path src-tauri/Cargo.toml semester_wizard_pdf -- --ignored --test-threads=1`: 1 prošel, 0 selhalo, 5,72 s. Skutečně založil projekt s údaji pro FM a názvem obsahujícím &, %, _, #, $, ~, ^, zpětné lomítko a závorky; pdfLaTeX/BibTeX vytvořily PDF s ověřenou hlavičkou.
+- Nové testy ověřují všechny součásti, přestupný rok a neplatná data, prázdné či víceřádkové údaje, TeX escaping, zachování těla dokumentu, komentářů, BOM/CRLF, odmítnutí změněné struktury a ochranu před tím, aby uživatelský text ovlivnil další nahrazované deklarace. Test zakládání ověřuje, že neplatná metadata nevytvoří ani rodičovskou složku, že metadata pro jinou šablonu jsou odmítnuta a že existující projekt s uživatelskými úpravami nelze přepsat.
+- `npm run tauri build -- --debug --no-bundle`: prošlo; vytvořeno nové DEBUG EXE. Při souběhu Cargo kontrol se čekalo na standardní build lock, nešlo o selhání. Instalátor se nevytvářel.
+- GUI: první krok zobrazil název složky, šablonu a Pokračovat. Druhý krok nabídl fakultu, předvyplněný název podle složky, autora, předmět a rok; rozbalení Datum a verze zadání ukázalo 2026-11-05 a verzi 1. Vytvořit dokument bez autora neprovedlo založení; Test-Path cílového projektu vrátil False.
+- GUI: vyplněn název „Měření & modelování 50 %“, autor „Zkušební autor“, předmět „Modelování & simulace“ a vybrána FM. Zpět a opětovné Pokračovat zachovaly všechna pole včetně ručně upraveného názvu a fakulty. Systémové rozbalovací menu WebView2 bylo kvůli omezení ovládacího nástroje vybráno klávesnicí; výsledná hodnota byla ověřena před pokračováním.
+- GUI: vytvořen projekt `C:\Users\akabr\Documents\TUL Writer\Ukázka průvodce semestrální prací`. Get-Content ověřil správné deklarace FM, názvu a předmětu s escaped ampersandem/procentem, autora, roku, českého data a verze. Aplikace automaticky otevřela hlavní soubor.
+- Ctrl+Enter vytvořilo skutečné dvoustránkové PDF; GUI ukázalo Compiled with pdflatex, 0 chyb a 0 varování. Vizuálně i textovou vrstvou ověřeno fakultní logo a oranžový akcent FM, název se skutečnými znaky & a %, autora, předmět, datum a verzi. Aplikace zůstala otevřená nad touto ukázkou.
+- `git diff --check`: bez chyb whitespace. Logy: ignorované output/verification/semester-frontend.log, semester-rust.log, semester-regression.log, semester-pdf.log a semester-native-build.log. Původní ZIP archivy se při tomto úkolu neměnily.
+
+Ověřený rozsah je semestrální šablona 1.3 a nové pracovní kopie. Nejde o obecný parser LaTeX metadat ani o automatickou úpravu existujících prací. Ostatní čtyři předvolby používají dosavadní zakládání bez tohoto formuláře; čtyři starší plné PDF testy šablon se neopakovaly, jejich zdroje a překladače se neměnily.
+
 ## Pracovní prostor a TUL předvolby – 2026-11-05
 
 Scénář: nastavit jednu složku pro všechny nové dokumenty, zvolit výchozí šablonu, založit novou samostatnou pracovní kopii a přeložit ji. Existující adresář ani projekt se nesmí přepsat. Přidány čtyři nezměněné univerzitní balíčky z uživatelova portálu a prázdný dokument; fakultní průvodce není součástí tohoto kroku.

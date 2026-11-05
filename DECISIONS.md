@@ -1,5 +1,11 @@
 # Rozhodnutí
 
+## ADR-009 – Předvyplnění nové semestrální práce (2026-11-05)
+
+První metadata průvodce je omezen na pevně přibalenou semestrální šablonu 1.3. Dva kroky oddělují složku a šablonu od údajů titulní strany. Osobní údaje se neukládají jako globální předvolba. Datum se nabízí podle místního kalendáře a verze zadání jako 1; uživatel je může změnit.
+
+Backend vyžaduje metadata pro nové semestrální projekty a odmítá je u ostatních typů. Před jakýmkoli založením adresáře ověří známou součást TUL, délku a jednořádkový text, čtyřciferný rok a skutečný kalendářní den. Text escapuje po jednotlivých znacích pro LaTeX. Transformuje jen sedm konkrétních deklarací před begin{document}, každou přesně jednou, pomocí původních rozsahů aplikovaných odzadu. Neznámá nebo změněná struktura je chyba, nikoli důvod ke generickému přepisu dokumentu. Originální ZIP i podklady zůstávají nezměněné; vlastní text, komentáře, BOM a konce řádků se zachovávají.
+
 ## ADR-008 – Pracovní prostor a offline TUL předvolby (2026-11-05)
 
 Přijato na pokyn uživatele: globální složka nových dokumentů (výchozí systémové Dokumenty / TUL Writer) a výchozí šablona v konfiguraci aplikace, nikoli v nastavení právě otevřeného projektu. Založení vytváří výhradně novou podsložku; nepřebírá existující obsah a neprovádí automatické skripty. Při chybě rozbalení se částečná nová složka ponechá s chybovou zprávou, aby se automaticky neodstraňovala případná uživatelská data.

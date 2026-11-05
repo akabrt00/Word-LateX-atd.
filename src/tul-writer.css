@@ -43,3 +43,12 @@
 .workspace-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 18px; }
 .workspace-link { color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; font: inherit; font-size: 12px; }
 .workspace-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 22px; margin-top: 22px; border-top: 1px solid var(--border); }
+.workspace-actions .workspace-back { margin-right: auto; }
+.semester-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
+.semester-fields .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.semester-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.semester-year { max-width: 130px; }
+.semester-extra { margin-top: 20px; }
+.semester-extra summary { cursor: pointer; color: var(--fg-dim); font-size: 13px; }
+.semester-extra[open] summary { margin-bottom: 4px; }
+@media (max-width: 560px) { .semester-grid { grid-template-columns: 1fr; gap: 0; } }

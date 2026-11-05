@@ -10,6 +10,8 @@ Na úvodní obrazovce zvolte **Nastavit složku a šablonu…**; stejné nastave
 
 **Nový dokument** požádá o název a šablonu a vytvoří vlastní podsložku ve zvoleném pracovním prostoru. Existující složku nepřepisuje ani neslučuje. Předvolená je TUL semestrální práce; k dispozici jsou také závěrečná práce, prezentace, poster a prázdný LaTeX dokument. Čtyři TUL balíčky jsou nezměněné offline kopie z portálu https://latex-tul.adamkabrt.chatgpt.site/templates; původ a kontrolní součty jsou v resources/templates/. Původní obecné šablony jsou pod **Další šablony…**.
 
+Pro **TUL semestrální práci** následuje druhý krok: součást TUL (celá univerzita, sedm fakult nebo CXI), název práce, autor, předmět a rok. Pod **Datum a verze zadání** lze změnit datum titulní strany a verzi; výchozí je dnešní datum a verze 1. Název práce se nabídne podle názvu složky, ale může být jiný. **Zpět** zachová rozepsané údaje. Až **Vytvořit dokument** založí nový projekt a předvyplní sedm známých deklarací v semestralni-prace.tex. Znaky jako `%`, `&`, `_` či zpětné lomítko se vkládají jako obyčejný text. Původní ZIP, styly i text práce zůstávají zachované. Osobní údaje se neukládají do globálního nastavení. Ostatní typy dokumentů zatím vlastní průvodce nemají.
+
 Nový projekt obsahuje .tulwriter/project.json s hlavním souborem a nastavením překladače. Semestrální práce používá pdfLaTeX + BibTeX, závěrečná práce XeLaTeX + Biber, prezentace XeLaTeX a poster LuaLaTeX. Tyto nástroje a potřebné TeX balíčky musí být lokálně dostupné. Pomocné skripty ani latexmkrc z balíčků se automaticky nespouštějí. Ukázkové údaje nahraďte vlastními podle návodů uvnitř projektu.
 
 ### Vývojové spuštění

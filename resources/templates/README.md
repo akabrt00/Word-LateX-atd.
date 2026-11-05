@@ -3,7 +3,7 @@
 Nezměněné ZIP balíčky byly převzaty 2026-11-05 z uživatelem zadaného portálu:
 https://latex-tul.adamkabrt.chatgpt.site/templates
 
-Přesné URL, velikosti a SHA-256 jsou v provenance.json. Jde o univerzitní varianty TUL, nikoli předvolbu konkrétní fakulty. Aplikace obsahuje archivy přímo v EXE a každému projektu vytvoří samostatnou pracovní kopii. Balíčky ani jejich případné pomocné skripty se při založení nespouštějí. Zápis .tulwriter/project.json přidává pouze nastavení překladače aplikace; původní soubory šablon se nemění.
+Přesné URL, velikosti a SHA-256 jsou v provenance.json. Archivy jsou univerzitní varianty TUL. Aplikace je obsahuje přímo v EXE a každému projektu vytvoří samostatnou pracovní kopii. Balíčky ani jejich případné pomocné skripty se při založení nespouštějí. .tulwriter/project.json přidává nastavení překladače aplikace. Průvodce semestrální prací v nové kopii předvyplní sedm deklarací titulní strany včetně vybrané součásti TUL; ostatní zdroje a originální archivy se nemění.
 
 | Balíček | Hlavní soubor | Překlad | Původ |
 |---|---|---|---|

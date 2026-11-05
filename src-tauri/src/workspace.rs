@@ -128,10 +128,24 @@ fn unpack(bytes: &[u8], target: &Path) -> Result<(), String> {
     Ok(())
 }
 
+#[cfg(test)]
 pub(crate) fn create_starter(parent: &Path, name: &str, template_id: &str) -> Result<PathBuf, String> {
+    create_starter_with_details(parent, name, template_id, None)
+}
+
+fn create_starter_with_details(parent: &Path, name: &str, template_id: &str, details: Option<&crate::semester::SemesterDetails>) -> Result<PathBuf, String> {
     validate_name(name)?;
     if !parent.is_absolute() { return Err("Složka dokumentů musí mít úplnou cestu.".into()); }
     let starter = STARTERS.iter().find(|t| t.id == template_id).ok_or("Neznámá šablona")?;
+    // Validate and prepare before creating any directories or touching disk copies.
+    let personalized = if let Some(details) = details {
+        if template_id != "tul-semester" { return Err("Průvodce údaji je zatím dostupný jen pro semestrální práci.".into()); }
+        let mut archive = zip::ZipArchive::new(Cursor::new(starter.archive.ok_or("Chybí šablona")?)).map_err(|e| e.to_string())?;
+        let mut original = String::new();
+        use std::io::Read;
+        archive.by_name(starter.main).map_err(|e| e.to_string())?.read_to_string(&mut original).map_err(|e| e.to_string())?;
+        Some(details.render(&original)?)
+    } else { None };
     std::fs::create_dir_all(parent).map_err(|e| format!("Nelze vytvořit složku dokumentů: {e}"))?;
     let parent = parent.canonicalize().map_err(|e| e.to_string())?;
     let target = parent.join(name);
@@ -140,6 +154,7 @@ pub(crate) fn create_starter(parent: &Path, name: &str, template_id: &str) -> Re
     let result = (|| {
         if let Some(bytes) = starter.archive { unpack(bytes, &target)?; }
         else { std::fs::write(target.join("main.tex"), "\\documentclass{article}\n\\begin{document}\nMuj novy dokument.\n\\end{document}\n").map_err(|e| e.to_string())?; }
+        if let Some(source) = personalized { std::fs::write(target.join(starter.main), source).map_err(|e| e.to_string())?; }
         let build = ProjectBuild { main: starter.main.into(), engine: starter.engine.into(), bibliography: starter.bibliography.map(String::from), template: starter.id.into() };
         std::fs::create_dir(target.join(".tulwriter")).map_err(|e| e.to_string())?;
         std::fs::write(target.join(".tulwriter/project.json"), serde_json::to_vec_pretty(&build).map_err(|e| e.to_string())?).map_err(|e| e.to_string())?;
@@ -150,9 +165,10 @@ pub(crate) fn create_starter(parent: &Path, name: &str, template_id: &str) -> Re
 }
 
 #[tauri::command]
-pub(crate) async fn create_template_project(app: tauri::AppHandle, name: String, template_id: String) -> Result<String, String> {
+pub(crate) async fn create_template_project(app: tauri::AppHandle, name: String, template_id: String, semester_details: Option<crate::semester::SemesterDetails>) -> Result<String, String> {
+    if template_id == "tul-semester" && semester_details.is_none() { return Err("Vyplňte údaje semestrální práce v průvodci.".into()); }
     let settings = read_workspace_settings(app)?;
-    tauri::async_runtime::spawn_blocking(move || create_starter(Path::new(&settings.documents_dir), &name, &template_id).map(|p| {
+    tauri::async_runtime::spawn_blocking(move || create_starter_with_details(Path::new(&settings.documents_dir), &name, &template_id, semester_details.as_ref()).map(|p| {
         let text = p.to_string_lossy();
         // Keep Windows' canonical long-path prefix out of recent-project labels.
         if cfg!(windows) {
@@ -215,6 +231,33 @@ mod tests {
             std::fs::write(&path, json).unwrap();
             assert!(project_build(&project).is_err());
         }
+    }
+
+    #[test]
+    fn invalid_details_create_nothing_and_existing_projects_are_preserved() {
+        let dir = tempfile::tempdir().unwrap();
+        let parent = dir.path().join("Documents");
+        let mut details = crate::semester::example_details(); details.author.clear();
+        assert!(create_starter_with_details(&parent, "invalid", "tul-semester", Some(&details)).is_err());
+        assert!(!parent.exists());
+        details = crate::semester::example_details();
+        assert!(create_starter_with_details(&parent, "wrong template", "tul-thesis", Some(&details)).is_err());
+        assert!(!parent.exists());
+        let project = create_starter_with_details(&parent, "Moje práce", "tul-semester", Some(&details)).unwrap();
+        assert!(std::fs::read_to_string(project.join("semestralni-prace.tex")).unwrap().contains("Zkušební autor"));
+        std::fs::write(project.join("semestralni-prace.tex"), "user edits").unwrap();
+        assert!(create_starter_with_details(&parent, "Moje práce", "tul-semester", Some(&details)).is_err());
+        assert_eq!(std::fs::read_to_string(project.join("semestralni-prace.tex")).unwrap(), "user edits");
+    }
+
+    #[test]
+    #[ignore = "Requires pdfLaTeX, BibTeX and semester template packages"]
+    fn semester_wizard_pdf() {
+        let dir = tempfile::tempdir().unwrap();
+        let project = create_starter_with_details(dir.path(), "Práce s údaji", "tul-semester", Some(&crate::semester::example_details())).unwrap();
+        let result = crate::compile_blocking(&project.to_string_lossy(), "semestralni-prace.tex").unwrap();
+        assert!(result.ok, "{}", result.log);
+        assert!(std::fs::read(project.join(result.pdf.unwrap())).unwrap().starts_with(b"%PDF-"));
     }
 
     fn verify_pdf(template: &str) {

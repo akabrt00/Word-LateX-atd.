@@ -7,6 +7,7 @@
 mod ai;
 mod documents;
 mod workspace;
+mod semester;
 #[tauri::command]
 fn initial_project() -> Option<String> {
     let mut args = std::env::args();
