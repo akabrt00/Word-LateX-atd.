@@ -1,5 +1,21 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Zprovoznění na druhém PC – 2026-11-05
+
+Čistý klon origin/main v `C:\Users\akabr\Documents\ChatGPT\TULWright\Word-LateX-atd`. Zdrojový kód aplikace se při zprovoznění neměnil.
+
+- Prostředí: Windows x64, Node.js 24.15.0, npm 11.12.1, MiKTeX-pdfTeX 4.18 (MiKTeX 24.1), WebView2 156.0.4314.58. Python není nainstalovaný.
+- `gh repo clone` nebylo dostupné (chybí GitHub CLI). `git clone https://github.com/akabrt00/Word-LateX-atd..git Word-LateX-atd` prošlo mimo sandbox; explicitní cílová složka obchází nepovolenou koncovou tečku názvu ve Windows. První síťový pokus v sandboxu selhal na `getaddrinfo() thread failed to start`.
+- Přes winget instalovány `Microsoft.VisualStudio.2022.BuildTools` 17.14.44 s `--override '--wait --quiet --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended'` a `Rustlang.Rustup` 1.29.3. Ověřeno Rust/Cargo 1.99.1 (MSVC), C++ workload a úspěšná instalace Windows SDK 10.0.26100.
+- První `npm ci` v sandboxu nepostupovalo a bylo přerušeno. Opakované `npm ci` mimo sandbox uspělo: 97 balíčků, audit bez známých zranitelností v tomto běhu.
+- `npm test`: 7 prošlo, 0 selhalo. `npm run check`: prošlo. `npm run build`: prošlo s dosavadními varováními o velikosti chunků a neúčinných dynamických importech.
+- S PATH doplněným o `C:\Users\akabr\.cargo\bin`: `npm run tauri build -- --debug --no-bundle` prošlo, nativní kompilace trvala 3 minuty. EXE: `src-tauri/target/debug/tul-writer.exe`. Instalátor nebyl vytvářen.
+- `cargo test --manifest-path src-tauri/Cargo.toml tul_writer_open_edit_save_compile_pdf -- --test-threads=1`: 1 prošel, 27 odfiltrováno. Skutečně ověřeno čtení, změna, uložení, kompilace PDF v cestě s diakritikou a odmítnutí starého PDF po chybě. Celá Rust sada ani volitelné notebookové integrace se při tomto úkolu nespouštěly.
+- Desktopové ověření: EXE spuštěno s `--project` nad kopií `examples/first-project` v ignorované složce `output/verification/desktop-project`. Přes GUI změněn text na „TUL Writer works on this computer. Edited and saved in the desktop app.“, uložen Ctrl+S a ověřen na disku. Ctrl+Enter spustilo kompilaci; GUI ukázalo `Compiled with pdflatex`, 0 chyb, 0 varování, Page 1 of 1 a nový text i sekci Results v PDF.js. PDF má 68 198 bajtů.
+- Lokální logy: `output/verification/native-build.log` a `output/verification/native-test.log`. Generované soubory zůstávají ignorované Gitem.
+
+Ověřený rozsah je základní desktopový editor a LaTeX/PDF tok na tomto PC. Nejde o nové ověření všech převzatých funkcí, instalátoru, AI nebo Word Mode. Následující oddíly zachovávají výsledky z původního vývojového počítače.
+
 ## Výsledek
 
 Všech šest akceptačních bodů prvního milníku bylo ověřeno na Windows: spuštění nativního EXE, otevření LaTeX projektu, editace, uložení, lokální kompilace a zobrazení skutečného PDF uvnitř aplikace. Nejde pouze o webový náhled ani mock backendu.

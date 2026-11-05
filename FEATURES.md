@@ -5,6 +5,7 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 | Funkce | Stav 0.1 |
 |---|---|
 | Tauri 2, Rust, TypeScript | Nativní EXE sestavené a spuštěné na Windows |
+| Zprovoznění na druhém Windows PC | Ověřeno sestavení DEBUG EXE a GUI tok editace → uložení → kompilace → PDF; podrobnosti v docs/TEST_REPORT.md |
 | Otevření složky, .tex soubory, více souborů | Ověřeno nativním integračním testem a načtením projektu v GUI |
 | CodeMirror úpravy, Ctrl+S, undo | Editace a Ctrl+S ověřeny v GUI; undo převzato |
 | Atomický zápis a historie | Převzato; rozšířit externí konflikty a recovery |

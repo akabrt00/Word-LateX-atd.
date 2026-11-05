@@ -4,6 +4,8 @@ Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
 ## Vývoj – 2026-11-05
 
+- Zprovozněno vývojové prostředí na druhém Windows PC; ověřeno nativní sestavení a GUI průchod editace, uložení, kompilace a PDF náhledu. Výsledky zaznamenány v docs/TEST_REPORT.md.
+
 - Propojení projektu s GitHub origin akabrt00/Word-LateX-atd. a větví main při zachování historie Scribe i původního GitHub commitu.
 - Rozšířen .gitignore o lokální konfiguraci, přihlašovací údaje, klíče, cache a dočasné soubory.
 - V AGENTS.md uloženo trvalé oprávnění automaticky commitovat a pushovat dokončené úkoly a ověřovat vzdálený commit.

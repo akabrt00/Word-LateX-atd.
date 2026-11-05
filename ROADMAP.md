@@ -6,6 +6,8 @@ Vybrán Scribe MIT se zachováním historie. Audit, licence, architektura, AI n�
 
 ## Etapa 1 – pracovní základ 0.1
 
+2026-11-05: na druhém Windows PC doplněn toolchain a ověřeno čisté sestavení i základní desktopový tok editace, uložení a PDF kompilace. Evidence a omezení jsou v docs/TEST_REPORT.md; další funkční etapy zůstávají beze změny.
+
 Hlavním vzdáleným úložištěm projektu je od 2026-11-05 GitHub repozitář akabrt00/Word-LateX-atd. s větví main. Další dokončené úkoly se automaticky commitují a synchronizují podle AGENTS.md.
 
 Samostatná identita, Tauri konfigurace, ukázkový vícesouborový projekt, přímý MiKTeX compiler fallback, explicitní notebook execution, vlastní ikony, AI centrum a experiment zdrojových transakcí. Průběžný stav akceptačních bodů a omezení je v docs/TEST_REPORT.md.
