@@ -9,6 +9,7 @@ Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 - Automatické testování, sestavení NSIS/MSI a publikace privátní aktualizace z main. Jedinečná verze major.minor.číslo-běhu, ochrana před publikováním staršího commitu a veřejným vydáním.
 - Lokální šifrovaný podpisový klíč s DPAPI heslem, provisioning GitHub Actions secrets po výslovném schválení uživatele. Doplněny smluvní testy toku instalace a release nástrojů.
 - Při skutečné síťové diagnostice nalezena a opravena chybějící inicializace TLS provideru před vytvořením HTTP klienta updateru.
+- Windows CI používá bezpečnou pracovní cestu nezávislou na tečce na konci názvu GitHub repozitáře.
 
 ## Vývoj – 2026-11-05
 

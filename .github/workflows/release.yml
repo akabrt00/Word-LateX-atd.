@@ -14,16 +14,32 @@ jobs:
     timeout-minutes: 45
     permissions:
       contents: write
+    defaults:
+      run:
+        working-directory: ${{ runner.temp }}/tul-writer-source
     steps:
-      - uses: actions/checkout@v4
+      # The repository name ends in a dot: the default Windows checkout path is invalid.
+      - name: Download exact commit into a Windows-safe source directory
+        working-directory: ${{ runner.temp }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $sourceDir = Join-Path $env:RUNNER_TEMP 'tul-writer-source'
+          $sourceArchive = Join-Path $env:RUNNER_TEMP 'tul-writer-source.tar.gz'
+          New-Item -ItemType Directory -Path $sourceDir -Force | Out-Null
+          gh api "repos/$env:GITHUB_REPOSITORY/tarball/$env:GITHUB_SHA" > $sourceArchive
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          tar -xzf $sourceArchive --strip-components=1 -C $sourceDir
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
+          cache-dependency-path: ${{ runner.temp }}/tul-writer-source/package-lock.json
       - uses: dtolnay/rust-toolchain@stable
       - uses: swatinem/rust-cache@v2
         with:
-          workspaces: src-tauri -> target
+          workspaces: ${{ runner.temp }}/tul-writer-source/src-tauri -> target
       - run: npm ci
       - run: npm test
       - run: npm run check
@@ -52,9 +68,9 @@ jobs:
         with:
           name: tul-writer-windows
           path: |
-            src-tauri/target/release/tul-writer.exe
-            src-tauri/target/release/bundle/nsis/*.exe
-            src-tauri/target/release/bundle/msi/*.msi
-            src-tauri/target/release/bundle/nsis/*.sig
-            src-tauri/target/release/bundle/msi/*.sig
-            output/latest.json
+            ${{ runner.temp }}/tul-writer-source/src-tauri/target/release/tul-writer.exe
+            ${{ runner.temp }}/tul-writer-source/src-tauri/target/release/bundle/nsis/*.exe
+            ${{ runner.temp }}/tul-writer-source/src-tauri/target/release/bundle/msi/*.msi
+            ${{ runner.temp }}/tul-writer-source/src-tauri/target/release/bundle/nsis/*.sig
+            ${{ runner.temp }}/tul-writer-source/src-tauri/target/release/bundle/msi/*.sig
+            ${{ runner.temp }}/tul-writer-source/output/latest.json
