@@ -24,6 +24,7 @@ Skutečný stav běhu Windows workflow a živého stahování bude doplněn po p
 
 - Commit f5626c8 byl úspěšně nahrán na main a SHA přesně odpovídalo git ls-remote. První Windows Actions běh 42234822860 selhal již v checkoutu: název repozitáře končí tečkou a cesta D:/a/Word-LateX-atd./Word-LateX-atd. nebyla na Windows dostupná. Testy ani build se v tomto běhu nespustily. Workflow proto stahuje archiv přesného GITHUB_SHA pomocí autentizovaného gh API do runner.temp/tul-writer-source, používá tuto bezpečnou cestu pro run kroky, cache i artefakty. Repozitář se nepřejmenovává a credential se neukládá do zdrojů.
 - Následující běh 42235262371 odmítla validace workflow před vytvořením jobu: runner context není povolen v jobs.defaults.run. Cesta byla přesunuta do jednotlivých steps.working-directory, kde jej GitHub podporuje. Neproběhl žádný build tohoto pokusu.
+- Běh 42235426076 úspěšně stáhl a rozbalil zdroje, ale setup-node odmítl cache pro cestu mimo GITHUB_WORKSPACE. Vypnuta npm/Rust cache pro tento nestandardní Windows workspace a přidána přímá kontrola přítomnosti package-lock.json po rozbalení. Následující běh ověří čisté sestavení bez cache.
 
 ## Pracovní prostor a TUL předvolby – 2026-11-05
 

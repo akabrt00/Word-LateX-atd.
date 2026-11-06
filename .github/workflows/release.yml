@@ -28,15 +28,11 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           tar -xzf $sourceArchive --strip-components=1 -C $sourceDir
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not (Test-Path -LiteralPath (Join-Path $sourceDir 'package-lock.json'))) { throw 'Source archive is incomplete.' }
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
-          cache-dependency-path: ${{ runner.temp }}/tul-writer-source/package-lock.json
       - uses: dtolnay/rust-toolchain@stable
-      - uses: swatinem/rust-cache@v2
-        with:
-          workspaces: ${{ runner.temp }}/tul-writer-source/src-tauri -> target
       - run: npm ci
         working-directory: ${{ runner.temp }}/tul-writer-source
       - run: npm test
