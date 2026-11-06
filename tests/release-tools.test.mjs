@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { ciVersion, setVersion } from "../scripts/version.mjs";
-import { makeManifest, signaturePath } from "../scripts/publish-update.mjs";
+import { makeManifest, signaturePath, isCurrentInstaller } from "../scripts/publish-update.mjs";
 test("CI builds get monotonically increasing MSI-compatible versions", () => {
   assert.equal(ciVersion("0.2.0", 1), "0.2.1"); assert.equal(ciVersion("0.2.0", 2), "0.2.2");
   for (const value of [0, -1, "x", 65536]) assert.throws(() => ciVersion("0.2.0", value));
@@ -43,4 +43,11 @@ test("signature lookup handles GitHub-normalized installer filenames", () => {
   assert.equal(signaturePath(files,"TUL.Writer_0.2.4_x64_en-US.msi"),files[2]);
   assert.throws(()=>signaturePath(files,"another.exe"),/Missing/);
   assert.throws(()=>signaturePath([...files,files[1]],"TUL.Writer_0.2.4_x64-setup.exe"),/ambiguous/);
+});
+
+test("cached installers from older versions never enter a new release", () => {
+  const names=["TUL Writer_0.2.5_x64-setup.exe","TUL.Writer_0.2.5_x64-setup.exe.sig",
+    "TUL Writer_0.2.5_x64_en-US.msi","TUL Writer_0.2.5_x64_en-US.msi.sig",
+    "TUL Writer_0.2.4_x64-setup.exe","TUL Writer_0.2.50_x64-setup.exe","TUL Writer_0.2.5_x64-setup.exe.tmp"];
+  assert.deepEqual(names.filter(name=>isCurrentInstaller(name,"0.2.5")),names.slice(0,4));
 });

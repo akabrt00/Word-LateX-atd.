@@ -12,6 +12,9 @@ export function signaturePath(files, assetName) {
   if (matches.length !== 1) throw new Error("Missing or ambiguous installer signature: " + assetName);
   return matches[0];
 }
+export function isCurrentInstaller(name, version) {
+  return name.replaceAll(" ", ".").startsWith(`TUL.Writer_${version}_`) && /\.(exe|msi)(\.sig)?$/.test(name);
+}
 
 export function makeManifest(release, version, signatureFor, notes, date = new Date().toISOString()) {
   if (release.tag_name !== `v${version}`) throw new Error("Release version mismatch");
@@ -47,7 +50,7 @@ export function publish() {
   }
   if (!existing) github(["release", "create", tag, "--repo", REPO, "--draft", "--target", process.env.GITHUB_SHA, "--title", `TUL Writer ${version}`, "--notes", notes]);
   const bundle = "src-tauri/target/release/bundle";
-  const files = ["nsis", "msi"].flatMap(dir => fs.readdirSync(path.join(bundle, dir)).filter(name => /\.(exe|msi)(\.sig)?$/.test(name)).map(name => path.join(bundle, dir, name)));
+  const files = ["nsis", "msi"].flatMap(dir => fs.readdirSync(path.join(bundle, dir)).filter(name => isCurrentInstaller(name, version)).map(name => path.join(bundle, dir, name)));
   if (files.length !== 4) throw new Error("Expected two installers and two signatures");
   github(["release", "upload", tag, ...files, "--repo", REPO, "--clobber"]);
   // Draft tags may not resolve through /releases/tags until publication.

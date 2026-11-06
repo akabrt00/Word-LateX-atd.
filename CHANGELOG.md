@@ -10,7 +10,7 @@ Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 - Lokální šifrovaný podpisový klíč s DPAPI heslem, provisioning GitHub Actions secrets po výslovném schválení uživatele. Doplněny smluvní testy toku instalace a release nástrojů.
 - Při skutečné síťové diagnostice nalezena a opravena chybějící inicializace TLS provideru před vytvořením HTTP klienta updateru.
 - Windows CI používá bezpečnou pracovní cestu nezávislou na tečce na konci názvu GitHub repozitáře.
-- Opraveno dohledání privátního draftu podle ID a párování podpisů při změně mezer na tečky v GitHub názvech; CI uchová sestavené artefakty i při chybě publikace a využívá Rust cache.
+- Opraveno dohledání privátního draftu podle ID a párování podpisů při změně mezer na tečky v GitHub názvech; CI uchová sestavené artefakty i při chybě publikace a využívá Rust cache. Publisher vybírá pouze instalátory právě sestavené verze.
 
 ## Vývoj – 2026-11-05
 
