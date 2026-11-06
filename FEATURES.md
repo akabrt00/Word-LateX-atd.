@@ -4,8 +4,8 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 
 | Funkce | Stav 0.1 |
 |---|---|
-| Český panel Soubory | Přeložené popisky, souborové dialogy a místní nabídky; ostatní panely a hlavní nabídka zůstávají částečně anglické |
-| Popisky podkladů šablony | Ve stromu Vzhled šablony a Vzhled šablony / Písma; původní cesty zůstávají v nápovědě a souborových operacích |
+| Český panel Soubory | Živě ověřeny popisky, nabídky souboru/složky, vytvoření souboru a česká validace cesty; ostatní panely a hlavní nabídka zůstávají částečně anglické |
+| Popisky podkladů šablony | Živě ověřeny Vzhled šablony a Vzhled šablony / Písma; nápověda zachovává původní cesty, 166 podkladů nového projektu ověřeno proti ZIP pomocí SHA-256 |
 | Tauri 2, Rust, TypeScript | Nativní EXE sestavené a spuštěné na Windows |
 | Zprovoznění na druhém Windows PC | Ověřeno sestavení DEBUG EXE a GUI tok editace → uložení → kompilace → PDF; podrobnosti v docs/TEST_REPORT.md |
 | Otevření složky, .tex soubory, více souborů | Ověřeno nativním integračním testem a načtením projektu v GUI |

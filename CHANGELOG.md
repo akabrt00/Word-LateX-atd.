@@ -2,6 +2,10 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Ověření – 2026-11-06
+
+- Zopakováno 11 frontendových a 36 Rust testů i dva skutečné PDF překlady. Živě ověřen český panel Soubory, popisky vzhledu šablony, odmítnutí cesty mimo projekt, uložení českých poznámek a založení semestrálky se dvěma autory až do PDF bez chyb a varování. Produkční kód se při tomto ověření neměnil; podrobnosti a neprovedené kontroly v docs/TEST_REPORT.md.
+
 ## Vývoj – 2026-11-05
 
 - Panel Soubory, jeho tlačítka a místní nabídky jsou česky včetně zadávání názvů, validací a potvrzení přesunu do koše. Windows akce nově uvádí Průzkumníka místo Finderu.

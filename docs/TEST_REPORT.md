@@ -1,5 +1,22 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Regrese a živý český tok – 2026-11-06
+
+Výchozí pracovní kopie čistá, commit 447ff68. Na žádost uživatele zopakovány automatické kontroly a živý průchod aktuálním DEBUG EXE. Produkční kód se neměnil, nové závislosti ani TeX balíčky nebyly instalovány. Prostředí: Windows x64, Node/npm, Rust MSVC, MiKTeX a WebView2 jako v předchozích kontrolách.
+
+- `npm test`: 11 prošlo, 0 selhalo. `npm run check` a `npm run build`: prošly. Dosavadní varování importů/chunků přetrvávají.
+- `cargo test --manifest-path src-tauri/Cargo.toml --lib -- --test-threads=1 --skip lists_and_compiles_example --skip synctex_round_trip_on_example --skip export_is_plain_latex_that_compiles_on_its_own`: 36 prošlo, 0 selhalo, 7 ignorováno, 3 odfiltrováno, 20,31 s. Ignorované a odfiltrované testy nejsou vykazované jako úspěšně provedené.
+- `cargo test --manifest-path src-tauri/Cargo.toml wizard_pdf -- --ignored --test-threads=1`: skutečný překlad jednoho autora se speciálními znaky i šesti autorů, 2 prošly, 0 selhalo, 12,02 s. Ostatní čtyři šablonové PDF integrace ani volitelné notebook/example integrace se tentokrát neopakovaly.
+- GUI přes computer-use: založen nový projekt `C:\Users\akabr\Documents\TUL Writer\Test českého prostředí 2026-11-06`, součást TUL, dva fiktivní autoři po řádcích, předmět „Měření & modelování“. Zdroj na disku potvrzuje dvě jména s řízeným zalomením, escaped ampersand a automatické datum 6. listopadu 2026.
+- GUI: nadpis Soubory a title/aria-label tlačítek jsou česky. Zobrazen a vizuálně ověřen Vzhled šablony, po sbalení jeho souborů také Vzhled šablony / Písma. Nápověda obsahuje původní podklady a podklady/pisma. Místní nabídka složky i souboru zobrazila české akce včetně Zobrazit v Průzkumníku. Mazání se neprovádělo.
+- GUI: tlačítko Nový soubor otevřelo českou výzvu. Zadání `../mimo-projekt.txt` a Enter odmítnuto hláškou „Soubor musí být uvnitř projektu.“ Cílový soubor mimo projekt neexistuje. Následně vytvořen poznamky-test.txt, do editoru vloženy dva řádky českého textu a uloženy Ctrl+S; čtení z disku potvrdilo přesný text s diakritikou.
+- GUI: hlavní semestralni-prace.tex znovu otevřen přes kartu, Ctrl+Enter provedlo překlad. PDF.js zobrazilo Page 1 of 2, oba autory pod sebou, popisek Autoři práce, ampersand a dnešní datum; Compiled with pdflatex, 0 chyb a 0 varování. Aplikace zůstala otevřená nad tímto testovacím PDF.
+- Porovnání projektu s původním ZIP ověřilo 167 souborů kromě personalizovaného hlavního zdroje: 166 podkladů bajtově shodných pomocí SHA-256 a styl shodný s originálem po jediné očekávané změně popisku autorů. Konfigurace potvrzuje pdflatex/bibtex. Originální ZIP se neměnil.
+- První UI kliknutí skončilo chybou nástroje „coordinate input geometry is unavailable“. Obnovena volba okna a screenshot, jediný opakovaný pokus prošel. Tato chyba ovládacího nástroje nebyla vydávána za chybu aplikace. Další snapshoty někdy ukazují předchozí strom; rozhodující hodnoty byly znovu načteny a potvrzeny obrazem či diskem.
+- `git diff --check`: bez chyb. Nový native build se neprováděl, testovalo se poslední úspěšně sestavené EXE. Světlý motiv, úplný překlad všech panelů, skutečné mazání, přejmenování/přesuny, recovery a instalace na čistém PC nebyly tímto průchodem ověřeny. V testovaném rozsahu nenalezen nový funkční regresní problém.
+
+Logy v ignorovaném output/verification: regression-1106-frontend.log, regression-1106-check.log, regression-1106-build.log, regression-1106-rust.log, regression-1106-pdf.log a regression-1106-assets.log.
+
 ## České popisky panelu Soubory – 2026-11-06
 
 Překlad zobrazovaných řetězců v index.html, sidebar.ts a místní nabídce prázdné části stromu v main.ts. Zahrnuje nadpis, title/aria-label tlačítek, nabídky souborů/složek, zadávání názvů, validace, přidávání souborů a potvrzení koše. Windows popisek odkazuje na Průzkumníka. ID, příkazy, cesty, souborové operace a ochrany zůstávají stejné. Ostatní panely a hlavní nabídka nejsou součástí překladu.

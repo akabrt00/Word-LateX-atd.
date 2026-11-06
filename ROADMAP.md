@@ -18,6 +18,8 @@ Zpřehledněny popisky podkladů a písem ve stromu souborů jako Vzhled šablon
 
 Dokončeny české popisky panelu Soubory, jeho tlačítek, místních nabídek a dialogů pro práci se soubory. Překlad ostatních panelů a hlavní nabídky zbývá.
 
+2026-11-06: živě ověřeno založení semestrálky se dvěma autory, české nabídky a popisky podkladů, odmítnutí cesty mimo projekt, vytvoření/uložení poznámek a PDF bez chyb či varování. Regrese: 11 frontendových, 36 Rust a dvě skutečné PDF integrace prošly; omezení v TEST_REPORT.md.
+
 Pracovní prostor a základní TUL předvolby: implementována globální složka nových dokumentů, trvalá výchozí šablona a vytvoření samostatné kopie čtyř univerzitních balíčků. Doplněn výběr překladače a bibliografie podle projektu. Semestrální práce má dvoukrokový průvodce součástí TUL a údaji titulní strany včetně seznamu autorů pro skupinové práce, ověřený až do PDF. Navazující práce: obdobný průvodce závěrečnou prací, prezentací a posterem a správa verzí šablon. Originální archivy zůstávají nezměněné.
 
 1. Nativní smoke test, Rust regresní sada a DEBUG EXE/MSI build jsou dokončené. Navázat release buildem a ověřením instalace/odinstalace na čistém Windows účtu bez vývojových nástrojů.
