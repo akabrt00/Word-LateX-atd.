@@ -1,5 +1,15 @@
 # Rozhodnutí
 
+## ADR-009 – Podepsané aktualizace instalované aplikace (2026-11-06)
+
+Na výslovný pokyn uživatele řešíme aktualizaci nainstalované aplikace, nikoli automatický git pull uživatelova vývojového projektu. Zachován tauri-plugin-updater 2.14.1. Používáme privátní GitHub Releases stejného origin a vlastní veřejný klíč. NSIS i MSI mají podpis svázaný s verzí (requireSignedVersion). Authenticode podpis není tímto podpisem nahrazen a zatím není nastaven.
+
+Soukromý repozitář neumožňuje anonymní stahování. Přijato přihlášení přes GitHub CLI na každém PC; backend získá token do paměti a nevrací jej do JS. Není vložen společný PAT do aplikace ani zpřístupněn repozitář veřejnosti. API adresy balíčků jsou odvozeny od asset ID a kontrolovány vůči vydání. Manifest přes restore_update vstupuje do standardního ověřovače Tauri; nejde o vlastní implementaci kryptografie.
+
+Uživatel výslovně povolil uložit soukromý podpisový klíč a heslo jako šifrovaná GitHub Actions secrets. Lokální klíč je šifrovaný, jeho heslo chrání Windows DPAPI v ignorované .tools. Workflow na main spouští testy, jedinečné verzování, Windows build a publikaci hotového privátního vydání. Změny workflow s oprávněním contents:write jsou hranicí důvěry; veřejná distribuce a změna viditelnosti nadále vyžadují samostatné zadání.
+
+Kontrola aktualizace nikdy neinstaluje. Tlačítko uživatele spustí ověření, uložení a instalaci; aktivní kompilace/notebook/terminál a konflikt uložení instalaci zastaví. Staré 0.1 buildy vyžadují ruční bootstrap. Instalace na čisté VM a skutečný upgrade/restart jsou samostatné akceptační kontroly; jejich dokončení nelze odvodit pouze z úspěchu buildů či podpisu.
+
 ## ADR-008 – Pracovní prostor a offline TUL předvolby (2026-11-05)
 
 Přijato na pokyn uživatele: globální složka nových dokumentů (výchozí systémové Dokumenty / TUL Writer) a výchozí šablona v konfiguraci aplikace, nikoli v nastavení právě otevřeného projektu. Založení vytváří výhradně novou podsložku; nepřebírá existující obsah a neprovádí automatické skripty. Při chybě rozbalení se částečná nová složka ponechá s chybovou zprávou, aby se automaticky neodstraňovala případná uživatelská data.

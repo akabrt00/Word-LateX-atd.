@@ -1,11 +1,19 @@
-name: Windows artifact build
+name: Windows signed updates
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: tul-writer-windows-updates
+  cancel-in-progress: false
 jobs:
   windows:
     runs-on: windows-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,7 +26,28 @@ jobs:
           workspaces: src-tauri -> target
       - run: npm ci
       - run: npm test
-      - run: npm run tauri build
+      - run: npm run check
+      - name: Updater and document safety tests
+        run: |
+          cargo test --manifest-path src-tauri/Cargo.toml updates::
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path src-tauri/Cargo.toml documents::
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path src-tauri/Cargo.toml workspace::
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Unique version for this main build
+        run: node scripts/version.mjs --ci $env:GITHUB_RUN_NUMBER
+      - name: Build signed Windows installers
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          if (-not $env:TAURI_SIGNING_PRIVATE_KEY) { throw 'Configure updater signing secrets first.' }
+          npm run tauri build -- --bundles nsis,msi
+      - name: Publish private update after successful checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/publish-update.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: tul-writer-windows
@@ -26,3 +55,6 @@ jobs:
             src-tauri/target/release/tul-writer.exe
             src-tauri/target/release/bundle/nsis/*.exe
             src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/nsis/*.sig
+            src-tauri/target/release/bundle/msi/*.sig
+            output/latest.json

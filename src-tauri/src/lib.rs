@@ -5,6 +5,7 @@
 //! symlinks pointing outside). That boundary matters once projects are shared.
 
 mod ai;
+mod updates;
 mod documents;
 mod workspace;
 #[tauri::command]
@@ -2757,11 +2758,13 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
-        // updates from GitHub releases, checked against the public key in tauri.conf.json
-        // Upstream updater disabled for this fork.
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .manage(updates::UpdateState::default())
+        .setup(|app| { updates::diagnostics(app); Ok(()) })
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             initial_project, list_files, list_dirs, create_dir, rename_path, delete_path, import_files,
+            updates::check_app_update, updates::download_app_update, updates::install_app_update,
             workspace::read_workspace_settings, workspace::write_workspace_settings, workspace::create_template_project,
             read_file, write_file, documents::read_document, documents::save_document, read_binary, compile, compile_snippet, pdf_to_svg, compile_diff, git_log,
             ai::ai_stream, ai::ai_set_key, ai::ai_has_key, ai::ai_cancel, ai::ai_models,

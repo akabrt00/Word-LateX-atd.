@@ -1,6 +1,14 @@
 # Architektura
 
-Stav 0.1: pracovní fork Scribe 1.2.3. Tauri 2 + Rust; frontend TypeScript/DOM + Vite, CodeMirror 6, PDF.js, MathLive, KaTeX. Frameworkový přepis není pro první etapu opodstatněný.
+Stav 0.2: pracovní fork Scribe 1.2.3. Tauri 2 + Rust; frontend TypeScript/DOM + Vite, CodeMirror 6, PDF.js, MathLive, KaTeX. Frameworkový přepis není pro první etapu opodstatněný.
+
+## Aktualizace aplikace
+
+Windows workflow sestaví a podepíše NSIS/MSI a zveřejní kompletní privátní GitHub Release s latest.json. Verze je major.minor.GITHUB_RUN_NUMBER; souběžné běhy se řadí a zastaralý commit nesmí přepsat latest. Soukromý podpisový klíč a heslo jsou GitHub Actions secrets; aplikace obsahuje pouze veřejný klíč. Veřejné publikování blokuje kontrola repository.private.
+
+updates.rs čte přihlášení přes gh auth token přímo v Rustu. Manifest i binární soubory získává přes autentizované GitHub API. URL balíčku musí přesně odpovídat assetu téhož vydání, tag musí odpovídat verzi. Tauri updater ověřuje podpis souboru i podepsanou verzi; není povolen downgrade. Credential ani celý Update objekt se neserializují do frontendu. Na straně Rustu jsou operace serializované a stažený balíček je do instalace pouze v paměti.
+
+updates.ts zobrazuje nabídku a modální stav instalace. Čistý UpdateFlow odděluje kontrolu od explicitní instalace: kontrola běžících úloh → stažení a podpis → opětovná kontrola → revizní uložení hlavního/bočního editoru → stav relace → instalátor. Konflikt či neuložené další psaní zastaví instalaci. Veřejné příkazy updater pluginu nejsou zpřístupněny frontendovým capabilities; používají se vlastní IPC příkazy. Podrobnosti a hranice ověření: ADR-009 a docs/UPDATES.md.
 
 ## Současný tok
 

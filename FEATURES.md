@@ -2,7 +2,7 @@
 
 Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živým testem; testováno = konkrétní evidence v docs/TEST_REPORT.md.
 
-| Funkce | Stav 0.1 |
+| Funkce | Průběžný stav |
 |---|---|
 | Tauri 2, Rust, TypeScript | Nativní EXE sestavené a spuštěné na Windows |
 | Zprovoznění na druhém Windows PC | Ověřeno sestavení DEBUG EXE a GUI tok editace → uložení → kompilace → PDF; podrobnosti v docs/TEST_REPORT.md |
@@ -26,7 +26,7 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 | TUL šablony a zakládání dokumentů | Čtyři nezměněné offline balíčky z portálu TUL × LaTeX; nová vlastní podsložka bez přepisování, volba šablony a nastavení enginu/bibliografie. Fakultní průvodce zatím není implementovaný |
 | Překladač podle šablony | Explicitní pdfLaTeX / XeLaTeX / LuaLaTeX, BibTeX / Biber a navazující průchody; původní projekty zachovávají dosavadní automatickou detekci |
 | Windows EXE/MSI | Sestavené testovací DEBUG EXE/MSI; instalace na čistém systému neověřena |
-| Podepsané aktualizace | Vypnuto; upstream aktualizace Scribe se neinstalují |
+| Podepsané aktualizace | Vlastní privátní GitHub Release kanál, nabídka po startu i ruční kontrola; NSIS/MSI s podpisem souboru a verze, revizní uložení před instalací. Vyžaduje GitHub CLI přihlášení; evidence skutečné distribuce a hranice ověření v docs/TEST_REPORT.md |
 | Kompletní české UI | Částečně; převzaté obrazovky zůstávají anglické |
 | GitHub synchronizace projektu | Origin akabrt00/Word-LateX-atd.; main a automatický commit/push po dokončených úkolech podle AGENTS.md |
 

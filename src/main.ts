@@ -242,7 +242,7 @@ register(
   },
 
   { id: "help.shortcuts", group: "Help", title: "Keyboard Shortcuts", run: commandPalette },
-  { id: "help.updates", group: "Help", title: "Check for Updates…", run: () => checkForUpdates() },
+  { id: "help.updates", group: "Help", title: "Zkontrolovat aktualizace…", run: () => checkForUpdates() },
   { id: "help.whatsnew", group: "Help", title: "What's New", run: () => showWhatsNew() },
   { id: "help.tour", group: "Help", title: "Take the Tour", enabled: hasProject, run: startTour },
   { id: "edit.table", group: "Insert", title: "Table…", enabled: () => !!activeEditor()?.dom.dataset.path?.endsWith(".tex"), run: editTable },

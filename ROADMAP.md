@@ -12,7 +12,11 @@ Hlavním vzdáleným úložištěm projektu je od 2026-11-05 GitHub repozitář 
 
 Samostatná identita, Tauri konfigurace, ukázkový vícesouborový projekt, přímý MiKTeX compiler fallback, explicitní notebook execution, vlastní ikony, AI centrum a experiment zdrojových transakcí. Průběžný stav akceptačních bodů a omezení je v docs/TEST_REPORT.md.
 
-## Bezprostřední další etapa – 0.2
+## Distribuční krok – 0.2 (2026-11-06)
+
+Implementován updater nainstalované aplikace z privátních GitHub Releases, podpisy svázané s verzí, automatický Windows workflow po push na main a explicitní nabídka instalace s uložením dokumentů. Zdrojový projekt se uživatelům automaticky nesynchronizuje. Testy, skutečný stav kanálu a zbývající ověření instalace/restartu jsou v docs/TEST_REPORT.md. Před veřejnou distribucí zbývá Authenticode, čistá VM a ověření všech instalačních cest.
+
+## Bezprostřední další etapa – bezpečná editace
 
 Pracovní prostor a základní TUL předvolby: implementována globální složka nových dokumentů, trvalá výchozí šablona a vytvoření samostatné kopie čtyř univerzitních balíčků. Doplněn výběr překladače a bibliografie podle projektu. Navazující práce: fakultní průvodce, vyplnění metadat a správa verzí šablon; původní zdroje se zatím nemění.
 
@@ -24,7 +28,7 @@ Pracovní prostor a základní TUL předvolby: implementována globální složk
 6. UI režimy LaTeX/Hybrid/Word až po funkčním napojení. Neznámý blok přepne do zdroje; přímá změna zdroje invaliduje projekci. Paginace je aproximace, PDF zůstává autorita.
 7. Dokončit české popisky hlavního toku a testy klávesnice, focusu a obou motivů.
 
-Definition of done 0.2: tři režimy bezpečně upraví podporovaný jednoduchý dokument, neznámé bloky zůstanou beze změny, externí konflikt je odmítnut, autosave se zotaví po pádu a PDF odpovídá označené revizi.
+Definition of done této etapy: tři režimy bezpečně upraví podporovaný jednoduchý dokument, neznámé bloky zůstanou beze změny, externí konflikt je odmítnut, autosave se zotaví po pádu a PDF odpovídá označené revizi. Distribuční verze 0.2 sama tato kritéria bezpečné vizuální editace nenaplňuje.
 
 ## Etapa 2 – základ Word Mode
 

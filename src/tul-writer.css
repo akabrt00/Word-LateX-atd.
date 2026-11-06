@@ -1,5 +1,9 @@
 /* Independent application identity; template assets keep their original branding. */
 :root { --font: "Inter Variable", Inter, "Segoe UI", system-ui, sans-serif; --font-display: var(--font); }
+.update-card { width: min(390px, calc(100vw - 40px)); }
+.update-notes { max-height: 130px; overflow: auto; white-space: pre-wrap; color: var(--fg-dim); }
+.update-progress { color: var(--fg); background: var(--panel); border: 1px solid var(--border-hi); border-radius: 8px; padding: 24px; max-width: 460px; }
+.update-progress::backdrop { background: #0006; }
 .tul-brand { margin: 0 0 12px; font-size: 34px; line-height: 1.1; font-weight: 700; letter-spacing: -.8px; }
 .tul-brand span { color: #5948AD; }
 .tul-subtitle { color: var(--fg-dim); line-height: 1.6; margin: 0 0 28px; max-width: 33em; }

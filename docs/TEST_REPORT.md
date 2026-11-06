@@ -1,5 +1,27 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Podepsané aktualizace instalované aplikace – 2026-11-06
+
+Scénář: z privátního origin/main sestavit aktualizaci nainstalovaného TUL Writeru, nabídnout ji bez automatické instalace, ověřit soubor a podepsanou verzi a zastavit instalaci při konfliktu ukládání. Vývojové projekty uživatelů se automaticky nestahují. Rizika: únik přihlášení, podvržený balíček, downgrade, neuložené dokumenty a zastaralé souběžné CI vydání.
+
+Prostředí: Windows x64, PowerShell, Node.js 24, Rust MSVC stable, WebView2, lokální MiKTeX a Python z .tools/test-python. Před změnami čisté main na 0f53916; `git fetch --no-tags origin` a `git merge --ff-only --quiet origin/main` bezpečně převzaly tři commity druhého PC až na 3ed3d49. Uživatelské změny nebyly přepsány. Soukromý repozitář a oprávnění GitHub CLI byly ověřeny bez vypsání tokenu.
+
+### Místní kontroly před distribucí
+
+- `npm test`: 18 prošlo, 0 selhalo. Pět nových testů kontroluje oddělení check/install, pořadí a shodnou verzi, odmítnutí chybného podpisu, konflikt uložení a souběžné požadavky. Tři nové testy kontrolují CI verze, oba lockfiles a manifest pro NSIS/MSI. První pokus v sandboxu skončil spawn EPERM před provedením testů; opakování mimo sandbox prošlo.
+- `npm run check` a `npm run build`: prošly. Zachována dosavadní neblokující Vite varování o velikosti chunků a neúčinných dynamických importech. Logy jsou v ignorovaném output/updater-validation/.
+- S PATH rozšířeným o `.tools/test-python/Scripts`: `cargo test --manifest-path src-tauri/Cargo.toml -- --test-threads=1`: 36 prošlo, 0 selhalo, 5 ignorováno. Čtyři ignorované jsou explicitní integrační překlady TUL šablon a pátý upstream instalace Tectonicu. Nejsou vykazovány jako provedené; jejich předchozí evidence je v sekci šablon. Převzaté testy mohou při absenci volitelného nástroje předčasně skončit; samotný počet není úplné pokrytí všech integrací.
+- Tři nové Rust testy kontrolují příslušnost balíčků ke stejnému vydání, odmítnutí cizích URL, neplatné verze, prázdného podpisu a nadlimitní velikosti, citlivou Authorization hlavičku a serializaci operací.
+- `npm run tauri build -- --debug --bundles nsis,msi` s lokálním klíčem a DPAPI heslem předanými pouze přes prostředí: vytvořeno DEBUG EXE, NSIS 25,54 MiB a MSI 31,43 MiB, oba instalační soubory mají .sig. Výstupy v src-tauri/target/debug/bundle a desktop-build.log. Jde o aktualizační podpis, nikoli Authenticode certifikát.
+- První `tul-writer.exe --check-updates` odhalil panic reqwest/rustls-no-provider při chybějícím kryptografickém provideru. Opraveno explicitní inicializací ring před vytvořením HTTP klienta, přidána kontrola konstrukce klienta do Rust testu a zahájeno nové sestavení. Původní chybný běh není vydáván za úspěch.
+- Po samostatném výslovném souhlasu uživatele `py scripts/setup-updater-signing.py --upload` úspěšně uložil klíč a heslo do GitHub Actions secrets; obsahy se nevypisovaly. První pokus automatická kontrola oprávnění zablokovala před provedením a byl zopakován až po schválení.
+
+- Po opravě `cargo test --manifest-path src-tauri/Cargo.toml updates::`: 3 prošly. Nové DEBUG EXE z `npm run tauri build -- --debug --no-bundle` skutečně dokončilo `--check-updates` s exit 0 a JSON `available:false, version:null, installerStarted:false`: autentizované spojení funguje, dosud není vydání. WebView2 při zavření skrytého diagnostického okna vypsalo neblokující hlášku unregister class (1412). Stažení ani podpis tímto během ještě ověřené nejsou.
+
+### Hranice a distribuční ověření
+
+Skutečný stav běhu Windows workflow a živého stahování bude doplněn po push. Úspěch místních testů není tvrzením o dokončeném CI ani o stažené aktualizaci. Skutečná instalace, upgrade/restart a odinstalace na čisté VM zatím nebyly provedeny. Dosavadní desktopový test otevření/editace/uložení/kompilace/PDF je zaznamenán níže; pro updater se tento průchod zatím neopakoval. Živé AI API ani vizuální Word Mode nejsou předmětem tohoto kroku.
+
 ## Pracovní prostor a TUL předvolby – 2026-11-05
 
 Scénář: nastavit jednu složku pro všechny nové dokumenty, zvolit výchozí šablonu, založit novou samostatnou pracovní kopii a přeložit ji. Existující adresář ani projekt se nesmí přepsat. Přidány čtyři nezměněné univerzitní balíčky z uživatelova portálu a prázdný dokument; fakultní průvodce není součástí tohoto kroku.
