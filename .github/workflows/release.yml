@@ -14,9 +14,6 @@ jobs:
     timeout-minutes: 45
     permissions:
       contents: write
-    defaults:
-      run:
-        working-directory: ${{ runner.temp }}/tul-writer-source
     steps:
       # The repository name ends in a dot: the default Windows checkout path is invalid.
       - name: Download exact commit into a Windows-safe source directory
@@ -41,9 +38,13 @@ jobs:
         with:
           workspaces: ${{ runner.temp }}/tul-writer-source/src-tauri -> target
       - run: npm ci
+        working-directory: ${{ runner.temp }}/tul-writer-source
       - run: npm test
+        working-directory: ${{ runner.temp }}/tul-writer-source
       - run: npm run check
+        working-directory: ${{ runner.temp }}/tul-writer-source
       - name: Updater and document safety tests
+        working-directory: ${{ runner.temp }}/tul-writer-source
         run: |
           cargo test --manifest-path src-tauri/Cargo.toml updates::
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -52,8 +53,10 @@ jobs:
           cargo test --manifest-path src-tauri/Cargo.toml workspace::
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Unique version for this main build
+        working-directory: ${{ runner.temp }}/tul-writer-source
         run: node scripts/version.mjs --ci $env:GITHUB_RUN_NUMBER
       - name: Build signed Windows installers
+        working-directory: ${{ runner.temp }}/tul-writer-source
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
@@ -61,6 +64,7 @@ jobs:
           if (-not $env:TAURI_SIGNING_PRIVATE_KEY) { throw 'Configure updater signing secrets first.' }
           npm run tauri build -- --bundles nsis,msi
       - name: Publish private update after successful checks
+        working-directory: ${{ runner.temp }}/tul-writer-source
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/publish-update.mjs

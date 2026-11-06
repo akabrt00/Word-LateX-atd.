@@ -23,6 +23,7 @@ Prostředí: Windows x64, PowerShell, Node.js 24, Rust MSVC stable, WebView2, lo
 Skutečný stav běhu Windows workflow a živého stahování bude doplněn po push. Úspěch místních testů není tvrzením o dokončeném CI ani o stažené aktualizaci. Skutečná instalace, upgrade/restart a odinstalace na čisté VM zatím nebyly provedeny. Dosavadní desktopový test otevření/editace/uložení/kompilace/PDF je zaznamenán níže; pro updater se tento průchod zatím neopakoval. Živé AI API ani vizuální Word Mode nejsou předmětem tohoto kroku.
 
 - Commit f5626c8 byl úspěšně nahrán na main a SHA přesně odpovídalo git ls-remote. První Windows Actions běh 42234822860 selhal již v checkoutu: název repozitáře končí tečkou a cesta D:/a/Word-LateX-atd./Word-LateX-atd. nebyla na Windows dostupná. Testy ani build se v tomto běhu nespustily. Workflow proto stahuje archiv přesného GITHUB_SHA pomocí autentizovaného gh API do runner.temp/tul-writer-source, používá tuto bezpečnou cestu pro run kroky, cache i artefakty. Repozitář se nepřejmenovává a credential se neukládá do zdrojů.
+- Následující běh 42235262371 odmítla validace workflow před vytvořením jobu: runner context není povolen v jobs.defaults.run. Cesta byla přesunuta do jednotlivých steps.working-directory, kde jej GitHub podporuje. Neproběhl žádný build tohoto pokusu.
 
 ## Pracovní prostor a TUL předvolby – 2026-11-05
 
