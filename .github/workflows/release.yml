@@ -21,6 +21,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Cache's tar always uses GITHUB_WORKSPACE as its base, even for external paths.
+          # Create the literal NT path; normal Win32 creation trims the trailing dots.
+          [System.IO.Directory]::CreateDirectory('\\?\' + $env:GITHUB_WORKSPACE) | Out-Null
           $sourceDir = Join-Path $env:RUNNER_TEMP 'tul-writer-source'
           $sourceArchive = Join-Path $env:RUNNER_TEMP 'tul-writer-source.tar.gz'
           New-Item -ItemType Directory -Path $sourceDir -Force | Out-Null
