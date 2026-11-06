@@ -14,6 +14,8 @@ Samostatná identita, Tauri konfigurace, ukázkový vícesouborový projekt, př
 
 ## Bezprostřední další etapa – 0.2
 
+Implementován formulář Údaje práce pro dodatečnou úpravu titulní strany existující semestrálky, s načtením ze zdroje, kontrolou revizí zdroje/stylu a samostatnými body historie. Další rozšíření: stejné ovládání pro další ověřené TUL šablony.
+
 Zpřehledněny popisky podkladů a písem ve stromu souborů jako Vzhled šablony; fyzické cesty se nemění.
 
 Dokončeny české popisky panelu Soubory, jeho tlačítek, místních nabídek a dialogů pro práci se soubory. Překlad ostatních panelů a hlavní nabídky zbývá.

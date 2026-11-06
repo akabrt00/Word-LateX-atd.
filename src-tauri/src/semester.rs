@@ -1,7 +1,7 @@
 //! Plain-text metadata applied only to the known declarations of a new semester copy.
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub(crate) struct SemesterDetails {
     pub faculty: String,
@@ -21,7 +21,7 @@ fn plain(value: &str, label: &str, max: usize) -> Result<String, String> {
     Ok(value.to_owned())
 }
 
-fn tex_text(text: &str) -> String {
+pub(super) fn tex_text(text: &str) -> String {
     text.chars().map(|c| match c {
         '\\' => "\\textbackslash{}".into(), '{' => "\\{".into(), '}' => "\\}".into(),
         '$' => "\\$".into(), '&' => "\\&".into(), '%' => "\\%".into(), '#' => "\\#".into(),
@@ -30,7 +30,7 @@ fn tex_text(text: &str) -> String {
     }).collect()
 }
 
-fn czech_date(iso: &str) -> Result<String, String> {
+pub(super) fn czech_date(iso: &str) -> Result<String, String> {
     let invalid = || "Datum musí být platný kalendářní den ve tvaru RRRR-MM-DD.".to_string();
     let parts: Vec<_> = iso.split('-').collect();
     if parts.len() != 3 || parts[0].len() != 4 || parts[1].len() != 2 || parts[2].len() != 2

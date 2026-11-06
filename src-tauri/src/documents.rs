@@ -13,7 +13,7 @@ pub(crate) struct DocumentSnapshot {
     revision: String,
 }
 
-fn revision(bytes: &[u8]) -> String {
+pub(crate) fn revision(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
 

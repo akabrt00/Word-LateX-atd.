@@ -2,6 +2,11 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Vývoj – 2026-11-06
+
+- Tlačítko Údaje práce pro dodatečnou úpravu titulní strany semestrálky TUL: aktuální název, autoři, součást, předmět, rok, datum a verze se načtou ze zdroje. Změny zachovávají okolní LaTeX a mají samostatné body historie.
+- Kontrola revizí zdroje i stylu, odmítnutí vlastních maker a nejednoznačných deklarací, přizpůsobení popisku počtu autorů a chráněné obnovení zdroje při chybě zápisu stylu. Pole jsou sdílená s průvodcem nového dokumentu.
+
 ## Ověření – 2026-11-06
 
 - Zopakováno 11 frontendových a 36 Rust testů i dva skutečné PDF překlady. Živě ověřen český panel Soubory, popisky vzhledu šablony, odmítnutí cesty mimo projekt, uložení českých poznámek a založení semestrálky se dvěma autory až do PDF bez chyb a varování. Produkční kód se při tomto ověření neměnil; podrobnosti a neprovedené kontroly v docs/TEST_REPORT.md.

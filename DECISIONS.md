@@ -1,5 +1,13 @@
 # Rozhodnutí
 
+## ADR-010 – Údaje existující semestrální práce (2026-11-06)
+
+Formulář čte aktuální LaTeX a neudržuje druhou databázi metadat. Podporuje pouze projekty tul-semester s očekávaným hlavním souborem. Konzervativní parser rozpozná sedm jednořádkových deklarací v preambuli, vyžaduje jejich jednoznačnost a dekóduje pouze známé textové escapování a řízené zalomení autorů. Vlastní makra, redefinice nebo neznámá syntaxe jsou důvodem k odmítnutí formuláře. Nezměněné hodnoty ani jejich mezery se nepřepisují; změněné hodnoty se aplikují do původních rozsahů odzadu. Tělo, okolní komentáře, BOM a konce řádků zůstávají zachované.
+
+Načtení vrací revize zdroje i stylu. Uložení pod sdíleným WRITE_LOCK kontroluje oba soubory před změnami a znovu každý těsně před atomickou výměnou. Pokud selže druhý zápis, první se obnoví pouze při shodě s právě zapsanými bajty; při cizí souběžné změně se nepřepisuje a chyba výslovně oznámí částečné uložení. Před změnami vznikají samostatné body v historii a tyto zápisy se neslučují do časové skupiny. Nejde o atomickou transakci více souborů při pádu procesu ani o odstranění omezení závodu s cizími procesy z ADR-007.
+
+Dialog před načtením uloží hlavní editor a uloží/zavře boční editor; neúspěšné uložení formulář zablokuje. Modální formulář zadrží aplikační klávesové zkratky. Po úspěchu se hlavní soubor načte s novou revizí; PDF se aktualizuje až explicitní kompilací. Vytvářecí a editační formulář sdílejí pole, ale editace nikdy nemění globální pracovní prostor.
+
 ## ADR-009 – Předvyplnění nové semestrální práce (2026-11-05)
 
 Průvodce metadaty je omezen na pevně přibalenou semestrální šablonu 1.3. Dva kroky oddělují složku a šablonu od údajů titulní strany. Osobní údaje se neukládají jako globální předvolba. Datum se nabízí podle místního kalendáře a verze zadání jako 1; uživatel je může změnit.

@@ -4,6 +4,7 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 
 | Funkce | Stav 0.1 |
 |---|---|
+| Údaje existující semestrálky | Formulář čte aktuální zdroj, mění sedm známých hodnot a popisek autorů; ochrana revizí zdroje/stylu, samostatná historie. Živě ověřen přechod skupina ↔ jeden autor, PDF i konflikt externího stylu. Vlastní makra nebo nejednoznačné deklarace odmítá |
 | Český panel Soubory | Živě ověřeny popisky, nabídky souboru/složky, vytvoření souboru a česká validace cesty; ostatní panely a hlavní nabídka zůstávají částečně anglické |
 | Popisky podkladů šablony | Živě ověřeny Vzhled šablony a Vzhled šablony / Písma; nápověda zachovává původní cesty, 166 podkladů nového projektu ověřeno proti ZIP pomocí SHA-256 |
 | Tauri 2, Rust, TypeScript | Nativní EXE sestavené a spuštěné na Windows |

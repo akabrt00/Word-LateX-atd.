@@ -14,6 +14,8 @@ Pro **TUL semestrální práci** následuje druhý krok: součást TUL (celá un
 
 Nový projekt obsahuje .tulwriter/project.json s hlavním souborem a nastavením překladače. Semestrální práce používá pdfLaTeX + BibTeX, závěrečná práce XeLaTeX + Biber, prezentace XeLaTeX a poster LuaLaTeX. Tyto nástroje a potřebné TeX balíčky musí být lokálně dostupné. Pomocné skripty ani latexmkrc z balíčků se automaticky nespouštějí. Ukázkové údaje nahraďte vlastními podle návodů uvnitř projektu.
 
+V otevřené semestrální práci TUL lze přes **Údaje práce** změnit titulní stranu i dodatečně. Formulář načítá aktuální údaje ze zdroje včetně ručních úprav v podporovaném tvaru. Před otevřením uloží hlavní i boční editor a boční panel zavře. **Uložit údaje** upraví pouze příslušné hodnoty, případně popisek Autor/Autoři práce; obsah práce zůstane zachovaný. Změny mají samostatný bod v historii. Pro nové PDF spusťte **Kompilovat**. Pokud se zdroj nebo styl mezitím změnil, formulář uložení odmítne a je potřeba jej znovu otevřít. Hodnoty s vlastními LaTeX makry se upravují přímo ve zdroji; tento formulář je nepřevádí. Ostatní typy šablon zatím nejsou podporované.
+
 ### Vývojové spuštění
 
 Vyžaduje Node.js 24+, Rust stable MSVC, Microsoft C++ Build Tools (Desktop development with C++), Windows SDK a WebView2. Pro dokumenty nainstalujte MiKTeX nebo TeX Live. Tectonic je alternativní cesta s vlastním stahováním balíčků. MiKTeX latexmk vyžaduje Perl; bez něj aplikace použije pdflatex.

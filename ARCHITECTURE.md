@@ -4,6 +4,8 @@ Stav 0.1: pracovní fork Scribe 1.2.3. Tauri 2 + Rust; frontend TypeScript/DOM +
 
 ## Současný tok
 
+Tlačítko Údaje práce otevírá semester-edit.ts se sdílenými poli semester-form.ts. Backend semester_edit.rs čte podporované deklarace existující semestrálky a vrací údaje i revize zdroje/stylu. Při uložení mění pouze rozsahy hodnot a očekávaný popisek autorů, zachová samostatné body historie a kontroluje konflikty obou souborů. Ochrana a omezení dvousouborového zápisu jsou v ADR-010.
+
 Pracovní prostor se ukládá mimo projekty přes Tauri app_config_dir/workspace.json; výchozí umístění odvozuje systémová složka Dokumenty. Backend workspace.rs vytváří výhradně novou pojmenovanou podsložku a rozbaluje do ní jednu z pevně přibalených ZIP šablon. .tulwriter/project.json přidává allowlistované nastavení překladače a bibliografie. Archivy se za běhu nestahují ani neupravují; vytvořené projekty jsou nezávislé kopie. Podrobnosti v ADR-008.
 
 Semestrální průvodce posílá samostatný objekt SemesterDetails. Modul semester.rs ověří součást, jednořádkové texty, rok a kalendářní datum a připraví lokální změny sedmi přesně očekávaných deklarací v původní preambuli. Rozsahy se odvozují z originálu a aplikují odzadu, aby se text uživatele nikdy nestal dalším vyhledávacím vzorem. Validace i transformace předcházejí vytvoření složky. Údaje existují pouze v nové pracovní kopii, nikoli v globální konfiguraci. Seznam autorů zachovává pořadí a každé jméno escapuje samostatně před vložením řízeného zalomení. Více autorů mění jediný známý popisek v nové kopii stylu na Autoři práce; obě transformace se ověřují před založením projektu. Viz ADR-009.

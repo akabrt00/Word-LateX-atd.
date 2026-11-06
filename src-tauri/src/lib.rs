@@ -8,6 +8,7 @@ mod ai;
 mod documents;
 mod workspace;
 mod semester;
+mod semester_edit;
 #[tauri::command]
 fn initial_project() -> Option<String> {
     let mut args = std::env::args();
@@ -194,6 +195,10 @@ fn write_file(root: String, rel: String, content: String) -> Result<(), String> 
 }
 
 fn write_file_checked(root: &str, rel: &str, content: &str, expected: Option<&str>) -> Result<(), String> {
+    write_file_checked_mode(root, rel, content, expected, true)
+}
+
+fn write_file_checked_mode(root: &str, rel: &str, content: &str, expected: Option<&str>, group_history: bool) -> Result<(), String> {
     let path = resolve(&root, &rel)?;
     if let Some(revision) = expected { documents::check_revision(&path, revision)?; }
     if let Some(parent) = path.parent() {
@@ -222,7 +227,7 @@ fn write_file_checked(root: &str, rel: &str, content: &str, expected: Option<&st
     tmp.persist(&path).map_err(|e| e.to_string())?;
     if keep {
         if let Ok(root_dir) = Path::new(&root).canonicalize() {
-            let _ = save_version(&root_dir, &rel, &content, now_secs(), true);
+            let _ = save_version(&root_dir, &rel, &content, now_secs(), group_history);
         }
     }
     Ok(())
@@ -2764,6 +2769,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             initial_project, list_files, list_dirs, create_dir, rename_path, delete_path, import_files,
             workspace::read_workspace_settings, workspace::write_workspace_settings, workspace::create_template_project,
+            semester_edit::read_semester_details, semester_edit::save_semester_details,
             read_file, write_file, documents::read_document, documents::save_document, read_binary, compile, compile_snippet, pdf_to_svg, compile_diff, git_log,
             ai::ai_stream, ai::ai_set_key, ai::ai_has_key, ai::ai_cancel, ai::ai_models,
             parse_notebook, run_notebook, generate_style,
