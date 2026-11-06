@@ -25,8 +25,8 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 | Pracovní prostor | Výchozí složka Dokumenty / TUL Writer, změna složky a šablony pro celý počítač, nastavení přetrvává po restartu |
 | TUL šablony a zakládání dokumentů | Čtyři nezměněné offline balíčky z portálu TUL × LaTeX; nová vlastní podsložka bez přepisování, volba šablony a nastavení enginu/bibliografie. Fakultní průvodce zatím není implementovaný |
 | Překladač podle šablony | Explicitní pdfLaTeX / XeLaTeX / LuaLaTeX, BibTeX / Biber a navazující průchody; původní projekty zachovávají dosavadní automatickou detekci |
-| Windows EXE/MSI | Sestavené testovací DEBUG EXE/MSI; instalace na čistém systému neověřena |
-| Podepsané aktualizace | Vlastní privátní GitHub Release kanál, nabídka po startu i ruční kontrola; NSIS/MSI s podpisem souboru a verze, revizní uložení před instalací. Vyžaduje GitHub CLI přihlášení; evidence skutečné distribuce a hranice ověření v docs/TEST_REPORT.md |
+| Windows EXE/MSI | Podepsané aktualizační DEBUG i RELEASE NSIS/MSI; privátní vydání 0.2.4. Authenticode, instalace a odinstalace na čistém systému neověřeny |
+| Podepsané aktualizace | Vlastní privátní GitHub Release kanál; živě ověřeno stažení 0.2.4, podpis a odmítnutí změněného balíčku/verze. Nabídka po startu i ruční kontrola, revizní uložení před instalací; vyžaduje GitHub CLI přihlášení. Skutečná instalace/restart zbývá; evidence v docs/TEST_REPORT.md |
 | Kompletní české UI | Částečně; převzaté obrazovky zůstávají anglické |
 | GitHub synchronizace projektu | Origin akabrt00/Word-LateX-atd.; main a automatický commit/push po dokončených úkolech podle AGENTS.md |
 

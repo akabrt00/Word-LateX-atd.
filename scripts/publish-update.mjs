@@ -6,6 +6,13 @@ import { fileURLToPath } from "node:url";
 const REPO = "akabrt00/Word-LateX-atd.";
 const API = `https://api.github.com/repos/${REPO}/releases/assets/`;
 
+// GitHub normalizes spaces in these ASCII installer filenames to dots on upload.
+export function signaturePath(files, assetName) {
+  const matches = files.filter(file => path.basename(file).replaceAll(" ", ".") === assetName + ".sig");
+  if (matches.length !== 1) throw new Error("Missing or ambiguous installer signature: " + assetName);
+  return matches[0];
+}
+
 export function makeManifest(release, version, signatureFor, notes, date = new Date().toISOString()) {
   if (release.tag_name !== `v${version}`) throw new Error("Release version mismatch");
   const platforms = {};
@@ -43,8 +50,11 @@ export function publish() {
   const files = ["nsis", "msi"].flatMap(dir => fs.readdirSync(path.join(bundle, dir)).filter(name => /\.(exe|msi)(\.sig)?$/.test(name)).map(name => path.join(bundle, dir, name)));
   if (files.length !== 4) throw new Error("Expected two installers and two signatures");
   github(["release", "upload", tag, ...files, "--repo", REPO, "--clobber"]);
-  const release = JSON.parse(github(["api", `repos/${REPO}/releases/tags/${tag}`]));
-  const manifest = makeManifest(release, version, name => fs.readFileSync(files.find(p => path.basename(p) === name + ".sig"), "utf8"), notes);
+  // Draft tags may not resolve through /releases/tags until publication.
+  const draft = JSON.parse(github(["api", `repos/${REPO}/releases`, "--paginate", "--slurp"])).flat().find(r => r.tag_name === tag);
+  if (!draft?.draft || draft.target_commitish !== process.env.GITHUB_SHA) throw new Error("Release draft provenance changed");
+  const release = JSON.parse(github(["api", `repos/${REPO}/releases/${draft.id}`]));
+  const manifest = makeManifest(release, version, name => fs.readFileSync(signaturePath(files, name), "utf8"), notes);
   fs.mkdirSync("output", { recursive: true });
   fs.writeFileSync("output/latest.json", JSON.stringify(manifest, null, 2) + "\n");
   github(["release", "upload", tag, "output/latest.json", "--repo", REPO, "--clobber"]);

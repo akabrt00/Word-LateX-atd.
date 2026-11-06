@@ -33,6 +33,20 @@ jobs:
         with:
           node-version: 24
       - uses: dtolnay/rust-toolchain@stable
+      - name: Identify Rust cache outside the default workspace
+        id: rust-cache-key
+        working-directory: ${{ runner.temp }}/tul-writer-source
+        run: |
+          $rustVersion = (rustc --version) -replace '[^a-zA-Z0-9._-]', '_'
+          $lockHash = (Get-FileHash -LiteralPath 'src-tauri/Cargo.lock' -Algorithm SHA256).Hash
+          "key=windows-msvc-$rustVersion-$lockHash" >> $env:GITHUB_OUTPUT
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.CARGO_HOME }}/registry
+            ${{ env.CARGO_HOME }}/git
+            ${{ runner.temp }}/tul-writer-source/src-tauri/target
+          key: ${{ steps.rust-cache-key.outputs.key }}
       - run: npm ci
         working-directory: ${{ runner.temp }}/tul-writer-source
       - run: npm test
@@ -65,6 +79,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/publish-update.mjs
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: tul-writer-windows
           path: |

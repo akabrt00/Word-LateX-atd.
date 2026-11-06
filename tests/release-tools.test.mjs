@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { ciVersion, setVersion } from "../scripts/version.mjs";
-import { makeManifest } from "../scripts/publish-update.mjs";
+import { makeManifest, signaturePath } from "../scripts/publish-update.mjs";
 test("CI builds get monotonically increasing MSI-compatible versions", () => {
   assert.equal(ciVersion("0.2.0", 1), "0.2.1"); assert.equal(ciVersion("0.2.0", 2), "0.2.2");
   for (const value of [0, -1, "x", 65536]) assert.throws(() => ciVersion("0.2.0", value));
@@ -34,4 +34,13 @@ test("private manifests use authenticated API asset URLs for both installer type
   assert.equal(manifest.platforms["windows-x86_64-msi"].url.endsWith("/2"),true);
   assert.throws(()=>makeManifest(release,"0.2.2",()=>"signature","notes"));
   assert.throws(()=>makeManifest(release,"0.2.1",()=>"","notes"));
+});
+
+test("signature lookup handles GitHub-normalized installer filenames", () => {
+  const files=["bundle/TUL Writer_0.2.4_x64-setup.exe", "bundle/TUL Writer_0.2.4_x64-setup.exe.sig",
+    "bundle/TUL Writer_0.2.4_x64_en-US.msi.sig"];
+  assert.equal(signaturePath(files,"TUL.Writer_0.2.4_x64-setup.exe"),files[1]);
+  assert.equal(signaturePath(files,"TUL.Writer_0.2.4_x64_en-US.msi"),files[2]);
+  assert.throws(()=>signaturePath(files,"another.exe"),/Missing/);
+  assert.throws(()=>signaturePath([...files,files[1]],"TUL.Writer_0.2.4_x64-setup.exe"),/ambiguous/);
 });
