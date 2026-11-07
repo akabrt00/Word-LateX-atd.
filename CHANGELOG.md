@@ -2,6 +2,10 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Synchronizace – 2026-11-07
+
+- Spojeny samostatné historie obou PC: podepsané soukromé aktualizace a místní úpravy semestrálních dokumentů. Zachována historie i rozpracované průvodce dalšími šablonami; opraven kolidující identifikátor rozhodnutí updateru na ADR-012.
+
 ## Vývoj – 2026-11-06
 
 - Tlačítko Údaje práce pro dodatečnou úpravu titulní strany semestrálky TUL: aktuální název, autoři, součást, předmět, rok, datum a verze se načtou ze zdroje. Změny zachovávají okolní LaTeX a mají samostatné body historie.

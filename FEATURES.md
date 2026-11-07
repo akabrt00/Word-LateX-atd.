@@ -2,6 +2,8 @@
 
 Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živým testem; testováno = konkrétní evidence v docs/TEST_REPORT.md.
 
+2026-11-07: vývojové historie obou PC bezpečně sloučeny, včetně updateru a semestrálních formulářů. Toto předání neověřuje skutečnou instalaci ani nové vydání aplikace.
+
 | Funkce | Průběžný stav |
 |---|---|
 | Údaje existující semestrálky | Formulář čte aktuální zdroj, mění sedm známých hodnot a popisek autorů; ochrana revizí zdroje/stylu, samostatná historie. Živě ověřen přechod skupina ↔ jeden autor, PDF i konflikt externího stylu. Vlastní makra nebo nejednoznačné deklarace odmítá |

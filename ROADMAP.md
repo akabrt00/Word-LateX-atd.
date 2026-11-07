@@ -20,6 +20,8 @@ Ověřeno automatické vydání 0.2.5, skutečné privátní stažení a odmítn
 
 ## Bezprostřední další etapa – bezpečná editace
 
+2026-11-07: spojeny historie obou PC včetně podepsaných aktualizací a editace semestrálních údajů. Místní rozpracované průvodce ostatními TUL šablonami jsou zachované odděleně od synchronizačního commitu. Živé GUI a instalační kontroly při tomto předání neproběhly.
+
 Implementován formulář Údaje práce pro dodatečnou úpravu titulní strany existující semestrálky, s načtením ze zdroje, kontrolou revizí zdroje/stylu a samostatnými body historie. Další rozšíření: stejné ovládání pro další ověřené TUL šablony.
 
 Zpřehledněny popisky podkladů a písem ve stromu souborů jako Vzhled šablony; fyzické cesty se nemění.

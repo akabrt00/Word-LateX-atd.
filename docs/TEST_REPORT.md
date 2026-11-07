@@ -1,5 +1,18 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Sloučení vývoje z obou PC – 2026-11-07
+
+Prostředí: Windows, PowerShell, Node v24.15.0, npm 11.12.1, cargo 1.99.1. Původní HEAD f5d8b1b, vzdálený main 35d5f97: každá strana měla sedm vlastních commitů. Zachována větev codex/backup-before-sync-2026-11-07 a stash včetně obou nových souborů rozpracovaných průvodců. Merge 0ca25e2 zachoval obě historie; konflikty CHANGELOG.md, DECISIONS.md a tohoto reportu byly vyřešeny zachováním obou obsahů. Updater dostal samostatné ADR-012 a odpovídající odkaz v architektuře.
+
+- `git fetch origin`: první sandboxový pokus selhal na getaddrinfo; opakování mimo sandbox uspělo.
+- `npm test`: 21 prošlo, 0 selhalo. `npm run check`: exit 0. Obě kontroly zopakovány i se samostatně uloženou rozpracovanou prací, se stejným výsledkem.
+- `npm run build`: exit 0, Vite 8.3.6; varování velkých chunků a neúčinných dynamických importů. Tento build zahrnoval obnovené místní průvodce, které nejsou součástí synchronizačního commitu.
+- `cargo test --manifest-path src-tauri/Cargo.toml --offline`: sandboxová sada vykázala chyby síťových a souborových testů a byla přerušena (exit 1); není vykázána jako úspěch.
+- `cargo test --manifest-path src-tauri/Cargo.toml --offline --lib -- --test-threads=1` mimo sandbox, po samostatném uložení rozpracované práce: 46 prošlo, 1 selhal, 8 ignorováno, exit 1. Jediné selhání `tests::lists_and_compiles_example`: Python nemá `matplotlib`. Updater, revize dokumentů, editace semestrálních údajů a workspace testy prošly. Neinstalovány žádné další závislosti.
+- `git diff --check`: bez chyb. GUI, instalátor, restart aplikace ani skutečný upgrade nebyly spuštěny; uživatel požadoval práci bez převzetí obrazovky. Výsledek této synchronizace neprokazuje úspěch nového GitHub Actions běhu nebo vydání.
+
+Rozpracované soubory nejsou přidávány do synchronizačního commitu; po dokončení se obnoví jako místní změny a záložní stash zůstává zachovaný.
+
 ## Údaje existující semestrální práce – 2026-11-06
 
 Výchozí pracovní kopie čistá na 90d60bf. Rozsah: formulář Údaje práce v otevřeném projektu tul-semester, čtení metadat přímo z aktuálního LaTeXu, sedm podporovaných deklarací, změna počtu autorů i příslušného popisku, revize obou souborů a samostatné body historie. Vytvářecí průvodce sdílí pole z semester-form.ts. Prostředí stejné Windows/Node/Rust/MiKTeX/WebView2 jako v předchozím ověření; bez nových závislostí a bez instalace TeX balíčků.

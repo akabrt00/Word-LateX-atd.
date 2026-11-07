@@ -8,7 +8,7 @@ Windows workflow sestaví a podepíše NSIS/MSI a zveřejní kompletní privátn
 
 updates.rs čte přihlášení přes gh auth token přímo v Rustu. Manifest i binární soubory získává přes autentizované GitHub API. URL balíčku musí přesně odpovídat assetu téhož vydání, tag musí odpovídat verzi. Tauri updater ověřuje podpis souboru i podepsanou verzi; není povolen downgrade. Credential ani celý Update objekt se neserializují do frontendu. Na straně Rustu jsou operace serializované a stažený balíček je do instalace pouze v paměti.
 
-updates.ts zobrazuje nabídku a modální stav instalace. Čistý UpdateFlow odděluje kontrolu od explicitní instalace: kontrola běžících úloh → stažení a podpis → opětovná kontrola → revizní uložení hlavního/bočního editoru → stav relace → instalátor. Konflikt či neuložené další psaní zastaví instalaci. Veřejné příkazy updater pluginu nejsou zpřístupněny frontendovým capabilities; používají se vlastní IPC příkazy. Podrobnosti a hranice ověření: ADR-009 a docs/UPDATES.md.
+updates.ts zobrazuje nabídku a modální stav instalace. Čistý UpdateFlow odděluje kontrolu od explicitní instalace: kontrola běžících úloh → stažení a podpis → opětovná kontrola → revizní uložení hlavního/bočního editoru → stav relace → instalátor. Konflikt či neuložené další psaní zastaví instalaci. Veřejné příkazy updater pluginu nejsou zpřístupněny frontendovým capabilities; používají se vlastní IPC příkazy. Podrobnosti a hranice ověření: ADR-012 a docs/UPDATES.md.
 
 ## Současný tok
 
