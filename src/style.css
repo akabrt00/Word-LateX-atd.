@@ -1804,6 +1804,10 @@ body.dragging-file #files * { cursor: grabbing; }
 }
 
 #pdf-page-label { flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.pdf-freshness { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 7px 12px; font-size: 12px; border-bottom: 1px solid var(--border); background: var(--panel); }
+.pdf-freshness[data-state="stale"], .pdf-freshness[data-state="unknown"] { border-left: 3px solid var(--accent); }
+.pdf-freshness .btn { margin-left: auto; }
+#source-state[data-state="unsaved"] { font-weight: 600; }
 #pdf-download { flex-shrink: 0; height: 26px; gap: 6px; padding: 0 8px; }
 #pdf-find { flex: 1; min-width: 60px; max-width: 220px; height: 24px; margin-left: auto; font-size: 12px; }
 #pdf-find-count { flex-shrink: 0; min-width: 7ch; font-variant-numeric: tabular-nums; }

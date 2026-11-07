@@ -443,7 +443,7 @@ createMenubar($("menubar"), [
 // ---------- wire up ----------
 $("btn-open").onclick = openFolder;
 $("btn-compile").onclick = () => compile();
-$("pdf").addEventListener("click", event => {
+$("pdf-pane").addEventListener("click", event => {
   if ((event.target as Element).closest("[data-create-pdf]")) void compile();
 });
 $("btn-run").onclick = runNotebook;

@@ -12,6 +12,8 @@ Hotový výsledek uložíte přes **Uložit PDF…** přímo nad náhledem nebo 
 
 Pokud se změny nepodaří uložit, tvorba PDF se zastaví a text zůstane v editoru. Průběh rozlišuje ukládání, vytváření a hotové PDF; chyby a technický výstup najdete dole v kartách **Problémy** a **Podrobnosti**.
 
+Dole je samostatně vidět **Neuložené změny** nebo **Otevřené změny uloženy**. Nad náhledem poznáte, zda PDF obsahuje poslední úpravy. Po dalším psaní se nabídne **Vytvořit PDF** znovu; samotné uložení textu toto upozornění nezruší. Psaní během překladu také ponechá upozornění. Ukazatel sleduje změny v této relaci aplikace, nikoli úpravy souborů v jiných programech. PDF otevřené bez ověřeného překladu má aktuálnost neověřenou.
+
 ### Pracovní prostor a nové dokumenty
 
 Úvod nabízí **Nový dokument**, **Otevřít projekt**, přímo dostupný import a poslední práce. Vedle nich je animovaná ilustrační ukázka psaní v barvách TUL Writeru, kterou lze pozastavit nebo přehrát znovu; respektuje nastavení omezeného pohybu. Pod **Další možnosti** najdete diagnostiku, zkratky a **Nastavit složku a šablonu…**; stejné nastavení je dostupné přes ozubené kolečko v editoru. Chybějící překladač LaTeXu tuto část automaticky otevře. Výchozí složka je systémová složka Dokumenty / TUL Writer. Nastavení se ukládá do uživatelské konfigurace aplikace a platí i po restartu pro všechny nové projekty na tomto PC.

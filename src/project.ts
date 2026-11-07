@@ -10,6 +10,7 @@ import { createEditorState, prefEffects, view } from "./editor";
 import { isNotebook, leaveNotebook, notebookContent, stopKernel, updateNotebookView } from "./notebook";
 import { readDocument, resolveFileConflict } from "./document-files";
 import type { DocumentSession } from "./document-session";
+import { documentProgress } from "./document-progress";
 import { resetPdf } from "./preview";
 import { setPaperless } from "./layout";
 import { closeReader, isPaper, openReader } from "./reader";
@@ -283,6 +284,7 @@ export async function save() {
       if (root !== project || current !== rel || documentSession !== session) return;
       const snapshot = await readDocument(project, rel);
       documentSession = snapshot.session;
+      documentProgress.invalidate();
       view.setState(createEditorState(snapshot.content, rel));
       await updateNotebookView(snapshot.content);
       setDirty(false);

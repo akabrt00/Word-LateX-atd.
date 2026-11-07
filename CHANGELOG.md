@@ -2,6 +2,12 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Uložený text a aktuálnost PDF (2026-11-07)
+
+- Samostatný stav otevřených změn a upozornění nad starším PDF s přímou akcí Vytvořit PDF. Uložení hlavního či bočního editoru nezamění staré PDF za aktuální.
+- Překlad zachytí revizi změn; psaní během jeho běhu zůstane označené i po dokončení. PDF bez doložené revize se označuje jako neověřené. Stav nepředstírá sledování souborů mimo aplikaci.
+- Změny údajů práce a načtení zdroje po konfliktu zneplatní aktuálnost. Přejmenovaný boční soubor si zachová stav neuložených změn.
+
 ## Hlavní pracovní cesta — první iterace (2026-11-07)
 
 - Výhradní priorita projektu je nyní založit dokument → psát → uložit → získat PDF. Scénáře a další překážky jsou v docs/UX_WORKFLOW.md; jiné funkční etapy jsou odložené.

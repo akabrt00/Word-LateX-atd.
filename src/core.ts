@@ -1,5 +1,6 @@
 // Leaf module: DOM handles, shared state, status line and small helpers. It imports no other
-// app module, so anything may depend on it, including at load time.
+// UI module, so anything may depend on it, including at load time.
+import { documentProgress } from "./document-progress";
 
 
 export const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -21,8 +22,8 @@ export let mainFile = "main.tex";
 export let current: string | null = null;
 export let dirty = false;
 
-export const setRoot = (value: string | null) => { root = value; };
-export const setMainFile = (value: string) => { mainFile = value; };
+export const setRoot = (value: string | null) => { if (root !== value) { root = value; documentProgress.reset(); } };
+export const setMainFile = (value: string) => { if (mainFile !== value) { mainFile = value; documentProgress.invalidate(); } };
 export const setCurrent = (value: string | null) => { current = value; };
 /** Sets the flag only. `setDirty` also updates the title bar. */
 export const assignDirty = (value: boolean) => { dirty = value; };
@@ -59,7 +60,7 @@ export function renderCrumb() {
   for (const listener of changeListeners) listener();
   tabEl.replaceChildren();
   tabEl.classList.toggle("dirty", dirty);
-  tabEl.title = dirty ? "Unsaved changes" : "";
+  tabEl.title = dirty ? "Neuložené změny" : "";
   if (!current) return;
   const cut = current.lastIndexOf("/") + 1;
   if (cut) {
@@ -75,6 +76,10 @@ export function renderCrumb() {
 }
 
 export function setDirty(value: boolean) {
+  if (current) {
+    if (value) documentProgress.changed(current);
+    else documentProgress.saved(current);
+  }
   if (dirty === value) return;
   assignDirty(value);
   renderCrumb();

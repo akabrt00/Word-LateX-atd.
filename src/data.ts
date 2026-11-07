@@ -3,6 +3,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { $, mainFile, root, setStatus } from "./core";
 import { revealLine } from "./project";
+import { documentProgress } from "./document-progress";
 
 export const DATA_FILE = /\.(csv|tsv)$/i;
 
@@ -317,6 +318,7 @@ async function insertTable(rel: string, table: Table) {
   const next = end === -1 ? tex.replace(/\n*$/, "\n\n") + block : tex.slice(0, end) + block + tex.slice(end);
   try {
     await invoke("write_file", { root, rel: mainFile, content: next });
+    documentProgress.invalidate();
   } catch (e) {
     setStatus(`Couldn't update ${mainFile}: ${e}`, "err");
     return;

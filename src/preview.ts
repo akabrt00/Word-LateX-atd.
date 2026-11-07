@@ -13,6 +13,7 @@ import { view } from "./editor";
 import { sizes, togglePane } from "./layout";
 import { revealLine } from "./project";
 import { PdfExportFlow } from "./pdf-export-flow";
+import { documentProgress } from "./document-progress";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -24,6 +25,20 @@ const box = $("pdf");
 const bar = $("pdf-bar");
 const pdfEmpty = box.firstElementChild!.cloneNode(true);
 
+function renderDocumentProgress() {
+  const text = (element: HTMLElement, value: string) => { if (element.textContent !== value) element.textContent = value; };
+  const source = $("source-state");
+  source.hidden = !root;
+  text(source, documentProgress.unsaved.size ? "Neuložené změny" : "Otevřené změny uloženy");
+  source.dataset.state = documentProgress.unsaved.size ? "unsaved" : "saved";
+  const freshness = $("pdf-freshness");
+  freshness.hidden = !root || !pdfDoc;
+  freshness.dataset.state = documentProgress.pdfState;
+  text($("pdf-freshness-text"), documentProgress.pdfState === "current" ? "PDF obsahuje poslední úpravy" : documentProgress.pdfState === "stale" ? "Text se změnil. Vytvořte PDF znovu." : "Aktuálnost tohoto PDF není ověřena. Vytvořte PDF znovu.");
+  freshness.querySelector<HTMLButtonElement>("[data-create-pdf]")!.hidden = documentProgress.pdfState === "current";
+}
+documentProgress.listeners.push(renderDocumentProgress);
+
 let pdfJob = 0;
 let pdfDoc: PDFDocumentProxy | null = null;
 let pdfBuildBusy = false;
@@ -32,7 +47,12 @@ export function canExportPdf() { return !!root && !!pdfDoc && !pdfBuildBusy && !
 function updatePdfExportButton() {
   $<HTMLButtonElement>("pdf-download").disabled = !canExportPdf();
 }
-export function setPdfBuildBusy(busy: boolean) { pdfBuildBusy = busy; updatePdfExportButton(); }
+export function setPdfBuildBusy(busy: boolean) {
+  pdfBuildBusy = busy;
+  updatePdfExportButton();
+  // A resize postponed during a failed build still needs a sharp preview.
+  if (!busy && box.classList.contains("rescaling")) rerenderPdfSoon();
+}
 /** 1 means "fit the pane's width". */
 let zoom = 1;
 
@@ -43,6 +63,7 @@ const ZOOM_MAX = 4;
 export function resetPdf() {
   lastPdf = null;
   pdfDoc = null;
+  documentProgress.published(null);
   updatePdfExportButton();
   pdfJob++;
   zoom = 1;
@@ -54,7 +75,7 @@ export function resetPdf() {
   box.replaceChildren(pdfEmpty.cloneNode(true));
 }
 
-export async function renderPdf(rel: string, isCurrent = () => true) {
+export async function renderPdf(rel: string, isCurrent = () => true, sourceRevision: number | null = null) {
   const project = root;
   if (!project) return;
   const job = ++pdfJob;
@@ -109,6 +130,7 @@ export async function renderPdf(rel: string, isCurrent = () => true) {
   const at = scroller.scrollHeight > 0 ? scroller.scrollTop / scroller.scrollHeight : 0;
   pdfDoc = doc;
   lastPdf = rel;
+  documentProgress.published(sourceRevision);
   updatePdfExportButton();
   box.style.width = zoom === 1 ? "" : `${zoom * 100}%`;
   box.replaceChildren(frag);
@@ -127,7 +149,7 @@ export function rerenderPdfSoon() {
   if (lastPdf) box.classList.add("rescaling");
   if (pdfResizeTimer) clearTimeout(pdfResizeTimer);
   pdfResizeTimer = window.setTimeout(() => {
-    if (lastPdf && root) renderPdf(lastPdf).catch(() => {});
+    if (lastPdf && root && !pdfBuildBusy) renderPdf(lastPdf, () => true, documentProgress.pdfRevision).catch(() => {});
   }, 200);
 }
 window.addEventListener("resize", rerenderPdfSoon);

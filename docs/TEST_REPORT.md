@@ -1,5 +1,16 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Uložený text a aktuálnost PDF — 2026-11-07
+
+Výchozí lokální commit 53996fe. Rozsah: oddělený stav uložení otevřených editorů a revize PDF, upozornění s akcí Vytvořit PDF, zachování zastaralosti při psaní během překladu a po uložení zdroje. Čistý model DocumentProgress nesahá na soubory; skutečný zápis dále chrání DocumentSession. Backend ani závislosti se neměnily. Prostředí shodné s předchozí iterací: Windows/PowerShell, Node v24.15.0, npm 11.12.1, izolovaný Edge.
+
+- `npm test`: 28 prošlo, 0 selhalo. Nové případy: samostatné uložení obou editorů neobnoví staré PDF, psaní během překladu včetně opakované změny již dirty souboru, reset projektu/neověřený náhled a přejmenovaný neuložený boční soubor. `npm run check`: exit 0 po změnách hlavního toku.
+- `npm run test:workflow`: postupně 27, 30, 31 a finálně 33 kontrol prošlo, exit 0. Skutečné core.ts, build.ts, preview.ts a PDF.js včetně canvasu, testovací adaptéry editorových služeb a nativního IPC; nešlo o nativní okno. Ověřeno také, že pokračující psaní neobnovuje stejný text živých stavových oblastí pro čtečky obrazovky. Závěrečná kontrola odhalila odložený resize při chybě překladu: nově po dokončení obnoví ostrý náhled a zachová jeho starší revizi; oba případy prošly. Změny sidebar a přejmenování bočního souboru prošly statickou kontrolou; jejich živé souborové akce zde nejsou simulovány.
+- `npm run test:metadata`: opakovaný samostatný běh 24 kontrol prošlo, exit 0. První pokus v navazujícím běhu skončil časovým limitem Page.navigate při startu izolovaného prohlížeče a zavřením Vite; není vydáván za úspěch. Testovací profil byl automaticky uzavřen, běžné prohlížeče se neovládaly.
+- Finální `npm run check` a `npm run tauri build -- --debug --no-bundle`: exit 0. Frontendový `npm run build` v sestavení prošel, přetrvávají známá varování chunků/dynamických importů. Aktuální src-tauri/target/debug/tul-writer.exe sestaveno bez spuštění; ignorovaný log document-progress-build.log. `git diff --check`: bez chyb.
+
+Rust/TeX testy se neopakovaly, protože backend a překladové příkazy se neměnily; předchozí iterace obsahuje skutečný TeX/export. Nativní desktopový průchod ani instalace se na přání uživatele neprovádějí. Ukazatel je konzervativní podle sledovaných místních změn, nikoli externí watcher nebo graf všech závislostí. Undo nemusí obnovit příznak aktuálnosti bez nového překladu. Hlavní priorita zůstává aktivní.
+
 ## Hlavní pracovní cesta — první iterace — 2026-11-07
 
 Výchozí čistý commit 2bbf249. Priorita uživatele: založit dokument → psát → uložit → získat PDF. Tato iterace zpřehledňuje tvorbu PDF, automatické uložení otevřených editorů a export přesné zobrazené verze. Ostatní překážky této cesty zůstávají v docs/UX_WORKFLOW.md; celá priorita není dokončená.

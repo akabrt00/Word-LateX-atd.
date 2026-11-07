@@ -2,6 +2,7 @@
 // while another file is showing.
 import { EditorState } from "@codemirror/state";
 import { $, assignDirty, baseName, changeListeners, current, dirty, localKeys, renderCrumb, setCurrent } from "./core";
+import { documentProgress } from "./document-progress";
 import { view } from "./editor";
 import { ICONS } from "./icons";
 import { leaveNotebook } from "./notebook";
@@ -123,6 +124,7 @@ export async function closeTab(rel: string) {
 /** Files that no longer exist (deleted): close their tabs without saving them back. */
 export async function dropTabs(gone: (rel: string) => boolean) {
   const wasCurrent = !!current && gone(current);
+  if (wasCurrent) { documentProgress.saved(current!); documentProgress.invalidate(); }
   openTabs = openTabs.filter((rel) => !gone(rel));
   for (const rel of [...stashed.keys()]) if (gone(rel)) stashed.delete(rel);
   if (!wasCurrent) {

@@ -20,6 +20,7 @@ import { saveSettings, settings } from "./settings";
 import { openToSide, sideGone, sideMoved } from "./split";
 import { saveSessionSoon } from "./session";
 import { refreshBranch } from "./statusbar";
+import { documentProgress } from "./document-progress";
 import { renderSymbols } from "./symbols";
 import { dropTabs, renameTabs } from "./tabs";
 import { NotebookInfo } from "./types";
@@ -48,6 +49,7 @@ export async function newFile(dir = "", suggestion = "") {
     submit: async (rel) => {
       const content = rel.endsWith(".ipynb") ? JSON.stringify(emptyIpynb(), null, 1) + "\n" : "";
       await invoke("write_file", { root, rel, content });
+      documentProgress.invalidate();
       collapsedDirs.delete(parentOf(rel));
       await openFile(rel);
     },
@@ -62,6 +64,7 @@ export async function uploadFiles(dir = "") {
   if (!sources.length) return;
   try {
     const added = await invoke<string[]>("import_files", { root, dir, sources });
+    if (added.length) documentProgress.invalidate();
     collapsedDirs.delete(dir);
     setStatus(added.length === 1 ? `Přidáno: ${added[0]}` : `Počet přidaných souborů: ${added.length}`, "ok");
   } catch (e) {
@@ -124,6 +127,7 @@ export async function renameEntry(from: string, isDir: boolean) {
 
 // After a rename or move on disk: anything that pointed at the old path follows it.
 export function applyMove(from: string, to: string, isDir: boolean) {
+  documentProgress.invalidate();
   const moved = (p: string) =>
     p === from ? to : isDir && p.startsWith(`${from}/`) ? to + p.slice(from.length) : p;
   if (current) setCurrent(moved(current));
@@ -145,6 +149,7 @@ export async function deleteEntry(rel: string, isDir: boolean) {
   if (!confirmed) return;
   try {
     await invoke("delete_path", { root, rel });
+    documentProgress.invalidate();
   } catch (e) {
     setStatus(`Nepodařilo se odstranit ${rel}: ${e}`, "err");
     return;

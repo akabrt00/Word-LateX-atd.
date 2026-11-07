@@ -26,9 +26,13 @@ Přijetí: po úpravě zdroje stačí stisknout Vytvořit PDF; při úspěchu je
 
 Stav první iterace: implementována a automaticky ověřena (21 kontrol hlavního postupu, 24 Node testů, backendové regrese a skutečný TeX export; podrobnosti v TEST_REPORT.md). Osobní desktopový průchod zůstává otevřený. Následuje rozlišení uloženého textu a aktuálnosti PDF.
 
+## Druhá iterace: uložený text a aktuálnost PDF
+
+Implementováno samostatné Neuložené změny / Otevřené změny uloženy a informace nad PDF s přímou akcí Vytvořit PDF. Uložení textu neobnovuje aktuálnost. Překlad zachytí revizi místních změn a psaní během jeho běhu ponechá upozornění. PDF načtené bez této revize má aktuálnost neověřenou. Stav nezahrnuje změny souborů v jiných programech a konzervativně vyžaduje nové PDF také po editaci vrácené přes undo. Automatické kontroly jsou v TEST_REPORT.md; osobní desktopový průchod zůstává otevřený.
+
 ## Navazující práce výhradně v této prioritě
 
-1. Jasně rozlišit uložený zdroj a aktuálnost PDF. Po dalším psaní uživatel musí poznat, že zobrazené PDF ještě neobsahuje jeho změny.
+1. Při osobním průchodu ověřit srozumitelnost nového rozlišení uloženého textu a aktuálnosti PDF.
 2. Prověřit dostupnost běžného uložení a jeho potvrzení pro hlavní i boční editor. Nevnášet nejasnost mezi uložením zdroje a uložením PDF.
 3. Projít název dokumentu versus název složky, srozumitelnost šablon, validaci a návrat v průvodci. Zachovávat vyplněné údaje a předvolby; osobní údaje neukládat do globální konfigurace.
 4. Prověřit první otevření hlavního souboru a orientaci mezi vlastním textem a podklady šablony.

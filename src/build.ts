@@ -13,6 +13,7 @@ import { saveSide, sideFocused } from "./split";
 import { refreshIndexSoon } from "./texindex";
 import { refreshFiles } from "./sidebar";
 import { CompileResult, NotebookInfo, RunResult } from "./types";
+import { documentProgress } from "./document-progress";
 
 // ---------- notebooks ----------
 export let running = false;
@@ -136,6 +137,7 @@ export async function compile({ quiet = false } = {}) {
     // Notebook execution is an explicit user action in TUL Writer.
 
     setStatus("Vytvářím PDF…", "busy");
+    const sourceRevision = documentProgress.revision;
     const res = await invoke<CompileResult>("compile", { root: project, main });
     if (root !== project || mainFile !== main) return;
     // The parsed problems lead; the raw log stays one tab away.
@@ -144,9 +146,9 @@ export async function compile({ quiet = false } = {}) {
     setProblems(problems, res.log, !res.ok && !quiet);
     const summary = problemSummary();
     if (res.ok && res.pdf) {
-      await renderPdf(res.pdf, () => root === project && mainFile === main);
+      await renderPdf(res.pdf, () => root === project && mainFile === main, sourceRevision);
       if (root !== project || mainFile !== main) return;
-      setStatus(`PDF je připravené${summary ? ` · ${summary}` : ""}`, "ok");
+      setStatus(documentProgress.pdfState === "current" ? `PDF je připravené${summary ? ` · ${summary}` : ""}` : "PDF bylo vytvořené, ale text se mezitím změnil. Vytvořte PDF znovu.", documentProgress.pdfState === "current" ? "ok" : "");
       refreshFiles();
     } else {
       setStatus(summary ? `PDF se nepodařilo vytvořit: ${summary}` : "PDF se nepodařilo vytvořit. Podrobnosti najdete dole v panelu.", "err");

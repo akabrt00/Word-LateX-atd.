@@ -8,7 +8,8 @@ document.getElementById("welcome").classList.add("hidden");
 document.getElementById("app").classList.remove("hidden");
 const result = document.createElement("pre"); result.id = "workspace-test-result"; result.hidden = true; document.body.append(result);
 try {
-  const { setRoot, setMainFile, setCurrent } = await import("/src/core.ts");
+  const { setRoot, setMainFile, setCurrent, setDirty } = await import("/src/core.ts");
+  const { documentProgress } = await import("/src/document-progress.ts");
   const { workflow } = await import("/tests/browser/workflow-mocks.ts");
   let checks = 0;
   const check = (condition, message) => { if (!condition) throw Error(message); checks++; };
@@ -44,6 +45,7 @@ try {
   const preview = await import("/src/preview.ts");
   const { compile } = await import("/src/build.ts");
   const reset = () => {
+    setRoot(null);
     setRoot("C:\\Project A"); setMainFile("main.tex"); setCurrent("main.tex");
     workflow.calls.length = 0; workflow.saveError = ""; workflow.sideError = ""; workflow.onSave = null;
     compileHook = null; chooseHook = null; readHook = null; compileOk = true;
@@ -57,6 +59,29 @@ try {
   check(status() === "PDF je připravené", "Successful completion has a clear result message");
   check(document.querySelectorAll("#pdf canvas").length === 1 && !document.getElementById("pdf-bar").hidden, "Real PDF.js renders the resulting page");
   check(!document.getElementById("pdf-download").disabled && document.getElementById("pdf-download").textContent.includes("Uložit PDF"), "Export is visible and enabled only after a real render");
+  check(document.getElementById("pdf-freshness").dataset.state === "current", "A successful build publishes its source revision");
+  setDirty(true); setDirty(true);
+  check(document.getElementById("source-state").textContent === "Neuložené změny" && document.getElementById("pdf-freshness").dataset.state === "stale", "Typing visibly separates unsaved text from an older PDF");
+  const announcements = [];
+  const observer = new MutationObserver(records => announcements.push(...records));
+  observer.observe(document.getElementById("source-state"), { childList: true, subtree: true, characterData: true });
+  observer.observe(document.getElementById("pdf-freshness-text"), { childList: true, subtree: true, characterData: true });
+  setDirty(true); await Promise.resolve(); observer.disconnect();
+  check(announcements.length === 0, "Continued typing does not repeatedly announce unchanged status text");
+  setDirty(false);
+  check(document.getElementById("source-state").textContent === "Otevřené změny uloženy" && document.getElementById("pdf-freshness").dataset.state === "stale", "Saving source cannot acknowledge an older PDF");
+  documentProgress.changed("chapter.tex"); documentProgress.saved("chapter.tex");
+  check(document.getElementById("pdf-freshness").dataset.state === "stale", "Saving another edited file also leaves PDF stale");
+  await compile();
+  check(document.getElementById("pdf-freshness").dataset.state === "current", "Rebuilding includes the new source revision");
+  compileHook = () => setDirty(true); await compile(); compileHook = null;
+  check(document.getElementById("pdf-freshness").dataset.state === "stale" && status().includes("mezitím změnil"), "Typing during compilation cannot produce a false ready state");
+  setDirty(false); await compile();
+  setDirty(true); setDirty(false); compileOk = false; await compile(); compileOk = true;
+  check(document.getElementById("pdf-freshness").dataset.state === "stale" && !document.getElementById("pdf-download").disabled, "Failed rebuild keeps the existing PDF visibly stale and exportable");
+  await preview.renderPdf("build/other.pdf");
+  check(document.getElementById("pdf-freshness").dataset.state === "unknown", "A PDF opened without build provenance is never labelled current");
+  await compile();
   const original = [...pdfBytes];
   chooseHook = async () => {
     setRoot("C:\\Project B"); preview.resetPdf(); pdfBytes = bytesFor("Project B");
@@ -92,6 +117,17 @@ try {
   reset(); pdfBytes = new Uint8Array([1,2,3]); await compile();
   check(!preview.lastPdf && document.getElementById("pdf-download").disabled, "An invalid PDF never becomes an exportable preview");
 
+  reset(); await compile(); setDirty(true); setDirty(false);
+  let resumeFailed;
+  compileOk = false; compileHook = () => new Promise(resolve => { resumeFailed = resolve; });
+  const failedPending = compile();
+  for (let i=0; !resumeFailed && i<100; i++) await new Promise(resolve => setTimeout(resolve,10));
+  preview.rerenderPdfSoon(); await new Promise(resolve => setTimeout(resolve,250));
+  check(document.getElementById("pdf").classList.contains("rescaling"), "Resize waits while compilation owns the preview");
+  resumeFailed(); await failedPending;
+  for (let i=0; document.getElementById("pdf").classList.contains("rescaling") && i<300; i++) await new Promise(resolve => setTimeout(resolve,10));
+  check(!document.getElementById("pdf").classList.contains("rescaling") && document.getElementById("pdf-freshness").dataset.state === "stale", "Resize resumes after a failed build without acknowledging stale PDF");
+
   reset(); let release;
   compileHook = () => new Promise(resolve => { release = resolve; });
   const pending = compile();
@@ -103,6 +139,7 @@ try {
   check(!document.getElementById("btn-compile").disabled && !document.getElementById("pdf-download").disabled, "Controls recover after successful rendering");
   preview.resetPdf();
   check(!!document.querySelector("[data-create-pdf]") && document.getElementById("pdf-download").disabled, "Reset restores the contextual PDF action without a stale export");
+  check(document.getElementById("pdf-freshness").hidden, "Reset removes the previous PDF provenance message");
   result.textContent = JSON.stringify({ ok: true, checks });
 } catch (error) { result.textContent = JSON.stringify({ ok:false, error:String(error.stack||error) }); }
 </script>

@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { root, dirty, setStatus } from "./core";
 import { openFile, save } from "./project";
+import { documentProgress } from "./document-progress";
 import { closeSide } from "./split";
 import { authorsFromLines } from "./semester-authors";
 import { faculties, semesterFields } from "./semester-form";
@@ -128,8 +129,9 @@ export async function editDocumentDetails() {
       // Load the new acknowledged disk revision; old cached editor states cannot match
       // different text. Existing saves continue to use revision-checked sessions.
       if (root === project) {
+        documentProgress.invalidate();
         await openFile(snapshot.main);
-        setStatus("Údaje práce uloženy. Pro aktualizaci PDF spusťte kompilaci.", "ok");
+        setStatus("Údaje práce uloženy. Pro aktualizaci zvolte Vytvořit PDF.", "ok");
       }
       dialog.close();
     } catch (e) {

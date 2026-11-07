@@ -10,6 +10,7 @@ import { saveSessionSoon } from "./session";
 import { FILE_ICON } from "./sidebar";
 import { readDocument, resolveFileConflict } from "./document-files";
 import type { DocumentSession } from "./document-session";
+import { documentProgress } from "./document-progress";
 
 const pane = $("work-side");
 const handle = $("split-handle");
@@ -59,6 +60,7 @@ function show() {
 }
 
 function clear() {
+  if (sideFile) documentProgress.saved(sideFile);
   sideView?.destroy();
   sideView = null;
   sideFile = null;
@@ -84,12 +86,14 @@ export async function saveSide() {
       editor.dispatch({ changes: { from: 0, to: editor.state.doc.length, insert: snapshot.content } });
       documentSession = snapshot.session;
       sideDirty = false;
+      documentProgress.saved(rel);
       renderTitle(rel);
     });
     throw new Error(`Uložení ${rel} bylo zastaveno. ${String(error)}`);
   }
   if (root !== project || sideFile !== rel || sideView !== editor) return;
   sideDirty = editor.state.doc.toString() !== content;
+  if (!sideDirty) documentProgress.saved(rel);
   renderTitle(sideFile);
   if (sideDirty) throw new Error("Během ukládání přibyly další úpravy bočního souboru.");
 }
@@ -140,6 +144,7 @@ export async function openToSide(rel: string) {
     parent: body,
     state: createEditorState(text, rel, {
       onChange: () => {
+        if (sideFile) documentProgress.changed(sideFile);
         if (sideDirty) return;
         sideDirty = true;
         renderTitle(rel);
@@ -169,7 +174,9 @@ export function refreshSidePrefs() {
 /** The side file was renamed or moved. */
 export function sideMoved(moved: (rel: string) => string) {
   if (!sideFile) return;
+  const previous = sideFile;
   sideFile = moved(sideFile);
+  documentProgress.moved(previous, sideFile);
   renderTitle(sideFile);
 }
 

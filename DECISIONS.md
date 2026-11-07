@@ -1,5 +1,13 @@
 # Rozhodnutí
 
+## ADR-015 – Uložení zdroje a aktuálnost náhledu (2026-11-07)
+
+Stav uložení editorů je nezávislý na PDF. DocumentProgress sleduje neuložené cesty a monotónní revizi změn celé otevřené práce. Každá editace včetně opakovaného psaní do již změněného editoru posune revizi; potvrzené uložení pouze odstraní danou cestu z neuložených. Přejmenování bočního souboru přenese tuto cestu. Hlavní a boční soubor se navzájem nemohou označit za uložené.
+
+Build po uložení editorů zachytí revizi a preview ji při úspěšném vykreslení přiřadí ke konkrétnímu PDF. Novější editace během překladu nebo vykreslení ponechá PDF zastaralé. Samotné uložení, neúspěšný překlad ani export neobnoví aktuálnost. PDF otevřené jinou cestou bez této revize je neověřené. Změna projektu resetuje stav; změna hlavního souboru, údajů práce nebo konfliktní reload jej zneplatní. Resize zachovává původní revizi PDF a během překladu nezahajuje konkurenční načítání.
+
+Jde o konzervativní sledování změn v relaci, nikoli porovnávání obsahu nebo sledování externích souborů: vrácení textu přes undo může stále vyžadovat nové PDF. UI tuto hranici uvádí v popisu ukazatele. Původní revizní ochrana zápisu DocumentSession zůstává autoritou pro skutečné uložení; tento model ji nenahrazuje a nezavádí autosave.
+
 ## ADR-014 – Export zobrazeného PDF a kontext hlavního toku (2026-11-07)
 
 V rámci uživatelem určené priority běžné pracovní cesty používá hlavní akce název Vytvořit PDF; ukládá hlavní a boční editor jako dosud. Projekt a hlavní soubor se zachytí při zahájení. Po asynchronních krocích se kontroluje, že kontext stále odpovídá; dokončený výsledek jiného projektu nesmí přepsat aktuální náhled. Preview publikuje lastPdf až po úspěšném vykreslení, nikoli před načtením. Nejde o nový compiler worker ani jeho cancel/timeout.
