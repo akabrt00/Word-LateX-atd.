@@ -4,6 +4,8 @@ Uživatel dne 2026-11-07 určil jako alfa a omega projektu cestu **založit doku
 
 ## Co už funguje
 
+Aktuální názvosloví po dalším upřesnění uživatele: **Překompilovat** uloží otevřené změny a obnoví náhled, **Uložit PDF…** samostatně uloží zobrazenou verzi do počítače. Původní označení Vytvořit PDF v popisu předchozích iterací je překonané. Kompilace neotevírá exportní dialog, export nespouští kompilaci. Automatická kompilace při uložení/psaní zůstává volitelná a ve výchozím stavu vypnutá.
+
 - Nový dokument má předvolenou složku a šablonu; průvodce předvyplní známé údaje a otevře založený projekt. Existující složku nepřepisuje.
 - Otevřený zdroj se ukládá s kontrolou revize. Konflikt zachová rozepsaný text a zastaví navazující vytvoření PDF.
 - Vytvoření PDF již ukládalo hlavní i boční editor automaticky; tato vlastnost musí být pro uživatele zřejmá.

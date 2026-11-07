@@ -1,5 +1,16 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Oddělení kompilace a exportu v názvosloví — 2026-11-07
+
+Výchozí commit bdba244. Uživatel upřesnil, že akce kompilace nemá být pojmenovaná PDF. Hlavní a kontextové ovladače nyní mají Překompilovat; nabídky, nastavení, průběh, problémy a starší náhled používají stejné názvosloví. Uložit PDF… zůstává samostatný export. Chování překladu, ukládání zdrojů a snapshot exportu se neměnilo. Ve výchozím nastavení jsou automatické kompilace vypnuté jako dosud.
+
+- `npm test`: 28 prošlo, 0 selhalo. `npm run check`: exit 0. Prostředí beze změny: Windows/PowerShell, Node v24.15.0, npm 11.12.1; žádné nové závislosti.
+- `npm run test:workflow`: 34 kontrol prošlo, exit 0. Skutečný DOM, core/build/preview a PDF.js s testovacími adaptéry nativního IPC a editorových služeb. Ověřeno také, že kompilace pouze aktualizuje náhled a neotevře dialog pro export ani nezapíše uživatelem vybranou kopii PDF. Existující kontrola nadále ověřuje přesné bajty samostatného exportu a zvolené umístění.
+- `npm run tauri build -- --debug --no-bundle`: exit 0 včetně frontendového sestavení, známá varování chunků a dynamických importů přetrvávají. Aktuální src-tauri/target/debug/tul-writer.exe sestaveno bez spuštění; ignorovaný log compile-export-labels-build.log. `git diff --check`: bez chyb.
+- Backendové Rust/TeX testy se neopakovaly: změna se týká popisků a potvrzení, nikoli backendu nebo obsahu PDF. Nativní okno, dialog a instalátor se na přání uživatele neotevírají; nejde o plný živý desktopový průchod.
+
+Inspirace rozlišením akcí ověřena v primárních dokumentech Overleafu: https://docs.overleaf.com/getting-started/recompiling-your-project a https://docs.overleaf.com/managing-projects-and-files/downloading-a-project. Nepřebírá se kód ani vzhled jejich editoru; TUL styl zůstává.
+
 ## Uložený text a aktuálnost PDF — 2026-11-07
 
 Výchozí lokální commit 53996fe. Rozsah: oddělený stav uložení otevřených editorů a revize PDF, upozornění s akcí Vytvořit PDF, zachování zastaralosti při psaní během překladu a po uložení zdroje. Čistý model DocumentProgress nesahá na soubory; skutečný zápis dále chrání DocumentSession. Backend ani závislosti se neměnily. Prostředí shodné s předchozí iterací: Windows/PowerShell, Node v24.15.0, npm 11.12.1, izolovaný Edge.

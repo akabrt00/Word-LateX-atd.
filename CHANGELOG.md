@@ -2,6 +2,11 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Kompilace a uložení PDF jako dvě akce (2026-11-07)
+
+- Na upřesnění uživatele změněno Vytvořit PDF na Překompilovat: uloží otevřené změny a obnoví náhled. Samostatné Uložit PDF… ukládá zobrazený výsledek do počítače.
+- Sjednocené hlavní a kontextové akce, nabídka Kompilace, volby automatické kompilace, průběh, chyby a upozornění na starší náhled. Úspěšná kompilace hlásí aktualizaci náhledu; uloženou kopii potvrzuje až export.
+
 ## Uložený text a aktuálnost PDF (2026-11-07)
 
 - Samostatný stav otevřených změn a upozornění nad starším PDF s přímou akcí Vytvořit PDF. Uložení hlavního či bočního editoru nezamění staré PDF za aktuální.

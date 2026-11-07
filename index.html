@@ -71,7 +71,7 @@
         Run file
       </button>
       <button id="btn-run" class="btn" title="Run every notebook that produces figures (⇧⌘↵)">Run notebooks</button>
-      <button id="btn-compile" class="btn btn-primary" title="Uložit otevřené změny a vytvořit PDF (⌘↵)">Vytvořit PDF <kbd>⌘↵</kbd></button>
+      <button id="btn-compile" class="btn btn-primary" title="Uložit otevřené změny a obnovit náhled dokumentu (⌘↵)">Překompilovat <kbd>⌘↵</kbd></button>
       <button id="btn-settings" class="icon-btn" title="Settings" aria-label="Settings" aria-haspopup="true">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2.5 5h5.5M12 5h1.5M2.5 11h1.5M8 11h5.5"/><circle cx="10" cy="5" r="1.75"/><circle cx="6" cy="11" r="1.75"/></svg>
       </button>
@@ -184,7 +184,7 @@
       <section id="pdf-pane">
         <div id="pdf-freshness" class="pdf-freshness" hidden role="status" title="Stav podle změn v této relaci aplikace; změny souborů mimo aplikaci se nesledují.">
           <span id="pdf-freshness-text"></span>
-          <button type="button" class="btn" data-create-pdf>Vytvořit PDF</button>
+          <button type="button" class="btn" data-create-pdf>Překompilovat</button>
         </div>
         <div id="pdf-bar" hidden>
           <span id="pdf-page-label"></span>
@@ -208,10 +208,10 @@
         <div id="pdf-scroll">
         <div id="pdf">
           <div class="pdf-empty">
-            <p>Tady uvidíte svůj dokument v PDF.</p>
-            <p>Otevřené změny se před vytvořením automaticky uloží.</p>
-            <button type="button" class="btn btn-primary" data-create-pdf>Vytvořit PDF</button>
-            <p>Hotové PDF pak můžete uložit do vybrané složky.</p>
+            <p>Náhled dokumentu</p>
+            <p>Před kompilací se otevřené změny automaticky uloží.</p>
+            <button type="button" class="btn btn-primary" data-create-pdf>Překompilovat</button>
+            <p>Kompilace obnoví náhled. Přes Uložit PDF… pak uložíte soubor do počítače.</p>
           </div>
         </div>
         </div>
@@ -313,13 +313,13 @@
       <span>Writing checks</span>
       <input id="setting-lint" type="checkbox" role="switch" />
     </label>
-    <h3 class="settings-group">PDF</h3>
+    <h3 class="settings-group">Kompilace</h3>
     <label class="settings-row">
-      <span>Vytvořit PDF při uložení</span>
+      <span>Překompilovat při uložení</span>
       <input id="setting-compile-on-save" type="checkbox" role="switch" />
     </label>
     <label class="settings-row">
-      <span>Průběžně vytvářet PDF</span>
+      <span>Automaticky překompilovávat při psaní</span>
       <input id="setting-compile-on-type" type="checkbox" role="switch" />
     </label>
     <h3 class="settings-group">AI</h3>

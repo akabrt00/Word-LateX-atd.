@@ -127,7 +127,7 @@ export async function compile({ quiet = false } = {}) {
   $("pdf-pane").classList.add("busy"); // the preview shows that it is about to be replaced
   $("pdf-pane").setAttribute("aria-busy", "true");
   try {
-    setStatus("Ukládám změny před vytvořením PDF…", "busy");
+    setStatus("Ukládám změny před kompilací…", "busy");
     await save();
     if (root !== project || mainFile !== main) return;
     await saveSide(); // the side pane may hold part of the paper
@@ -136,7 +136,7 @@ export async function compile({ quiet = false } = {}) {
     // auto-run stale notebooks before compiling
     // Notebook execution is an explicit user action in TUL Writer.
 
-    setStatus("Vytvářím PDF…", "busy");
+    setStatus("Kompiluji dokument…", "busy");
     const sourceRevision = documentProgress.revision;
     const res = await invoke<CompileResult>("compile", { root: project, main });
     if (root !== project || mainFile !== main) return;
@@ -148,19 +148,19 @@ export async function compile({ quiet = false } = {}) {
     if (res.ok && res.pdf) {
       await renderPdf(res.pdf, () => root === project && mainFile === main, sourceRevision);
       if (root !== project || mainFile !== main) return;
-      setStatus(documentProgress.pdfState === "current" ? `PDF je připravené${summary ? ` · ${summary}` : ""}` : "PDF bylo vytvořené, ale text se mezitím změnil. Vytvořte PDF znovu.", documentProgress.pdfState === "current" ? "ok" : "");
+      setStatus(documentProgress.pdfState === "current" ? `Náhled je aktualizovaný${summary ? ` · ${summary}` : ""}` : "Kompilace dokončena, ale text se mezitím změnil. Překompilujte dokument znovu.", documentProgress.pdfState === "current" ? "ok" : "");
       refreshFiles();
     } else {
-      setStatus(summary ? `PDF se nepodařilo vytvořit: ${summary}` : "PDF se nepodařilo vytvořit. Podrobnosti najdete dole v panelu.", "err");
+      setStatus(summary ? `Kompilace se nezdařila: ${summary}` : "Kompilace se nezdařila. Podrobnosti najdete dole v panelu.", "err");
     }
   } catch (e) {
     if (root !== project || mainFile !== main) return;
-    showLog("Vytvoření PDF — podrobnosti", String(e));
-    setStatus(`PDF se nepodařilo vytvořit: ${String(e)}`, "err");
+    showLog("Kompilace — podrobnosti", String(e));
+    setStatus(`Kompilace se nezdařila: ${String(e)}`, "err");
     // No TeX at all: offer to install it rather than leave the user with an error.
     if (String(e).includes("No TeX engine")) {
-      const yes = await ask("K vytvoření PDF potřebujete překladač LaTeXu. Na tomto počítači nebyl nalezen.\n\nChcete nainstalovat Tectonic? Při prvním použití stáhne potřebné balíčky.", {
-        title: "Chybí překladač pro vytvoření PDF",
+      const yes = await ask("Ke kompilaci dokumentu potřebujete překladač LaTeXu. Na tomto počítači nebyl nalezen.\n\nChcete nainstalovat Tectonic? Při prvním použití stáhne potřebné balíčky.", {
+        title: "Chybí překladač LaTeXu",
         okLabel: "Nainstalovat",
       });
       if (yes) await installLatex();

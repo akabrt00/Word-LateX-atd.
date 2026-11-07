@@ -53,10 +53,11 @@ try {
   };
 
   reset();
-  check(document.querySelector("[data-create-pdf]").textContent === "Vytvořit PDF", "Empty preview has a direct PDF action");
+  check(document.querySelector("#pdf .pdf-empty [data-create-pdf]").textContent === "Překompilovat", "Empty preview offers compilation separately from PDF export");
   await compile();
   check(workflow.calls.join("|") === "save|saveSide|compile", "PDF creation saves both editors first");
-  check(status() === "PDF je připravené", "Successful completion has a clear result message");
+  check(status() === "Náhled je aktualizovaný", "Compilation confirms preview refresh, not a saved PDF copy");
+  check(dialogs.length === 0 && exports.length === 0, "Compilation never opens an export dialog or saves a user-selected PDF copy");
   check(document.querySelectorAll("#pdf canvas").length === 1 && !document.getElementById("pdf-bar").hidden, "Real PDF.js renders the resulting page");
   check(!document.getElementById("pdf-download").disabled && document.getElementById("pdf-download").textContent.includes("Uložit PDF"), "Export is visible and enabled only after a real render");
   check(document.getElementById("pdf-freshness").dataset.state === "current", "A successful build publishes its source revision");
@@ -112,7 +113,7 @@ try {
   check(!preview.lastPdf && document.querySelectorAll("#pdf canvas").length === 0, "Changing the main document during PDF loading cannot publish the old result");
 
   reset(); compileOk = false; await compile();
-  check(!preview.lastPdf && status().includes("nepodařilo vytvořit"), "Failed compilation is not reported as a ready PDF");
+  check(!preview.lastPdf && status().includes("Kompilace se nezdařila"), "Failed compilation is not reported as a ready PDF");
 
   reset(); pdfBytes = new Uint8Array([1,2,3]); await compile();
   check(!preview.lastPdf && document.getElementById("pdf-download").disabled, "An invalid PDF never becomes an exportable preview");

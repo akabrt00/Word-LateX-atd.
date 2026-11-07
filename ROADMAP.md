@@ -6,6 +6,8 @@ Uživatel 2026-11-07 určil výhradní současné zaměření: **založit dokume
 
 V rámci aktivní priority 2026-11-07 doplněno rozlišení uloženého textu a aktuálnosti PDF včetně změn během překladu. Dále prověřit dostupnost běžného uložení pro oba editory a průvodce novým dokumentem; osobní desktopový průchod zůstává otevřený.
 
+Upřesnění téhož dne: kompilaci a export pojmenovávat odděleně — Překompilovat obnoví náhled, Uložit PDF… uloží soubor do počítače. Nahradilo původní název Vytvořit PDF.
+
 ## Etapa 0 – audit a rozhodnutí
 
 Vybrán Scribe MIT se zachováním historie. Audit, licence, architektura, AI návrh a design systém jsou připravené. Převzetí AGPL kódu není součástí rozhodnutí.

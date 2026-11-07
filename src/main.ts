@@ -65,7 +65,7 @@ $("btn-semester-details").onclick = () => { void editDocumentDetails(); };
 function toggleLog() {
   if (logPanel.hidden && !logEl.textContent) {
     $("log-title").textContent = "Průběh";
-    logEl.textContent = "Zatím tu není žádný výstup. Zvolte Vytvořit PDF; tady pak najdete podrobnosti o průběhu.";
+    logEl.textContent = "Zatím tu není žádný výstup. Zvolte Překompilovat; tady pak najdete podrobnosti o průběhu.";
     setLogView("output");
   }
   logPanel.hidden = !logPanel.hidden;
@@ -217,7 +217,7 @@ register(
   { id: "view.focus", group: "View", title: "Focus Mode", keys: "Mod-Alt-f", enabled: () => !!current && !$("editor").hidden, checked: focusOn, run: () => toggleFocus() },
   { id: "view.pdfDark", group: "View", title: "Dark PDF", checked: () => appearance.pdfDark, run: toggleDarkPdf },
 
-  { id: "build.compile", group: "Build", title: "Vytvořit PDF", keys: "Mod-Enter", enabled: hasProject, run: compile },
+  { id: "build.compile", group: "Build", title: "Překompilovat", keys: "Mod-Enter", enabled: hasProject, run: compile },
   { id: "build.runNotebooks", group: "Build", title: "Run Notebooks", keys: "Mod-Shift-Enter", enabled: hasProject, run: runNotebook },
   {
     id: "build.runCell", group: "Build", title: "Run Cell", keys: "Shift-Enter", passive: true,
@@ -234,11 +234,11 @@ register(
   { id: "build.showInSource", group: "Build", title: "Show PDF Selection in Source", enabled: hasPdfSelection, run: goToSelectionSource },
   { id: "build.showInPdf", group: "Build", title: "Show in PDF", keys: "Mod-Shift-j", enabled: canShowInPdf, run: showInPdf },
   {
-    id: "build.compileOnSave", group: "Build", title: "Vytvořit PDF při uložení", enabled: hasProject,
+    id: "build.compileOnSave", group: "Build", title: "Překompilovat při uložení", enabled: hasProject,
     checked: () => settings.compileOnSave, run: () => setCompileOnSave(!settings.compileOnSave),
   },
   {
-    id: "build.compileOnType", group: "Build", title: "Průběžně vytvářet PDF", enabled: hasProject,
+    id: "build.compileOnType", group: "Build", title: "Automaticky překompilovávat při psaní", enabled: hasProject,
     checked: () => settings.compileOnType, run: () => setCompileOnType(!settings.compileOnType),
   },
   {
@@ -414,7 +414,7 @@ createMenubar($("menubar"), [
     ],
   },
   {
-    title: "PDF",
+    title: "Kompilace",
     icon: MENU_ICON.build,
     entries: [
       "build.compile", "build.compileOnSave", "build.compileOnType", "-",

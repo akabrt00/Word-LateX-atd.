@@ -131,7 +131,7 @@ export async function editDocumentDetails() {
       if (root === project) {
         documentProgress.invalidate();
         await openFile(snapshot.main);
-        setStatus("Údaje práce uloženy. Pro aktualizaci zvolte Vytvořit PDF.", "ok");
+        setStatus("Údaje práce uloženy. Pro aktualizaci náhledu zvolte Překompilovat.", "ok");
       }
       dialog.close();
     } catch (e) {

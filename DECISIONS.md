@@ -1,5 +1,7 @@
 # Rozhodnutí
 
+Upřesnění názvosloví od uživatele 2026-11-07: v aktuálním UI se akce z ADR-014/015 jmenuje **Překompilovat**, nikoli Vytvořit PDF. Uloží změny a obnoví náhled. **Uložit PDF…** zůstává samostatný export; tento rozdíl má být patrný i v průběhu a potvrzení výsledku. Implementace překladu, revizí a snapshot exportu se nemění.
+
 ## ADR-015 – Uložení zdroje a aktuálnost náhledu (2026-11-07)
 
 Stav uložení editorů je nezávislý na PDF. DocumentProgress sleduje neuložené cesty a monotónní revizi změn celé otevřené práce. Každá editace včetně opakovaného psaní do již změněného editoru posune revizi; potvrzené uložení pouze odstraní danou cestu z neuložených. Přejmenování bočního souboru přenese tuto cestu. Hlavní a boční soubor se navzájem nemohou označit za uložené.

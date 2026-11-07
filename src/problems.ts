@@ -67,12 +67,12 @@ export function setProblems(next: Problem[], log: string, visible: boolean, titl
   if (!problems.length) {
     const none = document.createElement("div");
     none.className = "empty";
-    none.textContent = title === "Compile" ? "Při posledním vytvoření PDF nebyly zjištěny problémy." : "Není co opravit.";
+    none.textContent = title === "Compile" ? "Při poslední kompilaci nebyly zjištěny problémy." : "Není co opravit.";
     frag.appendChild(none);
   }
   list.replaceChildren(frag);
 
-  $("log-title").textContent = title === "Compile" ? "Vytvoření PDF" : title;
+  $("log-title").textContent = title === "Compile" ? "Kompilace" : title;
   $("log-tab-problems").textContent = problems.length ? `Problémy (${problems.length})` : "Problémy";
   // With nothing parsed out of a failed compile, the raw output is the only useful thing to show.
   setLogView(problems.length || !log ? "problems" : "output");

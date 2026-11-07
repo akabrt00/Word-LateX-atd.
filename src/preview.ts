@@ -34,7 +34,7 @@ function renderDocumentProgress() {
   const freshness = $("pdf-freshness");
   freshness.hidden = !root || !pdfDoc;
   freshness.dataset.state = documentProgress.pdfState;
-  text($("pdf-freshness-text"), documentProgress.pdfState === "current" ? "PDF obsahuje poslední úpravy" : documentProgress.pdfState === "stale" ? "Text se změnil. Vytvořte PDF znovu." : "Aktuálnost tohoto PDF není ověřena. Vytvořte PDF znovu.");
+  text($("pdf-freshness-text"), documentProgress.pdfState === "current" ? "Náhled je aktuální" : documentProgress.pdfState === "stale" ? "Náhled neobsahuje poslední úpravy." : "Aktuálnost náhledu není ověřena.");
   freshness.querySelector<HTMLButtonElement>("[data-create-pdf]")!.hidden = documentProgress.pdfState === "current";
 }
 documentProgress.listeners.push(renderDocumentProgress);
