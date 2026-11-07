@@ -10,6 +10,7 @@ mod documents;
 mod workspace;
 mod semester;
 mod semester_edit;
+mod template_details;
 #[tauri::command]
 fn initial_project() -> Option<String> {
     let mut args = std::env::args();

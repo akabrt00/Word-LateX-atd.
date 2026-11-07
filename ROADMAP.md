@@ -22,6 +22,10 @@ Ověřeno automatické vydání 0.2.5, skutečné privátní stažení a odmítn
 
 2026-11-07: spojeny historie obou PC včetně podepsaných aktualizací a editace semestrálních údajů. Místní rozpracované průvodce ostatními TUL šablonami jsou zachované odděleně od synchronizačního commitu. Živé GUI a instalační kontroly při tomto předání neproběhly.
 
+Druhý krok vytvářecího průvodce doplněn pro závěrečnou práci (BP/DP), prezentaci a poster. Další rozšíření metadat: jejich dodatečná editace ve stávajících projektech těchto tří typů; zatím funguje u semestrálky.
+
+2026-11-07: dokončeny a ověřeny rozpracované průvodce včetně 21 bezokenních kontrol skutečných formulářů a PDF integrací všech tří nových předvoleb. Ověřeny návrat, oddělené rozepsané údaje, chyby a ochrana proti duplicitnímu vytvoření. Dodatečná editace těchto tří typů zůstává navazujícím krokem.
+
 Implementován formulář Údaje práce pro dodatečnou úpravu titulní strany existující semestrálky, s načtením ze zdroje, kontrolou revizí zdroje/stylu a samostatnými body historie. Další rozšíření: stejné ovládání pro další ověřené TUL šablony.
 
 Zpřehledněny popisky podkladů a písem ve stromu souborů jako Vzhled šablony; fyzické cesty se nemění.
@@ -30,7 +34,7 @@ Dokončeny české popisky panelu Soubory, jeho tlačítek, místních nabídek 
 
 2026-11-06: živě ověřeno založení semestrálky se dvěma autory, české nabídky a popisky podkladů, odmítnutí cesty mimo projekt, vytvoření/uložení poznámek a PDF bez chyb či varování. Regrese: 11 frontendových, 36 Rust a dvě skutečné PDF integrace prošly; omezení v TEST_REPORT.md.
 
-Pracovní prostor a základní TUL předvolby: implementována globální složka nových dokumentů, trvalá výchozí šablona a vytvoření samostatné kopie čtyř univerzitních balíčků. Doplněn výběr překladače a bibliografie podle projektu. Semestrální práce má dvoukrokový průvodce součástí TUL a údaji titulní strany včetně seznamu autorů pro skupinové práce, ověřený až do PDF. Navazující práce: obdobný průvodce závěrečnou prací, prezentací a posterem a správa verzí šablon. Originální archivy zůstávají nezměněné.
+Pracovní prostor a základní TUL předvolby: implementována globální složka nových dokumentů, trvalá výchozí šablona a vytvoření samostatné kopie čtyř univerzitních balíčků. Doplněn výběr překladače a bibliografie podle projektu. Semestrální práce má dvoukrokový průvodce součástí TUL a údaji titulní strany včetně seznamu autorů pro skupinové práce, ověřený až do PDF. Průvodci závěrečnou prací, prezentací a posterem jsou také implementovaní; navazuje dodatečná editace jejich údajů a správa verzí šablon. Originální archivy zůstávají nezměněné.
 
 1. Nativní smoke test, Rust regresní sada a DEBUG EXE/MSI build jsou dokončené. Navázat release buildem a ověřením instalace/odinstalace na čistém Windows účtu bez vývojových nástrojů.
 2. Revizní read/save pro hlavní a boční editor i notebooky implementován v documents.rs, včetně konfliktového dialogu a zastavení zavření po chybě. Další krok: převést starší integrační write_file volání na povinné revize, doplnit filesystem watcher, obnovu po pádu a dále vyjmout files/compiler z lib.rs. Optimistická kontrola neřeší celý TOCTOU závod s cizími procesy (ADR-007).

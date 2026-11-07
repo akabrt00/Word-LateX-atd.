@@ -10,11 +10,19 @@ Na úvodní obrazovce zvolte **Nastavit složku a šablonu…**; stejné nastave
 
 **Nový dokument** požádá o název a šablonu a vytvoří vlastní podsložku ve zvoleném pracovním prostoru. Existující složku nepřepisuje ani neslučuje. Předvolená je TUL semestrální práce; k dispozici jsou také závěrečná práce, prezentace, poster a prázdný LaTeX dokument. Čtyři TUL balíčky jsou nezměněné offline kopie z portálu https://latex-tul.adamkabrt.chatgpt.site/templates; původ a kontrolní součty jsou v resources/templates/. Původní obecné šablony jsou pod **Další šablony…**.
 
-Pro **TUL semestrální práci** následuje druhý krok: součást TUL (celá univerzita, sedm fakult nebo CXI), název práce, autoři (každý na samostatném řádku), předmět a rok. Pod **Datum a verze zadání** lze změnit datum titulní strany a verzi; výchozí je dnešní datum a verze 1. Název práce se nabídne podle názvu složky, ale může být jiný. **Zpět** zachová rozepsané údaje. Až **Vytvořit dokument** založí nový projekt a předvyplní sedm známých deklarací v semestralni-prace.tex. Znaky jako `%`, `&`, `_` či zpětné lomítko se vkládají jako obyčejný text. Lze zadat 1–20 autorů v požadovaném pořadí. Jména se na titulní straně zobrazí pod sebou; popisek se přizpůsobí na Autor práce nebo Autoři práce. Původní ZIP a text práce zůstávají zachované; u skupiny se pouze v nové kopii stylu upraví tento popisek. Osobní údaje se neukládají do globálního nastavení. Ostatní typy dokumentů zatím vlastní průvodce nemají.
+Pro **TUL semestrální práci** následuje druhý krok: součást TUL (celá univerzita, sedm fakult nebo CXI), název práce, autoři (každý na samostatném řádku), předmět a rok. Pod **Datum a verze zadání** lze změnit datum titulní strany a verzi; výchozí je dnešní datum a verze 1. Název práce se nabídne podle názvu složky, ale může být jiný. **Zpět** zachová rozepsané údaje. Až **Vytvořit dokument** založí nový projekt a předvyplní sedm známých deklarací v semestralni-prace.tex. Znaky jako `%`, `&`, `_` či zpětné lomítko se vkládají jako obyčejný text. Lze zadat 1–20 autorů v požadovaném pořadí. Jména se na titulní straně zobrazí pod sebou; popisek se přizpůsobí na Autor práce nebo Autoři práce. Původní ZIP a text práce zůstávají zachované; u skupiny se pouze v nové kopii stylu upraví tento popisek. Osobní údaje se neukládají do globálního nastavení. Druhý krok mají také další tři TUL šablony (viz níže).
 
 Nový projekt obsahuje .tulwriter/project.json s hlavním souborem a nastavením překladače. Semestrální práce používá pdfLaTeX + BibTeX, závěrečná práce XeLaTeX + Biber, prezentace XeLaTeX a poster LuaLaTeX. Tyto nástroje a potřebné TeX balíčky musí být lokálně dostupné. Pomocné skripty ani latexmkrc z balíčků se automaticky nespouštějí. Ukázkové údaje nahraďte vlastními podle návodů uvnitř projektu.
 
 V otevřené semestrální práci TUL lze přes **Údaje práce** změnit titulní stranu i dodatečně. Formulář načítá aktuální údaje ze zdroje včetně ručních úprav v podporovaném tvaru. Před otevřením uloží hlavní i boční editor a boční panel zavře. **Uložit údaje** upraví pouze příslušné hodnoty, případně popisek Autor/Autoři práce; obsah práce zůstane zachovaný. Změny mají samostatný bod v historii. Pro nové PDF spusťte **Kompilovat**. Pokud se zdroj nebo styl mezitím změnil, formulář uložení odmítne a je potřeba jej znovu otevřít. Hodnoty s vlastními LaTeX makry se upravují přímo ve zdroji; tento formulář je nepřevádí. Ostatní typy šablon zatím nejsou podporované.
+
+### Druhý krok dalších šablon
+
+- **Závěrečná práce:** součást TUL, BP/DP, český a anglický název, autor, vedoucí, rok, varianta prohlášení a studijní program (kód, český a anglický název). Obor lze vynechat; pokud jej zadání uvádí, vyplňte všechny tři údaje. Před odevzdáním ověřte úvodní listy podle své fakulty.
+- **Prezentace:** součást, název, autoři po řádcích, pracoviště a datum; e-mail a telefon jsou nepovinné.
+- **Poster:** součást, název, autoři a pracoviště; podnázev, akce, kontakt a web jsou nepovinné. Rozvržení a vlastní obsah zůstávají podle šablony.
+
+Zpět zachová vyplnění; při přepnutí typu zůstávají formuláře oddělené. Údaje se zapisují jen do nové kopie dokumentu, původní ZIP se nemění. Prázdný dokument druhý krok nemá. Tlačítko pro dodatečnou editaci **Údaje práce** je zatím pouze pro semestrálku.
 
 ### Vývojové spuštění
 
@@ -31,6 +39,8 @@ Pokud otevřený soubor mezitím změní nebo odstraní jiný program, uložení
     npm run check
     npm run build
     cargo test --manifest-path src-tauri/Cargo.toml
+
+Průchod vytvářecím průvodcem bez otevírání okna ověří `npm run test:workspace`. Použije samostatný dočasný profil Edge/Chrome a testovací IPC bez zápisu skutečných dokumentů nebo nastavení aplikace. Ve Windows se prohlížeč hledá automaticky; jinde nastavte `TUL_WRITER_TEST_BROWSER` na cestu k Chromium prohlížeči. Testuje návrat, přepínání šablon, zachování údajů, chybový stav, odesílaná metadata a ochranu proti dvojímu vytvoření.
 
 Pro úplnou Rust sadu včetně notebooků použijte Python s requirements-test.txt. Ve Windows lze vytvořit .tools/test-python přes py -m venv, nainstalovat pip install -r requirements-test.txt a přidat jeho Scripts do PATH pro testovací příkaz. Aplikace umí najít také standardní Windows launcher py.
 

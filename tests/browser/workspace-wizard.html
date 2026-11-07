@@ -1,0 +1,126 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Workspace wizard regression</title>
+<style>[hidden] { display: none !important; }</style>
+<pre id="workspace-test-result">pending</pre>
+<script type="module">
+import { showWorkspace } from "/src/workspace.ts";
+
+let checks = 0;
+const check = (condition, message) => { if (!condition) throw Error(message); checks++; };
+const tick = () => new Promise(resolve => setTimeout(resolve, 0));
+const waitForClose = async element => {
+  for (let attempt = 0; element?.isConnected && !element.open && attempt < 100; attempt++) await new Promise(resolve => setTimeout(resolve, 10));
+};
+const field = id => document.getElementById(id);
+const dialog = () => document.querySelector("dialog[open]");
+const set = (id, value) => { field(id).value = value; field(id).dispatchEvent(new Event("input", { bubbles: true })); };
+const choose = value => { field("workspace-template").value = value; field("workspace-template").dispatchEvent(new Event("change")); };
+const submit = async () => { const element = dialog(); element.querySelector("form").requestSubmit(); await tick(); await waitForClose(element); };
+const back = () => dialog().querySelector(".workspace-back").click();
+const calls = [];
+let rejectCreation = false;
+let resolveCreation;
+let holdCreation = false;
+window.__TAURI_INTERNALS__ = { invoke: async (command, args) => {
+  if (command === "read_workspace_settings") return { documentsDir: "C:\\Wizard-test", defaultTemplate: "tul-semester" };
+  if (command === "write_workspace_settings") return;
+  if (command === "create_template_project") {
+    calls.push(args);
+    if (rejectCreation) throw Error("Test: složka už existuje");
+    if (holdCreation) await new Promise(resolve => { resolveCreation = resolve; });
+    return ""; // The mock does not create files or open a project.
+  }
+  throw Error(`Unexpected IPC: ${command}`);
+} };
+
+try {
+  await showWorkspace(true);
+  set("workspace-name", "První dokument");
+  choose("tul-thesis");
+  await submit();
+  check(field("template-title").value === "První dokument", "Title defaults to folder name");
+  check(!field("semester-details").matches(":enabled"), "Semester controls stay disabled in thesis form");
+  set("template-title", "Vlastní název DP");
+  set("thesis-author", "Autorka DP");
+  back();
+  choose("tul-presentation");
+  await submit();
+  check(field("template-title").value === "První dokument", "Presentation has independent title");
+  set("template-authors", "První autor\nDruhá autorka");
+  set("presentation-institute", "Laboratoř");
+  check(field("presentation-date").min === "1900-01-01", "Presentation date has backend-compatible minimum");
+  back();
+  choose("tul-thesis");
+  set("workspace-name", "Přejmenovaná složka");
+  await submit();
+  check(field("template-title").value === "Vlastní název DP", "Back and template changes preserve custom thesis title");
+  check(field("thesis-author").value === "Autorka DP", "Thesis fields survive template switch");
+  check(document.querySelectorAll("#template-title").length === 1, "Only active form IDs are attached");
+  for (const [id, value] of Object.entries({ "thesis-title-en": "English title", "thesis-supervisor": "Vedoucí", "thesis-programme-code": "N0000", "thesis-programme": "Program", "thesis-programme-en": "Programme" })) set(id, value);
+  field("thesis-type").value = "DP";
+  field("thesis-declaration").value = "female";
+  await submit();
+  check(calls.at(-1).templateDetails.kind === "thesis" && calls.at(-1).templateDetails.workType === "DP", "Thesis IPC includes tagged camelCase data");
+  check(calls.at(-1).semesterDetails === null, "Thesis never sends semester data");
+  check(!dialog(), "Successful creation closes the dialog");
+
+  await showWorkspace(true);
+  set("workspace-name", "Prezentace");
+  choose("tul-presentation");
+  await submit();
+  set("template-authors", "Anna\nDavid");
+  set("presentation-institute", "Laboratoř");
+  set("presentation-date", "2026-11-07");
+  rejectCreation = true;
+  await submit();
+  check(!dialog().querySelector(".workspace-error").hidden, "Backend failure stays visible");
+  check(field("template-authors").value === "Anna\nDavid" && !field("template-authors").disabled, "Failure preserves and unlocks author input");
+  check(field("semester-details").disabled, "Failure does not enable hidden semester controls");
+  rejectCreation = false;
+  holdCreation = true;
+  const count = calls.length;
+  await submit();
+  await submit();
+  check(calls.length === count + 1, "Busy form does not create twice");
+  check(field("template-authors").disabled, "Pending creation freezes fields");
+  const cancel = new Event("cancel", { cancelable: true });
+  dialog().dispatchEvent(cancel);
+  check(cancel.defaultPrevented, "Pending creation prevents Escape cancellation");
+  resolveCreation();
+  await tick();
+  await waitForClose(document.querySelector("dialog"));
+  check(calls.at(-1).templateDetails.authors.join("|") === "Anna|David", "Presentation sends ordered author list");
+  holdCreation = false;
+
+  await showWorkspace(true);
+  set("workspace-name", "Poster");
+  choose("tul-poster");
+  await submit();
+  set("template-authors", "Autorka posteru");
+  set("poster-department", "Katedra");
+  let escaped = false;
+  const onKey = () => { escaped = true; };
+  window.addEventListener("keydown", onKey);
+  field("template-title").dispatchEvent(new KeyboardEvent("keydown", { key: "s", ctrlKey: true, bubbles: true }));
+  window.removeEventListener("keydown", onKey);
+  check(!escaped, "Dialog blocks application shortcuts");
+  await submit();
+  check(calls.at(-1).templateDetails.kind === "poster" && calls.at(-1).templateDetails.contact === "", "Poster supports empty optional contact");
+
+  await showWorkspace(true);
+  set("workspace-name", "Prázdný");
+  choose("blank");
+  await submit();
+  check(calls.at(-1).templateDetails === null && calls.at(-1).semesterDetails === null, "Blank document skips metadata step");
+
+  const beforeSettings = calls.length;
+  await showWorkspace(false);
+  choose("tul-thesis");
+  await submit();
+  check(!dialog() && calls.length === beforeSettings, "Workspace settings never create a document");
+  field("workspace-test-result").textContent = JSON.stringify({ ok: true, checks });
+} catch (error) {
+  field("workspace-test-result").textContent = JSON.stringify({ ok: false, checks, error: String(error.stack || error) });
+}
+</script>

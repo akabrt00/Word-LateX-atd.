@@ -1,5 +1,21 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Dokončení průvodců dalších TUL šablon – 2026-11-07
+
+Navázáno na zachované místní změny průvodců závěrečnou prací, prezentací a posterem. Scénář: založit nový personalizovaný dokument, zachovat rozepsané formuláře při návratu a změně šablony, odmítnout neplatné údaje před vznikem složky a nepřepsat existující projekt. Rozpracovaný kód z předchozího PC je součástí tohoto dokončovaného úkolu. Navíc doplněna izolace klávesových zkratek modálního průvodce a frontendový rozsah data prezentace shodný s backendem.
+
+Prostředí: Windows, PowerShell, Node v24.15.0, npm 11.12.1, Rust/cargo 1.99.1, místní MiKTeX s XeLaTeX, LuaLaTeX, Biber a pdftotext. Nepřidány závislosti ani balíčky TeXu.
+
+- `npm test`: 21 prošlo, 0 selhalo; `npm run check`: exit 0.
+- `npm run build`: exit 0; přetrvávají varování velkých chunků a neúčinných dynamických importů. Log build-verification.log je ignorovaný.
+- `cargo test --manifest-path src-tauri/Cargo.toml --offline --lib -- --test-threads=1 --skip tests::lists_and_compiles_example` mimo sandbox: 50 prošlo, 0 selhalo, 11 ignorováno, 1 filtrován. Vynechaný notebookový test má v tomto prostředí již doloženou chybějící závislost matplotlib; jeho úspěch se netvrdí. Zahrnuty transformace metadat, IPC camelCase, validace oboru, autoři, fakultní aliasy, zachování okolního zdroje, ochrana před přepsáním a regrese updateru/ukládání.
+- `cargo test --manifest-path src-tauri/Cargo.toml --offline --lib workspace::tests::other_wizard_pdf -- --ignored --test-threads=1` mimo sandbox: 3 prošly, 0 selhalo. Skutečná PDF závěrečné práce, prezentace a posteru mají hlavičku PDF a správný engine. U prezentace pdftotext ověřil zobrazené datum „6. listopadu 2026“ i jméno autorky, nikoli jen přítomnost příkazu ve zdroji.
+- `npm run tauri build -- --debug --no-bundle`: exit 0. Aktuální samostatná aplikace src-tauri/target/debug/tul-writer.exe sestavena; nebyla spuštěna ani instalována. Log desktop-verification.log je ignorovaný.
+
+Bezokenní formulářový test používá skutečný DOM Chromium, vlastní dočasný profil, loopback Vite a mock IPC bez skutečných nastavení či dokumentů. První pokus s dump-dom nedal výstup; připojení bylo převedeno na CDP. Další pokus odhalil asynchronní událost close v testovací synchronizaci. Po opravě celý průchod ověřil 21 kontrol. Následná opakování odhalila závod navigace a příliš krátký limit CDP; opraveno čekání na testovací stránku a uzavírání prohlížeče i při chybě. Finální `npm run test:workspace` mimo sandbox: exit 0, všech 21 kontrol prošlo včetně úklidu profilu. Test pokrývá payloady všech tří typů, oddělené rozepsané formuláře, návrat, chybu backendu a opakování, zámek během vytváření, zadržení zkratek, prázdný dokument a pouhé uložení globálního nastavení.
+
+Nativní desktopový průchod, instalační upgrade a restart nebyly provedeny, protože uživatel požaduje práci bez převzetí obrazovky. Editace metadat již existujících závěrečných prací, prezentací a posterů zůstává další etapou; dokončeno je jejich vytváření.
+
 ## Sloučení vývoje z obou PC – 2026-11-07
 
 Prostředí: Windows, PowerShell, Node v24.15.0, npm 11.12.1, cargo 1.99.1. Původní HEAD f5d8b1b, vzdálený main 35d5f97: každá strana měla sedm vlastních commitů. Zachována větev codex/backup-before-sync-2026-11-07 a stash včetně obou nových souborů rozpracovaných průvodců. Merge 0ca25e2 zachoval obě historie; konflikty CHANGELOG.md, DECISIONS.md a tohoto reportu byly vyřešeny zachováním obou obsahů. Updater dostal samostatné ADR-012 a odpovídající odkaz v architektuře.

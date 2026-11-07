@@ -2,12 +2,19 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Dokončení průvodců – 2026-11-07
+
+- Dokončena a regresně ověřena rozpracovaná podpora zakládání závěrečné práce, prezentace a posteru. Datum prezentace má stejný rozsah jako backend; otevřený průvodce nepředává klávesové zkratky hlavní aplikaci.
+- Přidán opakovatelný bezokenní test skutečného formuláře přes `npm run test:workspace`. Ověřeno 21 kontrol prohlížeče, 50 Rust testů a tři skutečné PDF překlady personalizovaných šablon; podrobnosti a vynechané kontroly v docs/TEST_REPORT.md.
+
 ## Synchronizace – 2026-11-07
 
 - Spojeny samostatné historie obou PC: podepsané soukromé aktualizace a místní úpravy semestrálních dokumentů. Zachována historie i rozpracované průvodce dalšími šablonami; opraven kolidující identifikátor rozhodnutí updateru na ADR-012.
 
 ## Vývoj – 2026-11-06
 
+- Druhý krok nového dokumentu také pro závěrečnou práci, prezentaci a poster. Závěrečná práce nabízí BP/DP, český/anglický název, autora, vedoucího, program, volitelný obor, rok a variantu prohlášení. Prezentace a poster podporují více autorů, pracoviště a nepovinné kontakty.
+- Formuláře zachovávají rozepsané údaje při návratu i přepnutí šablony. Před založením se validují správný typ údajů a přesná struktura přibalené šablony; původní ZIP se nemění. Prázdný dokument zůstává jednokrokový.
 - Tlačítko Údaje práce pro dodatečnou úpravu titulní strany semestrálky TUL: aktuální název, autoři, součást, předmět, rok, datum a verze se načtou ze zdroje. Změny zachovávají okolní LaTeX a mají samostatné body historie.
 - Kontrola revizí zdroje i stylu, odmítnutí vlastních maker a nejednoznačných deklarací, přizpůsobení popisku počtu autorů a chráněné obnovení zdroje při chybě zápisu stylu. Pole jsou sdílená s průvodcem nového dokumentu.
 

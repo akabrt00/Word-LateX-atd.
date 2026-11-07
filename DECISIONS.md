@@ -1,5 +1,13 @@
 # Rozhodnutí
 
+## ADR-011 – Druhý krok všech TUL předvoleb (2026-11-06)
+
+Vytvářecí průvodce má druhý krok pro semestrálku, závěrečnou práci, prezentaci a poster; prázdný dokument je jednokrokový. Závěrečná práce má jednoho autora a volbu BP/DP, prezentace a poster uspořádaný seznam 1–20 autorů zobrazovaný podle šablony čárkami. Obor je volitelný, ale všechny tři údaje oboru musí být vyplněné společně. Nevyplněný obor odstraní jen ukázkovou deklaraci TULbranch. Varianty prohlášení používají již přibalené male/female; formulář nepotvrzuje platnost úvodních listů konkrétní fakulty.
+
+Frontend uchovává rozpracované formuláře odděleně podle typu jako odpojené DOM uzly; v dokumentu je připojený jen aktuální formulář, takže se neopakují ID. Zpět ani změna šablony nepřenáší osobní údaje do jiné šablony či globálního nastavení. Backend přijímá samostatný tagovaný objekt TemplateDetails, kontroluje soulad se zvolenou šablonou a provede všechny validace i transformace před vytvořením složky. Vyžaduje jedinečné přesné vzory z pevných přibalených verzí a změny aplikuje podle původních rozsahů odzadu. Vstup uživatele se vkládá jako escapovaný obyčejný text.
+
+FUA se pro starší třídy tulthesis/tulpresentation mapuje na jejich podporovanou volbu FA, pro poster na FUA; uživatel stále vybírá FUA. Mění se pouze nové kopie main.tex a příslušného souboru údajů. Původní ZIP, třídy, grafika, písma a vlastní ukázkový obsah se zachovávají; u závěrečné práce se v main.tex mění ještě známá volba ThesisStart. Dodatečný editační formulář Údaje práce je nadále pouze pro semestrálky podle ADR-010; tento krok rozšiřuje zakládání dokumentů.
+
 ## ADR-010 – Údaje existující semestrální práce (2026-11-06)
 
 Formulář čte aktuální LaTeX a neudržuje druhou databázi metadat. Podporuje pouze projekty tul-semester s očekávaným hlavním souborem. Konzervativní parser rozpozná sedm jednořádkových deklarací v preambuli, vyžaduje jejich jednoznačnost a dekóduje pouze známé textové escapování a řízené zalomení autorů. Vlastní makra, redefinice nebo neznámá syntaxe jsou důvodem k odmítnutí formuláře. Nezměněné hodnoty ani jejich mezery se nepřepisují; změněné hodnoty se aplikují do původních rozsahů odzadu. Tělo, okolní komentáře, BOM a konce řádků zůstávají zachované.

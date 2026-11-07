@@ -1,5 +1,7 @@
 # TUL předvolby pro nové dokumenty
 
+Druhý krok vytvářecího průvodce nyní předvyplňuje také nové kopie závěrečné práce (main.tex a nastaveni/udaje.tex), prezentace (main.tex) a posteru (main.tex a nastaveni.tex). Mění jen přesně očekávané deklarace a volby těchto verzí. Originální archivy a ostatní soubory zůstávají nedotčené. Podrobnosti v ADR-011.
+
 Nezměněné ZIP balíčky byly převzaty 2026-11-05 z uživatelem zadaného portálu:
 https://latex-tul.adamkabrt.chatgpt.site/templates
 

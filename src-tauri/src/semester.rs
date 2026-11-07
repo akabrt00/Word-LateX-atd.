@@ -13,7 +13,7 @@ pub(crate) struct SemesterDetails {
     pub assignment_version: String,
 }
 
-fn plain(value: &str, label: &str, max: usize) -> Result<String, String> {
+pub(super) fn plain(value: &str, label: &str, max: usize) -> Result<String, String> {
     let value = value.trim();
     if value.is_empty() || value.chars().count() > max
         || value.chars().any(|c| c.is_control() || c == '\u{2028}' || c == '\u{2029}')

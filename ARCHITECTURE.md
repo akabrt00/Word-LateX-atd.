@@ -12,6 +12,8 @@ updates.ts zobrazuje nabídku a modální stav instalace. Čistý UpdateFlow odd
 
 ## Současný tok
 
+Zakládání závěrečné práce, prezentace a posteru používá template-form.ts a tagovaný objekt TemplateDetails. Backend template_details.rs připraví validované změny pevně známých deklarací ještě před založením projektu; workspace.rs je zapíše až do nové rozbalené kopie. Sdílený dvoukrokový tok zachovává samostatně rozepsané formuláře všech typů. Podrobnosti a fakultní aliasy v ADR-011.
+
 Tlačítko Údaje práce otevírá semester-edit.ts se sdílenými poli semester-form.ts. Backend semester_edit.rs čte podporované deklarace existující semestrálky a vrací údaje i revize zdroje/stylu. Při uložení mění pouze rozsahy hodnot a očekávaný popisek autorů, zachová samostatné body historie a kontroluje konflikty obou souborů. Ochrana a omezení dvousouborového zápisu jsou v ADR-010.
 
 Pracovní prostor se ukládá mimo projekty přes Tauri app_config_dir/workspace.json; výchozí umístění odvozuje systémová složka Dokumenty. Backend workspace.rs vytváří výhradně novou pojmenovanou podsložku a rozbaluje do ní jednu z pevně přibalených ZIP šablon. .tulwriter/project.json přidává allowlistované nastavení překladače a bibliografie. Archivy se za běhu nestahují ani neupravují; vytvořené projekty jsou nezávislé kopie. Podrobnosti v ADR-008.

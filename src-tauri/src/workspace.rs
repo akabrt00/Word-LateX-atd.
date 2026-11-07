@@ -133,11 +133,17 @@ pub(crate) fn create_starter(parent: &Path, name: &str, template_id: &str) -> Re
     create_starter_with_details(parent, name, template_id, None)
 }
 
+#[cfg(test)]
 fn create_starter_with_details(parent: &Path, name: &str, template_id: &str, details: Option<&crate::semester::SemesterDetails>) -> Result<PathBuf, String> {
+    create_starter_with_metadata(parent, name, template_id, details, None)
+}
+
+fn create_starter_with_metadata(parent: &Path, name: &str, template_id: &str, details: Option<&crate::semester::SemesterDetails>, template_details: Option<&crate::template_details::TemplateDetails>) -> Result<PathBuf, String> {
     validate_name(name)?;
     if !parent.is_absolute() { return Err("Složka dokumentů musí mít úplnou cestu.".into()); }
     let starter = STARTERS.iter().find(|t| t.id == template_id).ok_or("Neznámá šablona")?;
     // Validate and prepare before creating any directories or touching disk copies.
+    if details.is_some() && template_details.is_some() { return Err("Zadejte údaje pouze pro jednu šablonu.".into()); }
     let personalized = if let Some(details) = details {
         if template_id != "tul-semester" { return Err("Průvodce údaji je zatím dostupný jen pro semestrální práci.".into()); }
         let mut archive = zip::ZipArchive::new(Cursor::new(starter.archive.ok_or("Chybí šablona")?)).map_err(|e| e.to_string())?;
@@ -147,8 +153,10 @@ fn create_starter_with_details(parent: &Path, name: &str, template_id: &str, det
         let source = details.render(&original)?;
         let mut style = String::new();
         archive.by_name("tul-semestralni.sty").map_err(|e| e.to_string())?.read_to_string(&mut style).map_err(|e| e.to_string())?;
-        Some((source, details.render_style(&style)?))
-    } else { None };
+        vec![(starter.main.into(), source), ("tul-semestralni.sty".into(), details.render_style(&style)?)]
+    } else if let Some(details) = template_details {
+        crate::template_details::prepare(template_id, starter.archive.ok_or("Prázdný dokument nemá průvodce údaji.")?, details)?
+    } else { vec![] };
     std::fs::create_dir_all(parent).map_err(|e| format!("Nelze vytvořit složku dokumentů: {e}"))?;
     let parent = parent.canonicalize().map_err(|e| e.to_string())?;
     let target = parent.join(name);
@@ -157,10 +165,7 @@ fn create_starter_with_details(parent: &Path, name: &str, template_id: &str, det
     let result = (|| {
         if let Some(bytes) = starter.archive { unpack(bytes, &target)?; }
         else { std::fs::write(target.join("main.tex"), "\\documentclass{article}\n\\begin{document}\nMuj novy dokument.\n\\end{document}\n").map_err(|e| e.to_string())?; }
-        if let Some((source, style)) = personalized {
-            std::fs::write(target.join(starter.main), source).map_err(|e| e.to_string())?;
-            std::fs::write(target.join("tul-semestralni.sty"), style).map_err(|e| e.to_string())?;
-        }
+        for (path, content) in personalized { std::fs::write(target.join(path), content).map_err(|e| e.to_string())?; }
         let build = ProjectBuild { main: starter.main.into(), engine: starter.engine.into(), bibliography: starter.bibliography.map(String::from), template: starter.id.into() };
         std::fs::create_dir(target.join(".tulwriter")).map_err(|e| e.to_string())?;
         std::fs::write(target.join(".tulwriter/project.json"), serde_json::to_vec_pretty(&build).map_err(|e| e.to_string())?).map_err(|e| e.to_string())?;
@@ -171,10 +176,11 @@ fn create_starter_with_details(parent: &Path, name: &str, template_id: &str, det
 }
 
 #[tauri::command]
-pub(crate) async fn create_template_project(app: tauri::AppHandle, name: String, template_id: String, semester_details: Option<crate::semester::SemesterDetails>) -> Result<String, String> {
+pub(crate) async fn create_template_project(app: tauri::AppHandle, name: String, template_id: String, semester_details: Option<crate::semester::SemesterDetails>, template_details: Option<crate::template_details::TemplateDetails>) -> Result<String, String> {
     if template_id == "tul-semester" && semester_details.is_none() { return Err("Vyplňte údaje semestrální práce v průvodci.".into()); }
+    if ["tul-thesis", "tul-presentation", "tul-poster"].contains(&template_id.as_str()) && template_details.is_none() { return Err("Vyplňte údaje dokumentu ve druhém kroku průvodce.".into()); }
     let settings = read_workspace_settings(app)?;
-    tauri::async_runtime::spawn_blocking(move || create_starter_with_details(Path::new(&settings.documents_dir), &name, &template_id, semester_details.as_ref()).map(|p| {
+    tauri::async_runtime::spawn_blocking(move || create_starter_with_metadata(Path::new(&settings.documents_dir), &name, &template_id, semester_details.as_ref(), template_details.as_ref()).map(|p| {
         let text = p.to_string_lossy();
         // Keep Windows' canonical long-path prefix out of recent-project labels.
         if cfg!(windows) {
@@ -279,6 +285,56 @@ mod tests {
         assert!(!result.log.contains("Overfull \\vbox"), "{}", result.log);
         assert!(std::fs::read(project.join(result.pdf.unwrap())).unwrap().starts_with(b"%PDF-"));
     }
+
+    #[test]
+    fn other_wizards_validate_before_creation_and_never_overwrite() {
+        let dir = tempfile::tempdir().unwrap();
+        let parent = dir.path().join("Documents");
+        let mut invalid = crate::template_details::example("tul-presentation");
+        if let crate::template_details::TemplateDetails::Presentation(ref mut d) = invalid { d.authors.clear(); }
+        assert!(create_starter_with_metadata(&parent, "invalid", "tul-presentation", None, Some(&invalid)).is_err());
+        assert!(!parent.exists());
+        assert!(create_starter_with_metadata(&parent, "mismatch", "tul-poster", None, Some(&crate::template_details::example("tul-thesis"))).is_err());
+        assert!(!parent.exists());
+        for template in ["tul-thesis", "tul-presentation", "tul-poster"] {
+            let details = crate::template_details::example(template);
+            let project = create_starter_with_metadata(&parent, template, template, None, Some(&details)).unwrap();
+            let main = project.join("main.tex");
+            assert!(std::fs::read_to_string(&main).unwrap().contains(if template == "tul-poster" { "FUA" } else { "FA" }));
+            std::fs::write(&main, "user work").unwrap();
+            assert!(create_starter_with_metadata(&parent, template, template, None, Some(&details)).is_err());
+            assert_eq!(std::fs::read_to_string(main).unwrap(), "user work");
+        }
+    }
+
+    fn verify_other_wizard_pdf(template: &str) {
+        let dir = tempfile::tempdir().unwrap();
+        let project = create_starter_with_metadata(dir.path(), template, template, None, Some(&crate::template_details::example(template))).unwrap();
+        let build = project_build(&project).unwrap().unwrap();
+        let result = crate::compile_blocking(&project.to_string_lossy(), &build.main).unwrap();
+        assert!(result.ok, "{}: {}", template, result.log);
+        let pdf = project.join(result.pdf.unwrap());
+        assert!(std::fs::read(&pdf).unwrap().starts_with(b"%PDF-"));
+        assert_eq!(result.engine, build.engine);
+        if template == "tul-presentation" {
+            let output_path = project.join("rendered-date.txt");
+            let extracted = std::process::Command::new("pdftotext").arg("-layout").arg(&pdf).arg(&output_path).output().expect("This integration requires pdftotext");
+            assert!(extracted.status.success(), "{}", String::from_utf8_lossy(&extracted.stderr));
+            let text = std::fs::read_to_string(output_path).unwrap();
+            assert!(text.contains("6. listopadu 2026"), "The class must actually display the selected date: {text}");
+            assert!(text.contains("Zkušební autorka"));
+        }
+    }
+
+    #[test]
+    #[ignore = "Requires XeLaTeX, Biber and thesis packages"]
+    fn other_wizard_pdf_thesis() { verify_other_wizard_pdf("tul-thesis"); }
+    #[test]
+    #[ignore = "Requires XeLaTeX, pdftotext and presentation packages"]
+    fn other_wizard_pdf_presentation() { verify_other_wizard_pdf("tul-presentation"); }
+    #[test]
+    #[ignore = "Requires LuaLaTeX and poster packages"]
+    fn other_wizard_pdf_poster() { verify_other_wizard_pdf("tul-poster"); }
 
     fn verify_pdf(template: &str) {
         let dir = tempfile::tempdir().unwrap();
