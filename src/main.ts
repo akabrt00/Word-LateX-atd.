@@ -56,9 +56,9 @@ import { getRecent, importProject, installLatex, newProject, renderRecent, rende
 
 import { initAiCenter } from "./ai-center";
 import { refreshWorkspaceLabel, showWorkspace } from "./workspace";
-import { editSemesterDetails } from "./semester-edit";
+import { editDocumentDetails } from "./document-metadata";
 
-$("btn-semester-details").onclick = () => { void editSemesterDetails(); };
+$("btn-semester-details").onclick = () => { void editDocumentDetails(); };
 
 // ---------- log ----------
 function toggleLog() {

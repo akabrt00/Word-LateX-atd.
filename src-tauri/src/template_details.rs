@@ -1,6 +1,6 @@
 //! Plain-text metadata patched into exact, bundled template declarations before creation.
 use crate::semester::{czech_date, plain, tex_text};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::io::Read;
 
 #[derive(Clone, Debug, Deserialize)]
@@ -20,7 +20,7 @@ pub(crate) struct ThesisDetails {
     pub branch_code: String, pub branch: String, pub branch_en: String,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub(crate) struct PresentationDetails {
     pub faculty: String, pub title: String, pub authors: Vec<String>, pub institute: String,

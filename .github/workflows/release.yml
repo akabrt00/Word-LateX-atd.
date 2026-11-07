@@ -65,6 +65,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --manifest-path src-tauri/Cargo.toml workspace::
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path src-tauri/Cargo.toml semester_edit::
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path src-tauri/Cargo.toml presentation_edit::
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Unique version for this main build
         working-directory: ${{ runner.temp }}/tul-writer-source
         run: node scripts/version.mjs --ci $env:GITHUB_RUN_NUMBER

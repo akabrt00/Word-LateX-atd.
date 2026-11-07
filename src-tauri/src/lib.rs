@@ -11,6 +11,8 @@ mod workspace;
 mod semester;
 mod semester_edit;
 mod template_details;
+mod document_metadata;
+mod presentation_edit;
 #[tauri::command]
 fn initial_project() -> Option<String> {
     let mut args = std::env::args();
@@ -2774,6 +2776,7 @@ pub fn run() {
             updates::check_app_update, updates::download_app_update, updates::install_app_update,
             workspace::read_workspace_settings, workspace::write_workspace_settings, workspace::create_template_project,
             semester_edit::read_semester_details, semester_edit::save_semester_details,
+            document_metadata::read_document_details, presentation_edit::save_presentation_details,
             read_file, write_file, documents::read_document, documents::save_document, read_binary, compile, compile_snippet, pdf_to_svg, compile_diff, git_log,
             ai::ai_stream, ai::ai_set_key, ai::ai_has_key, ai::ai_cancel, ai::ai_models,
             parse_notebook, run_notebook, generate_style,

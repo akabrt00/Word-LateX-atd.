@@ -14,7 +14,9 @@ Pro **TUL semestrální práci** následuje druhý krok: součást TUL (celá un
 
 Nový projekt obsahuje .tulwriter/project.json s hlavním souborem a nastavením překladače. Semestrální práce používá pdfLaTeX + BibTeX, závěrečná práce XeLaTeX + Biber, prezentace XeLaTeX a poster LuaLaTeX. Tyto nástroje a potřebné TeX balíčky musí být lokálně dostupné. Pomocné skripty ani latexmkrc z balíčků se automaticky nespouštějí. Ukázkové údaje nahraďte vlastními podle návodů uvnitř projektu.
 
-V otevřené semestrální práci TUL lze přes **Údaje práce** změnit titulní stranu i dodatečně. Formulář načítá aktuální údaje ze zdroje včetně ručních úprav v podporovaném tvaru. Před otevřením uloží hlavní i boční editor a boční panel zavře. **Uložit údaje** upraví pouze příslušné hodnoty, případně popisek Autor/Autoři práce; obsah práce zůstane zachovaný. Změny mají samostatný bod v historii. Pro nové PDF spusťte **Kompilovat**. Pokud se zdroj nebo styl mezitím změnil, formulář uložení odmítne a je potřeba jej znovu otevřít. Hodnoty s vlastními LaTeX makry se upravují přímo ve zdroji; tento formulář je nepřevádí. Ostatní typy šablon zatím nejsou podporované.
+V otevřené semestrální práci TUL lze přes **Údaje práce** změnit titulní stranu i dodatečně. Formulář načítá aktuální údaje ze zdroje včetně ručních úprav v podporovaném tvaru. Před otevřením uloží hlavní i boční editor a boční panel zavře. **Uložit údaje** upraví pouze příslušné hodnoty, případně popisek Autor/Autoři práce; obsah práce zůstane zachovaný. Změny mají samostatný bod v historii. Pro nové PDF spusťte **Kompilovat**. Pokud se zdroj nebo styl mezitím změnil, formulář uložení odmítne a je potřeba jej znovu otevřít. Hodnoty s vlastními LaTeX makry se upravují přímo ve zdroji; tento formulář je nepřevádí.
+
+**Údaje práce** fungují také v prezentacích TUL založených novým průvodcem: fakulta, název, autoři, pracoviště, datum, e-mail a telefon. Hodnoty se čtou z aktuálního main.tex; mění se pouze podporované deklarace, snímky a ostatní soubory se zachovají. Komentáře, BOM, konce řádků a nezměněné hodnoty se nepřepisují. Zdrojový seznam autorů oddělený čárkou a mezerou se zobrazí jako jednotlivé řádky; totéž platí pro čárky uvnitř titulů/jmen, protože tato šablona neuchovává původní členění seznamu. Vlastní makra, volitelné krátké názvy, jiné volby třídy či jiný způsob vložení data upravte přímo ve zdroji. Změněný nebo smazaný zdroj blokuje uložení a zachová rozepsaný formulář. Závěrečná práce a poster dodatečný formulář zatím nemají.
 
 ### Druhý krok dalších šablon
 
@@ -22,7 +24,7 @@ V otevřené semestrální práci TUL lze přes **Údaje práce** změnit tituln
 - **Prezentace:** součást, název, autoři po řádcích, pracoviště a datum; e-mail a telefon jsou nepovinné.
 - **Poster:** součást, název, autoři a pracoviště; podnázev, akce, kontakt a web jsou nepovinné. Rozvržení a vlastní obsah zůstávají podle šablony.
 
-Zpět zachová vyplnění; při přepnutí typu zůstávají formuláře oddělené. Údaje se zapisují jen do nové kopie dokumentu, původní ZIP se nemění. Prázdný dokument druhý krok nemá. Tlačítko pro dodatečnou editaci **Údaje práce** je zatím pouze pro semestrálku.
+Zpět zachová vyplnění; při přepnutí typu zůstávají formuláře oddělené. Údaje se zapisují jen do nové kopie dokumentu, původní ZIP se nemění. Prázdný dokument druhý krok nemá. Dodatečná editace přes **Údaje práce** je dostupná pro semestrálku a podporované prezentace.
 
 ### Vývojové spuštění
 
@@ -41,6 +43,8 @@ Pokud otevřený soubor mezitím změní nebo odstraní jiný program, uložení
     cargo test --manifest-path src-tauri/Cargo.toml
 
 Průchod vytvářecím průvodcem bez otevírání okna ověří `npm run test:workspace`. Použije samostatný dočasný profil Edge/Chrome a testovací IPC bez zápisu skutečných dokumentů nebo nastavení aplikace. Ve Windows se prohlížeč hledá automaticky; jinde nastavte `TUL_WRITER_TEST_BROWSER` na cestu k Chromium prohlížeči. Testuje návrat, přepínání šablon, zachování údajů, chybový stav, odesílaná metadata a ochranu proti dvojímu vytvoření.
+
+Sdílený formulář pro dodatečnou editaci semestrálky a prezentace ověří `npm run test:metadata` ve stejném bezokenním prostředí, s testovacími adaptéry editoru. Kontroluje načtení, správné revize zápisu, konflikty, zámek během ukládání, přepnutí projektu a selhání následného načtení editoru.
 
 Pro úplnou Rust sadu včetně notebooků použijte Python s requirements-test.txt. Ve Windows lze vytvořit .tools/test-python přes py -m venv, nainstalovat pip install -r requirements-test.txt a přidat jeho Scripts do PATH pro testovací příkaz. Aplikace umí najít také standardní Windows launcher py.
 

@@ -1,23 +1,12 @@
 //! Conservative edits of supported semester declarations, with disk revision checks.
 use crate::semester::{czech_date, tex_text, SemesterDetails};
+use crate::document_metadata::{active, decode, iso_date, UNSUPPORTED};
 use serde::Serialize;
 use std::ops::Range;
 
 const MAIN: &str = "semestralni-prace.tex";
 const STYLE: &str = "tul-semestralni.sty";
 const NAMES: [&str; 7] = ["Fakulta", "Predmet", "NazevPrace", "AutorPrace", "DatumPrace", "RokPrace", "VerzeZadani"];
-const UNSUPPORTED: &str = "Tento dokument obsahuje nepodporované nebo nejednoznačné údaje. Upravte je ve zdroji LaTeXu; formulář nic nezměnil.";
-const MONTHS: [&str; 12] = ["ledna", "února", "března", "dubna", "května", "června", "července", "srpna", "září", "října", "listopadu", "prosince"];
-
-// Strip only real TeX comments, respecting escaped percent signs.
-fn active(line: &str) -> &str {
-    let mut escaped = false;
-    for (i, c) in line.char_indices() {
-        if c == '%' && !escaped { return &line[..i]; }
-        escaped = c == '\\' && !escaped;
-    }
-    line
-}
 
 fn ranges(source: &str) -> Result<Vec<Range<usize>>, String> {
     let mut found: Vec<Option<Range<usize>>> = vec![None; 7];
@@ -62,38 +51,13 @@ fn ranges(source: &str) -> Result<Vec<Range<usize>>, String> {
     found.into_iter().map(|r| r.ok_or_else(|| UNSUPPORTED.into())).collect()
 }
 
-fn decode(value: &str) -> Result<String, String> {
-    let tokens = [
-        ("\\textbackslash{}", "\\"), ("\\textasciitilde{}", "~"), ("\\textasciicircum{}", "^"),
-        ("\\{", "{"), ("\\}", "}"), ("\\$", "$"), ("\\&", "&"), ("\\%", "%"), ("\\#", "#"), ("\\_", "_"),
-    ];
-    let mut rest = value;
-    let mut result = String::new();
-    while !rest.is_empty() {
-        if let Some((from, to)) = tokens.iter().find(|(from, _)| rest.starts_with(from)) {
-            result.push_str(to); rest = &rest[from.len()..];
-        } else {
-            let c = rest.chars().next().unwrap();
-            if "\\{}$&#%_~^".contains(c) || c.is_control() { return Err(UNSUPPORTED.into()); }
-            result.push(c); rest = &rest[c.len_utf8()..];
-        }
-    }
-    Ok(result)
-}
-
 fn read_source(source: &str) -> Result<SemesterDetails, String> {
     let spans = ranges(source)?;
     let values: Vec<&str> = spans.iter().map(|r| &source[r.clone()]).collect();
-    let date = decode(values[4])?;
-    let date_parts: Vec<_> = date.split_whitespace().collect();
-    if date_parts.len() != 3 { return Err(UNSUPPORTED.into()); }
-    let day: u8 = date_parts[0].strip_suffix('.').ok_or(UNSUPPORTED)?.parse().map_err(|_| UNSUPPORTED)?;
-    let month = MONTHS.iter().position(|m| *m == date_parts[1]).ok_or(UNSUPPORTED)? + 1;
-    let year: u16 = date_parts[2].parse().map_err(|_| UNSUPPORTED)?;
     let details = SemesterDetails {
         faculty: decode(values[0])?, subject: decode(values[1])?, title: decode(values[2])?,
         authors: values[3].split("\\\\ ").map(decode).collect::<Result<Vec<_>, _>>()?,
-        date: format!("{year:04}-{month:02}-{day:02}"),
+        date: iso_date(values[4])?,
         year: values[5].parse().map_err(|_| UNSUPPORTED)?, assignment_version: decode(values[6])?,
     };
     validate(&details)?;
@@ -124,7 +88,9 @@ fn patch(source: &str, details: &SemesterDetails) -> Result<String, String> {
     let old = vec![previous.faculty, previous.subject.trim().into(), previous.title.trim().into(), previous.authors.iter().map(|a| a.trim()).collect::<Vec<_>>().join("\n"), previous.date, previous.year.to_string(), previous.assignment_version.trim().into()];
     let new = vec![details.faculty.clone(), details.subject.trim().into(), details.title.trim().into(), details.authors.iter().map(|a| a.trim()).collect::<Vec<_>>().join("\n"), details.date.clone(), details.year.to_string(), details.assignment_version.trim().into()];
     let mut output = source.to_string();
-    for i in (0..7).rev() { if old[i] != new[i] { output.replace_range(spans[i].clone(), &values[i]); } }
+    let mut edits: Vec<_> = spans.into_iter().enumerate().filter(|(i, _)| old[*i] != new[*i]).collect();
+    edits.sort_by_key(|(_, range)| std::cmp::Reverse(range.start));
+    for (i, range) in edits { output.replace_range(range, &values[i]); }
     Ok(output)
 }
 
@@ -222,6 +188,22 @@ mod tests {
             assert_eq!(&source[source.find("\\begin{document}").unwrap()..], &edited[edited.find("\\begin{document}").unwrap()..]);
             let restored = patch(&edited, &details).unwrap(); assert_eq!(restored, source);
         }
+    }
+
+    #[test]
+    fn reordered_declarations_use_source_offsets_not_field_order() {
+        let source = crate::semester::example_details().render(&original_source().unwrap()).unwrap();
+        let mut lines: Vec<_> = source.lines().collect();
+        let subject = lines.iter().position(|line| line.starts_with("\\newcommand{\\Predmet}")).unwrap();
+        let date = lines.iter().position(|line| line.starts_with("\\newcommand{\\DatumPrace}")).unwrap();
+        lines.swap(subject, date);
+        let source = lines.join("\n");
+        let original = read_source(&source).unwrap();
+        let mut changed = original.clone();
+        changed.subject = "Výrazně delší předmět & měření".into(); changed.date = "2028-02-29".into();
+        let edited = patch(&source, &changed).unwrap();
+        assert_eq!(read_source(&edited).unwrap(), changed);
+        assert_eq!(patch(&edited, &original).unwrap(), source);
     }
 
     #[test]

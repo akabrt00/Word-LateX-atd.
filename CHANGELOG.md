@@ -2,6 +2,12 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Údaje prezentací – 2026-11-07
+
+- Údaje práce nově upravují také podporované existující prezentace TUL: fakulta, název, autoři, pracoviště, datum a kontakty. Změny mají kontrolu revize main.tex a samostatnou historii; snímky a jiné soubory se zachovávají.
+- Společný formulář rozlišuje semestrálku a prezentaci, zastaví se při konfliktu editorů a chrání rozepsané hodnoty. Úspěšné uložení následované chybou načtení editoru nenabízí opakovaný zápis se zastaralou revizí.
+- Opraveno aplikování více změn v semestrálce s ručně přeuspořádanými deklaracemi: patche se nyní řadí podle zdrojových pozic. Nové regresní kontroly metadat přidány do Windows release workflow. Ověření a omezení v docs/TEST_REPORT.md.
+
 ## Dokončení průvodců – 2026-11-07
 
 - Dokončena a regresně ověřena rozpracovaná podpora zakládání závěrečné práce, prezentace a posteru. Datum prezentace má stejný rozsah jako backend; otevřený průvodce nepředává klávesové zkratky hlavní aplikaci.

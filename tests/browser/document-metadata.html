@@ -1,0 +1,124 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Document metadata regression</title>
+<style>[hidden] { display: none !important; }</style>
+<pre id="workspace-test-result">pending</pre>
+<script type="module">
+import { editDocumentDetails } from "/src/document-metadata.ts";
+import { editor, resetEditor, setRoot, setDirty } from "/tests/browser/metadata-editor-mocks.ts";
+
+let checks = 0;
+const check = (condition, message) => { if (!condition) throw Error(message); checks++; };
+const tick = () => new Promise(resolve => setTimeout(resolve, 0));
+const field = id => document.getElementById(id);
+const dialog = () => document.querySelector("dialog[open]");
+const waitForClose = async element => {
+  for (let i = 0; element?.isConnected && !element.open && i < 100; i++) await new Promise(resolve => setTimeout(resolve, 10));
+};
+const submit = async () => { const element = dialog(); element.querySelector("form").requestSubmit(); await tick(); await waitForClose(element); };
+const close = async () => { const element = dialog(); element.querySelector(".workspace-cancel").click(); await waitForClose(element); };
+const set = (id, value) => { field(id).value = value; };
+const writes = [];
+let readError = "", writeError = "", readHook, holdWrite = false, finishWrite;
+const presentation = {
+  kind: "presentation", snapshot: { main: "main.tex", sourceRevision: "original-revision", details: {
+    faculty: "FM", title: "Výsledky & měření", authors: ["Anna", "David"], institute: "Laboratoř", date: "2026-11-07", email: "test@tul.cz", phone: "",
+  } },
+};
+let response = presentation;
+window.__TAURI_INTERNALS__ = { invoke: async (command, args) => {
+  editor.calls.push(command);
+  if (command === "read_document_details") {
+    if (readHook) readHook();
+    if (readError) throw readError;
+    return structuredClone(response);
+  }
+  if (["save_presentation_details", "save_semester_details"].includes(command)) {
+    writes.push({ command, ...args });
+    if (writeError) throw writeError;
+    if (holdWrite) await new Promise(resolve => { finishWrite = resolve; });
+    return;
+  }
+  throw Error(`Unexpected IPC: ${command}`);
+} };
+
+try {
+  await editDocumentDetails();
+  check(editor.calls.slice(0, 3).join("|") === "save|closeSide|read_document_details", "Editors save before reading disk metadata");
+  check(field("document-details-title").textContent === "Údaje prezentace", "Presentation heading is shown");
+  check(field("template-title").value === "Výsledky & měření" && field("template-authors").value === "Anna\nDavid", "Metadata fields are populated from source");
+  check(!field("semester-title"), "Semester controls are absent from presentation editor");
+  set("template-title", "Nový název <test>");
+  await submit();
+  check(writes.at(-1).command === "save_presentation_details" && writes.at(-1).sourceRevision === "original-revision", "Presentation save sends the acknowledged source revision");
+  check(!("kind" in writes.at(-1).details) && !("styleRevision" in writes.at(-1)), "Presentation edit payload excludes creation tag and unrelated style revision");
+  check(writes.at(-1).details.title === "Nový název <test>", "User text is sent without HTML interpretation");
+  check(editor.calls.some(call => Array.isArray(call) && call[0] === "openFile" && call[1] === "main.tex"), "Successful edit reloads source with fresh editor revision");
+  check(!dialog(), "Successful save closes dialog");
+
+  resetEditor();
+  await editDocumentDetails();
+  editor.reloadError = "Reload failed";
+  await submit();
+  check(!dialog(), "Successful disk save never leaves a retry with stale revision after reload failure");
+  check(editor.calls.some(call => Array.isArray(call) && call[0] === "status" && call[1].includes("Údaje jsou uložené")), "Reload failure distinguishes saved data from editor refresh");
+
+  resetEditor();
+  await editDocumentDetails();
+  set("template-title", "Keep this draft");
+  writeError = "FILE_CONFLICT: external edit";
+  await submit();
+  check(field("template-title").value === "Keep this draft" && !dialog().querySelector("fieldset").disabled, "Disk conflict preserves and unlocks draft");
+  check(dialog().querySelector(".workspace-error").textContent.includes("mezitím změnil"), "Conflict explains reopening the form");
+  check(!editor.calls.some(call => Array.isArray(call) && call[0] === "openFile"), "Conflict never reloads over the draft");
+  writeError = "";
+  const count = writes.length;
+  setDirty(true);
+  await submit();
+  check(writes.length === count, "Changed editor state prevents metadata write");
+  setDirty(false);
+  holdWrite = true;
+  await submit();
+  await submit();
+  check(writes.length === count + 1 && dialog().querySelector("fieldset").disabled, "Pending save freezes form and blocks a second write");
+  const cancel = new Event("cancel", { cancelable: true });
+  dialog().dispatchEvent(cancel);
+  check(cancel.defaultPrevented, "Pending save blocks Escape cancellation");
+  const element = dialog();
+  finishWrite(); await tick(); await waitForClose(element);
+  holdWrite = false;
+
+  resetEditor();
+  response = { kind: "semester", snapshot: { main: "semestralni-prace.tex", sourceRevision: "source", styleRevision: "style", details: {
+    faculty: "FS", title: "Semestrálka", authors: ["Autorka"], subject: "Předmět", year: 2026, date: "2026-11-07", assignmentVersion: "1",
+  } } };
+  await editDocumentDetails();
+  check(field("semester-title").value === "Semestrálka" && !field("template-title"), "Existing semester path still loads its own form");
+  await submit();
+  check(writes.at(-1).command === "save_semester_details" && writes.at(-1).styleRevision === "style", "Semester save retains both source and style revision");
+
+  resetEditor(); response = presentation;
+  editor.saveError = "Save conflict";
+  await editDocumentDetails();
+  check(!editor.calls.includes("read_document_details"), "Failed editor save prevents metadata load");
+  check(dialog().querySelector('button[type="submit"]').disabled, "Load failure cannot be submitted");
+  await close();
+  resetEditor(); editor.sideError = "Side editor conflict";
+  await editDocumentDetails();
+  check(!editor.calls.includes("read_document_details"), "Failed side editor save prevents metadata load");
+  await close();
+
+  resetEditor(); readHook = () => setRoot("C:\\Other-project");
+  await editDocumentDetails();
+  check(dialog().querySelector('button[type="submit"]').disabled && !field("template-title"), "Project switch during load cannot expose stale form");
+  readHook = undefined;
+  await close();
+  resetEditor(); readError = "Unsupported template";
+  await editDocumentDetails();
+  check(dialog().querySelector(".workspace-error").textContent === "Unsupported template", "Unsupported source is reported without a writable form");
+  await close();
+  field("workspace-test-result").textContent = JSON.stringify({ ok: true, checks });
+} catch (error) {
+  field("workspace-test-result").textContent = JSON.stringify({ ok: false, checks, error: String(error.stack || error) });
+}
+</script>

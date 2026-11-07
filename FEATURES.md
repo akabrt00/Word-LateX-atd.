@@ -6,6 +6,7 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 
 | Funkce | Průběžný stav |
 |---|---|
+| Údaje existující prezentace | Načtení ze zdroje a lokální změny fakulty, názvu, autorů, pracoviště, data a kontaktů; revize main.tex, historie, no-op a zachování snímků. Ověřeny backendové konflikty, 24 bezokenních kontrol sdíleného formuláře a skutečné PDF po editaci; vlastní syntaxe se odmítá |
 | Průvodci dalšími TUL šablonami | Druhý krok pro BP/DP, prezentaci a poster; vlastní pole a více autorů u prezentace/posteru. Ověřeno 21 bezokenních kontrol formuláře, backendová validace a skutečné PDF všech tří průvodců; nativní desktopový průchod se neopakoval |
 | Údaje existující semestrálky | Formulář čte aktuální zdroj, mění sedm známých hodnot a popisek autorů; ochrana revizí zdroje/stylu, samostatná historie. Živě ověřen přechod skupina ↔ jeden autor, PDF i konflikt externího stylu. Vlastní makra nebo nejednoznačné deklarace odmítá |
 | Český panel Soubory | Živě ověřeny popisky, nabídky souboru/složky, vytvoření souboru a česká validace cesty; ostatní panely a hlavní nabídka zůstávají částečně anglické |

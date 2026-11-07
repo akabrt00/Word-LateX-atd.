@@ -13,8 +13,24 @@ const browser = process.env.TUL_WRITER_TEST_BROWSER || [
   "C:/Program Files/Google/Chrome/Application/chrome.exe",
 ].find(existsSync);
 if (!browser) throw new Error("Set TUL_WRITER_TEST_BROWSER to a Chromium browser executable.");
+const scenario = process.argv[2] || "workspace-wizard";
+if (!["workspace-wizard", "document-metadata"].includes(scenario)) throw Error("Unknown browser scenario.");
 const profile = await mkdtemp(join(tmpdir(), "tul-wizard-test-"));
-const server = await createServer({ configFile: false, server: { host: "127.0.0.1", port: 0, open: false } });
+const server = await createServer({
+  configFile: false,
+  cacheDir: resolve("output/browser-cache", scenario),
+  optimizeDeps: { noDiscovery: true, include: ["@tauri-apps/api/core", "@tauri-apps/plugin-dialog", "@tauri-apps/plugin-opener"] },
+  server: { host: "127.0.0.1", port: 0, open: false },
+  plugins: [{
+    name: "metadata-editor-test-adapters",
+    enforce: "pre",
+    resolveId(source, importer) {
+      if (importer?.split("?")[0].replaceAll("\\", "/").endsWith("/src/document-metadata.ts") && ["./core", "./project", "./split"].includes(source)) {
+        return resolve("tests/browser/metadata-editor-mocks.ts");
+      }
+    },
+  }],
+});
 let child, socket, browserSocket;
 let browserLog = "";
 const connect = async url => {
@@ -29,14 +45,14 @@ const connect = async url => {
 try {
   await server.listen();
   const address = server.httpServer.address();
-  const url = `http://127.0.0.1:${address.port}/tests/browser/workspace-wizard.html`;
+  const url = `http://127.0.0.1:${address.port}/tests/browser/${scenario}.html`;
   child = spawn(browser, [
     "--headless=new", "--disable-gpu", "--no-first-run", "--disable-background-networking",
-    `--user-data-dir=${profile}`, "--remote-debugging-port=0", "--remote-debugging-address=127.0.0.1", url,
+    `--user-data-dir=${profile}`, "--remote-debugging-port=0", "--remote-debugging-address=127.0.0.1", "about:blank",
   ], { windowsHide: true, stdio: ["ignore", "ignore", "pipe"] });
   child.stderr.on("data", chunk => { browserLog = (browserLog + chunk).slice(-4000); });
   child.on("error", error => { browserLog += String(error); });
-  const deadline = Date.now() + 60000;
+  const deadline = Date.now() + 90000;
   let port, browserEndpoint;
   while (Date.now() < deadline) {
     try {
@@ -51,9 +67,11 @@ try {
   browserSocket = await connect(`ws://127.0.0.1:${port}${browserEndpoint}`);
   let page;
   while (Date.now() < deadline) {
-    const pages = await fetch(`http://127.0.0.1:${port}/json/list`, { signal: AbortSignal.timeout(5000) }).then(r => r.json());
-    page = pages.find(page => page.type === "page" && page.url === url);
-    if (page) break;
+    try {
+      const pages = await fetch(`http://127.0.0.1:${port}/json/list`, { signal: AbortSignal.timeout(5000) }).then(r => r.json());
+      page = pages.find(page => page.type === "page" && page.url === "about:blank");
+      if (page) break;
+    } catch { /* The debugging endpoint can precede its initial page during startup. */ }
     await delay(100);
   }
   if (!page) throw Error("Headless test page was not found.");
@@ -72,6 +90,12 @@ try {
     pending.set(id, message => { clearTimeout(timer); resolve(message); });
     socket.send(JSON.stringify({ id, method, params }));
   });
+  // Establish the protocol before navigation, so Chromium startup cannot race
+  // the module loader and the first Runtime.evaluate command.
+  await send("Page.enable");
+  await send("Runtime.enable");
+  const navigation = await send("Page.navigate", { url });
+  if (navigation.error || navigation.result?.errorText) throw Error(JSON.stringify(navigation));
   let result;
   while (Date.now() < deadline) {
     const response = await send("Runtime.evaluate", { expression: 'document.getElementById("workspace-test-result")?.textContent', returnByValue: true });
@@ -81,7 +105,7 @@ try {
   }
   if (!result) throw Error(`Browser did not report a result: ${browserLog}`);
   if (!result.ok) throw new Error(result.error);
-  console.log(`Workspace wizard: ${result.checks} browser checks passed.`);
+  console.log(`${scenario}: ${result.checks} browser checks passed.`);
 } finally {
   socket?.close();
   // Close only the isolated test browser, including when navigation fails.

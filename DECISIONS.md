@@ -1,5 +1,13 @@
 # Rozhodnutí
 
+## ADR-013 – Dodatečná úprava údajů prezentace (2026-11-07)
+
+Formulář Údaje práce podporuje vedle semestrálky také nové prezentace tul-presentation s main.tex. Sdílený frontend načte tagovaný snapshot z read_document_details; zápis používá typově oddělené save_semester_details a save_presentation_details. Před načtením se uloží a uzavře boční editor, kontroluje se projekt a stav hlavního editoru. Zkratky aplikace se zadrží v modálu. Úspěšný zápis a následné selhání načtení editoru se hlásí odlišně, aby se nenabízel další zápis se starou revizí.
+
+Prezentace má sedm podporovaných jednořádkových deklarací v preambuli: documentclass, title, author, institute, authorMail, authorPhone a date. Přijímá se aspect169 a nejvýše jedna známá fakultní volba; FA se čte jako FUA. Pracoviště musí obsahovat přesný řízený dovětek se zobrazením insertdate z vytvářecího průvodce. Datum se dekóduje z českého kalendářního dne, text jen ze známých escapování. Seznam autorů se čte podle čárky a mezery; původní rozdělení jmen s čárkami není ve zdroji zachované. Krátké názvy, vlastní makra, zanořené deklarace, explicitní skupiny, změny catcode a nejednoznačná syntaxe se odmítají, nikoli normalizují.
+
+Zápis kontroluje SHA-256 přesných načtených bajtů, společný WRITE_LOCK a revizi těsně před atomickou náhradou main.tex. Před skutečnou změnou uloží samostatný původní stav historie. No-op historii nevytváří. Patche se řadí podle původních offsetů, nikoli pořadí polí; totéž opravuje ručně přeuspořádané deklarace semestrálky. Nezměněné hodnoty, komentáře, BOM, konce řádků a celé snímky zůstávají zachované. Třída, grafika, nastavení a jiné soubory se nepřepisují. Nejde o obecný parser nebo expanzi TeXu; přetrvávají omezení optimistické kontroly souběhu podle ADR-007.
+
 ## ADR-011 – Druhý krok všech TUL předvoleb (2026-11-06)
 
 Vytvářecí průvodce má druhý krok pro semestrálku, závěrečnou práci, prezentaci a poster; prázdný dokument je jednokrokový. Závěrečná práce má jednoho autora a volbu BP/DP, prezentace a poster uspořádaný seznam 1–20 autorů zobrazovaný podle šablony čárkami. Obor je volitelný, ale všechny tři údaje oboru musí být vyplněné společně. Nevyplněný obor odstraní jen ukázkovou deklaraci TULbranch. Varianty prohlášení používají již přibalené male/female; formulář nepotvrzuje platnost úvodních listů konkrétní fakulty.

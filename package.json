@@ -9,6 +9,7 @@
     "tauri": "tauri",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "test:workspace": "node scripts/verify-workspace-wizard.mjs",
+    "test:metadata": "node scripts/verify-workspace-wizard.mjs document-metadata",
     "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml",
     "check": "tsc --noEmit"
   },

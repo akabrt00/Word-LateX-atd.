@@ -22,11 +22,11 @@ Ověřeno automatické vydání 0.2.5, skutečné privátní stažení a odmítn
 
 2026-11-07: spojeny historie obou PC včetně podepsaných aktualizací a editace semestrálních údajů. Místní rozpracované průvodce ostatními TUL šablonami jsou zachované odděleně od synchronizačního commitu. Živé GUI a instalační kontroly při tomto předání neproběhly.
 
-Druhý krok vytvářecího průvodce doplněn pro závěrečnou práci (BP/DP), prezentaci a poster. Další rozšíření metadat: jejich dodatečná editace ve stávajících projektech těchto tří typů; zatím funguje u semestrálky.
+Druhý krok vytvářecího průvodce doplněn pro závěrečnou práci (BP/DP), prezentaci a poster. Dodatečná editace nyní funguje u semestrálky a podporovaných prezentací. Další rozšíření metadat: editace ve stávajících závěrečných pracích a posterech.
 
-2026-11-07: dokončeny a ověřeny rozpracované průvodce včetně 21 bezokenních kontrol skutečných formulářů a PDF integrací všech tří nových předvoleb. Ověřeny návrat, oddělené rozepsané údaje, chyby a ochrana proti duplicitnímu vytvoření. Dodatečná editace těchto tří typů zůstává navazujícím krokem.
+2026-11-07: dokončeny a ověřeny rozpracované průvodce včetně 21 bezokenních kontrol skutečných formulářů a PDF integrací všech tří nových předvoleb. Ověřeny návrat, oddělené rozepsané údaje, chyby a ochrana proti duplicitnímu vytvoření. Následně doplněna editace prezentací; navazuje editace závěrečných prací a posterů.
 
-Implementován formulář Údaje práce pro dodatečnou úpravu titulní strany existující semestrálky, s načtením ze zdroje, kontrolou revizí zdroje/stylu a samostatnými body historie. Další rozšíření: stejné ovládání pro další ověřené TUL šablony.
+Implementován formulář Údaje práce pro dodatečnou úpravu titulní strany existující semestrálky, s načtením ze zdroje, kontrolou revizí zdroje/stylu a samostatnými body historie. 2026-11-07: rozšířen o prezentace včetně skutečného PDF po změně názvu, autorky, fakulty a data. Opravena editace ručně přeuspořádaných deklarací v semestrálce a odlišeno selhání obnovení editoru po úspěšném zápisu. Další rozšíření: závěrečné práce a postery.
 
 Zpřehledněny popisky podkladů a písem ve stromu souborů jako Vzhled šablony; fyzické cesty se nemění.
 
