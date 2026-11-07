@@ -20,7 +20,9 @@ Ověřeno automatické vydání 0.2.5, skutečné privátní stažení a odmítn
 
 ## Bezprostřední další etapa – bezpečná editace
 
-2026-11-07: na přání uživatele sjednocen návrhový směr „v jednoduchosti je krása“. Úvod byl zjednodušen na dvě hlavní akce a poslední práce, ostatní volby jsou na vyžádání. Další úpravy pracovního rozhraní mají zachovat stejnou hierarchii podle DESIGN_SYSTEM.md.
+2026-11-07: uživatel upřesnil jednoduchost jako snadnou práci v programu. Obnovena animovaná ukázka v českém obsahu a TUL vzhledu; import je opět přímo dostupný bez rozbalování. Další úpravy mají zkracovat běžné pracovní postupy a používat srozumitelné ovládání a předvolby podle DESIGN_SYSTEM.md.
+
+Příští UX průchody hodnotit podle běžných scénářů založit dokument → psát → uložit → získat PDF. Sledovat nutné kroky, zbytečné volby a pochopitelnost výsledku; automatické skrytí ovladačů samo o sobě není akceptační kritérium.
 
 2026-11-07: spojeny historie obou PC včetně podepsaných aktualizací a editace semestrálních údajů. Místní rozpracované průvodce ostatními TUL šablonami jsou zachované odděleně od synchronizačního commitu. Živé GUI a instalační kontroly při tomto předání neproběhly.
 

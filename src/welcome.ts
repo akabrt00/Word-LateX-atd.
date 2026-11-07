@@ -9,10 +9,13 @@ import { profile } from "./profile";
 import { openProject } from "./project";
 import { TEMPLATES } from "./templates";
 import { refreshWorkspaceLabel, showWorkspace } from "./workspace";
+import { startWelcomeDemo, stopWelcomeDemo } from "./welcome-demo";
 
 export function showWelcome(show: boolean) {
   welcomeEl.classList.toggle("hidden", !show);
   appEl.classList.toggle("hidden", show);
+  if (show) startWelcomeDemo();
+  else stopWelcomeDemo();
   if (show) void refreshWorkspaceLabel();
 }
 

@@ -57,6 +57,7 @@ import { getRecent, importProject, installLatex, newProject, renderRecent, rende
 import { initAiCenter } from "./ai-center";
 import { refreshWorkspaceLabel, showWorkspace } from "./workspace";
 import { editDocumentDetails } from "./document-metadata";
+import { startWelcomeDemo } from "./welcome-demo";
 
 $("btn-semester-details").onclick = () => { void editDocumentDetails(); };
 
@@ -539,6 +540,7 @@ checkForUpdatesLater();
 renderRecent();
 renderShortcuts();
 renderSetup();
+startWelcomeDemo();
 
 initAiCenter();
 invoke<string | null>("initial_project").then(path => { if (path) return openProject(path); }).catch(e => setStatus(String(e), "err"));

@@ -7,7 +7,7 @@ Komunikujte česky. Kód a komentáře mohou být anglicky. Začněte README.md,
 1. Zkontrolujte git status; neodstraňujte uživatelské změny.
 2. Vymezte malý ověřitelný scénář a jeho rizika.
 3. Zachovejte fungující CodeMirror, PDF.js a Tauri infrastrukturu.
-   UI navrhujte podle zásady uživatele „v jednoduchosti je krása“: jasná hlavní akce, klidný vzhled a podrobnosti na vyžádání; konkrétní pravidla v DESIGN_SYSTEM.md. Chyby bránící práci neskrývejte.
+   Jednoduchost podle upřesnění uživatele znamená snadnou práci: minimum nutných kroků, srozumitelné volby a vhodné výchozí hodnoty. Často používané akce zbytečně neschovávejte. Animace a výraznější vzhled jsou vítané v identitě TUL Writeru; konkrétní pravidla v DESIGN_SYSTEM.md. Chyby bránící práci neskrývejte.
 4. Zdroj je autorita: nikdy nepřevádějte celý LaTeX přes HTML pro uložení.
 5. Nové zásahy mají kontrolovat revizi, původní rozsah a podporovanou syntaxi; neznámé konstrukce ponechte.
 6. Spusťte npm test, npm run check, npm run build a relevantní Rust testy. Pro celý milník proveďte desktopový průchod otevřít, změnit, uložit, kompilovat a zobrazit PDF.

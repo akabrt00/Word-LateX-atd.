@@ -22,6 +22,7 @@
           Otevřít projekt
         </button>
       </div>
+      <button id="welcome-import" class="welcome-import-link" title="Importovat ZIP z Overleafu nebo projekt z Git repozitáře">Importovat projekt…</button>
       <p id="welcome-error" class="welcome-error" role="alert" hidden></p>
       <section id="recent" class="welcome-section" hidden>
         <h2>Poslední projekty</h2>
@@ -29,7 +30,6 @@
       </section>
       <details id="welcome-options" class="welcome-options">
         <summary>Další možnosti</summary>
-        <button id="welcome-import" class="btn btn-outline" title="Importovat ZIP z Overleafu nebo projekt z Git repozitáře">Importovat projekt…</button>
         <section class="welcome-section welcome-workspace"><h2>Pracovní prostor</h2><p id="welcome-workspace-path">Načítám složku dokumentů…</p><button id="welcome-workspace" class="btn btn-outline">Nastavit složku a šablonu…</button></section>
       <section class="welcome-section">
         <h2>Na tomto počítači</h2>
@@ -42,6 +42,14 @@
       </details>
       <p class="welcome-version">TUL Writer <span class="app-version"></span> · Základ Scribe (MIT)</p><p class="tul-independent">Nezávislý studentský projekt. Nejde o oficiální software Technické univerzity v Liberci.</p>
     </div>
+    <section id="welcome-demo" class="welcome-demo" aria-label="Ukázka psaní v TUL Writeru">
+      <header class="welcome-demo-heading"><span>Od textu k dokumentu</span><button id="welcome-demo-replay" class="welcome-import-link" type="button">Přehrát znovu</button></header>
+      <div class="welcome-demo-body" aria-hidden="true">
+        <div class="welcome-demo-code"><span class="welcome-demo-label">LaTeX</span><pre id="welcome-demo-source"></pre></div>
+        <div class="welcome-demo-page"><div id="welcome-demo-paper"></div></div>
+      </div>
+      <p class="welcome-demo-note">Ilustrační ukázka · výsledné PDF se sází při kompilaci.</p>
+    </section>
   </section>
 
   <div id="app" class="hidden">

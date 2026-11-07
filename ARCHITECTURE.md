@@ -12,6 +12,8 @@ updates.ts zobrazuje nabídku a modální stav instalace. Čistý UpdateFlow odd
 
 ## Současný tok
 
+welcome-demo.ts je izolovaná ilustrační animace pevně připraveného zdroje a HTML stránky na úvodu. Nečte ani nezapisuje uživatelův dokument a nespouští TeX. Časovač se zastaví při odchodu z úvodu nebo skrytí aplikace; ukázka má pauzu/obnovení a při omezeném pohybu statický výsledek. Tento HTML náhled není součástí dokumentového modelu ani ukládací cesty.
+
 Zakládání závěrečné práce, prezentace a posteru používá template-form.ts a tagovaný objekt TemplateDetails. Backend template_details.rs připraví validované změny pevně známých deklarací ještě před založením projektu; workspace.rs je zapíše až do nové rozbalené kopie. Sdílený dvoukrokový tok zachovává samostatně rozepsané formuláře všech typů. Podrobnosti a fakultní aliasy v ADR-011.
 
 Tlačítko Údaje práce otevírá document-metadata.ts. Backend document_metadata.rs vybírá podporovaný typ podle konfigurace projektu a sdílí konzervativní dekódování prostého textu, komentářů a data. Semestrálky používají semester_edit.rs s revizemi zdroje/stylu a poli semester-form.ts; prezentace presentation_edit.rs s revizí main.tex a poli template-form.ts. Patche se aplikují odzadu podle skutečných pozic ve zdroji i při ručním přeuspořádání deklarací. Historie zůstává samostatná; prezentace nemění třídy ani jiné soubory. Ochrana dvousouborového zápisu semestrálky je v ADR-010, rozsah prezentací v ADR-013.

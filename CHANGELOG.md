@@ -2,6 +2,11 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## TUL ukázka a jednoduchá práce – 2026-11-07
+
+- Po upřesnění uživatele obnovena animace psaní a vznikající stránky s českým obsahem, typografií Inter a fialovým akcentem TUL Writeru. Barvy zdroje respektují motiv; hotová stránka zůstává bílá. Ukázku lze pozastavit, obnovit a přehrát znovu, omezený pohyb dostává statický výsledek.
+- Import vrácen přímo na úvod bez dalšího rozbalování. Zásada jednoduchosti v pravidlech projektu nově výslovně znamená jednoduché pracovní postupy a dostupné ovládání.
+
 ## Jednodušší rozhraní – 2026-11-07
 
 - Klidnější úvod s novým dokumentem, otevřením projektu a posledními pracemi. Import, nastavení, nástroje a zkratky zůstávají pod Další možnosti; chybějící překladač je automaticky odkryje.

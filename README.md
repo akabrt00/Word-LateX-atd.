@@ -6,7 +6,7 @@ Nezávislý studentský desktopový textový procesor pro Windows. Pracovní for
 
 ### Pracovní prostor a nové dokumenty
 
-Úvod nabízí **Nový dokument**, **Otevřít projekt** a poslední práce. Pod **Další možnosti** najdete import, diagnostiku, zkratky a **Nastavit složku a šablonu…**; stejné nastavení je dostupné přes ozubené kolečko v editoru. Chybějící překladač LaTeXu tuto část automaticky otevře. Výchozí složka je systémová složka Dokumenty / TUL Writer. Nastavení se ukládá do uživatelské konfigurace aplikace a platí i po restartu pro všechny nové projekty na tomto PC.
+Úvod nabízí **Nový dokument**, **Otevřít projekt**, přímo dostupný import a poslední práce. Vedle nich je animovaná ilustrační ukázka psaní v barvách TUL Writeru, kterou lze pozastavit nebo přehrát znovu; respektuje nastavení omezeného pohybu. Pod **Další možnosti** najdete diagnostiku, zkratky a **Nastavit složku a šablonu…**; stejné nastavení je dostupné přes ozubené kolečko v editoru. Chybějící překladač LaTeXu tuto část automaticky otevře. Výchozí složka je systémová složka Dokumenty / TUL Writer. Nastavení se ukládá do uživatelské konfigurace aplikace a platí i po restartu pro všechny nové projekty na tomto PC.
 
 **Nový dokument** požádá o název a šablonu a vytvoří vlastní podsložku ve zvoleném pracovním prostoru. Existující složku nepřepisuje ani neslučuje. Předvolená je TUL semestrální práce; k dispozici jsou také závěrečná práce, prezentace, poster a prázdný LaTeX dokument. Čtyři TUL balíčky jsou nezměněné offline kopie z portálu https://latex-tul.adamkabrt.chatgpt.site/templates; původ a kontrolní součty jsou v resources/templates/. Původní obecné šablony jsou pod **Další šablony…**.
 

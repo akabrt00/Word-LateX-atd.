@@ -22,9 +22,9 @@ Tmavý accent je vlastní přístupná odvozená UI barva, nikoli nová oficiál
 
 ## Komponenty
 
-Základní směr na přání uživatele (2026-11-07): krása v jednoduchosti. Každá obrazovka má jasnou hlavní akci, klidnou typografii a dostatek volného prostoru. Pokročilé možnosti se ukazují na vyžádání. Chyba, která brání hlavnímu úkolu, musí zůstat snadno dostupná; jednoduchost nesmí skrývat problém ani rušit klávesnicové ovládání.
+Upřesněný směr uživatele (2026-11-07): jednoduchost znamená snadnou práci v programu. Prioritou je málo nutných kroků, srozumitelné popisky, rozumné předvolby a dobře dostupné běžné akce. Každou úpravu posuzovat podle toho, zda se v programu snadněji píše a pracuje s dokumentem. Vizuální bohatost a animace jsou vítané, pokud respektují identitu TUL Writeru a nebrání práci. Chyba, která brání hlavnímu úkolu, zůstává snadno dostupná; zachovat klávesnicové ovládání.
 
-Úvodní obrazovka: jeden sloupec, Nový dokument a Otevřít projekt, poslední práce. Import, pracovní prostor, diagnostika a zkratky jsou pod Další možnosti. Chybějící překladač tuto část otevře automaticky; nepřítomnost volitelného Pythonu nikoli. Bez dekorativní animace nebo reklamní ukázky kódu. Akcent zvýrazňuje hlavní akci a používá barvu aktivního motivu.
+Úvodní obrazovka: vlevo nový dokument, otevření projektu, přímo dostupný import a poslední práce. Pracovní prostor, diagnostika a zkratky jsou pod Další možnosti; chybějící překladač tuto část otevře automaticky, nepřítomnost volitelného Pythonu nikoli. Vpravo česká animovaná ukázka zdroje a vznikající stránky: Inter, fialový akcent a barvy aktivního motivu. Ukázku lze pozastavit, obnovit a přehrát znovu; při omezeném pohybu se ukáže hotová statická stránka. Nejde o skutečně kompilovaný dokument. V menším okně má přednost přehledná stránka před kódem, při úzkém zobrazení jsou části pod sebou.
 Pracovní plocha: soubory/struktura vlevo, zdroj uprostřed, PDF vpravo. AI centrum je nyní zavíratelný pravý overlay; cílově dockovaný panel s vlastní nastavitelnou šířkou.
 Editorové režimy nyní popisujeme jako LaTeX + PDF. Nenabízíme nefunkční přepínač Word Mode.
 Cílový ribbon: Soubor, Domů, Vložení, Rozložení, Reference, Rovnice, Revize, Zobrazení, AI asistent; kontextové nástroje obrázků a tabulek až s implementovanými operacemi.

@@ -1,5 +1,21 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## TUL animace a upřesnění jednoduchosti – 2026-11-07
+
+Výchozí čistý commit 9fb41b2. Uživatel upřesnil, že jednoduchost znamená snadnou práci, a požádal o animovanou ukázku v TUL vzhledu. Upraveny návrhové instrukce v AGENTS.md a DESIGN_SYSTEM.md. Na úvod vrácena česká ilustrační animace zdroje a vznikající stránky: Inter, fialový akcent, zdroj podle aktivního motivu, bílá stránka. Import je přímo dostupný bez rozbalování. Nový modul welcome-demo.ts používá pevný ukázkový obsah; nemá přístup k projektům ani překladači.
+
+Prostředí: stejné Windows/PowerShell, Node v24.15.0, npm 11.12.1, Edge headless, bez nových závislostí a bez změn backendu.
+
+- `npm test`: 21 prošlo, 0 selhalo. `npm run check` a `npm run build`: exit 0. Existující varování neúčinných dynamických importů a velikosti chunků zůstávají; ignorovaný log tul-demo-build.log.
+- Dočasný preview v output/: `node output/prepare-welcome-preview.mjs` a `node output/welcome-preview-runner.mjs` mimo sandbox. Skutečné index.html, CSS a moduly welcome/welcome-demo, izolovaný Edge a mock projektových akcí/check_tools; pouze smyšlené názvy projektů a osob.
+- Ověřeny hlavní akce, jednoznačně dostupný import, poslední projekty a odkrytí chybějícího překladače. Animace: rozepisování zdroje, pauza, pokračování, zastavení časovače, zachování zastavení při návratu k oknu, dokončení celé ukázky a okamžitý kompletní výsledek při prefers-reduced-motion. Postupné kontroly prošly 12 a následně 13 kontrolami chování, exit 0.
+- Při vizuální kontrole byla prověřena nejednoznačně zobrazená část snímku v jiném motivu. DOM diagnostika potvrdila správné pozice, velikost, viditelnost i barvy textu; přímé načtení uloženého PNG potvrdilo 1630 barevných pixelů titulku. Vykreslování bylo zároveň zjednodušeno na běžné HTML bloky s průběžnou průhledností namísto skrytých kopií textu. Odhaleno a opraveno skutečné oříznutí při menší výšce okna: typografie stránky se odvozuje také od dostupné výšky.
+- Jeden samostatný diagnostický start skončil uzamčeným dočasným profilem (EBUSY), nikoli úspěchem. Procesy byly dohledány výhradně podle konkrétního testovacího profilu a ukončeny; běžné prohlížeče se neovládaly. Opakovaný izolovaný průchod prošel.
+- Finální opakování po změně měřítka: 13 kontrol chování a pět rozvržení prošlo, exit 0. PNG/JSON v ignorovaném output/welcome-tul-*: světlý/tmavý motiv 1400 × 860, sbalené/rozbalené možnosti 820 × 620 a minimální okno 820 × 520. Kontrolováno i to, že obsah ilustrační stránky nepřetéká mimo její spodní okraj.
+- `npm run check` a finální `npm run tauri build -- --debug --no-bundle`: exit 0. Aktuální src-tauri/target/debug/tul-writer.exe sestaveno bez spuštění; log tul-demo-desktop.log je ignorovaný. `git diff --check`: bez chyb.
+
+Backendové Rust testy se neopakovaly, protože zdrojové transakce, ukládání a překladač se neměnily. Nativní okno a instalátor nebyly otevřeny na přání uživatele zachovat obrazovku pro vlastní práci. Nejde o živý desktopový průchod ani skutečně zkompilované PDF ukázky.
+
 ## Jednodušší úvod – 2026-11-07
 
 Výchozí čistý commit 7782dd4. Na přání uživatele „v jednoduchosti je krása“ zjednodušen úvod na nový dokument, otevření projektu a poslední práce. Import, pracovní prostor, diagnostika a zkratky zůstávají pod nativním details/summary Další možnosti; chybějící TeX tuto část otevře automaticky. Python je volitelný. Odstraněn dekorativní typewriter včetně časovačů a souvisejících stylů; z pracovní lišty odstraněn pouze nadbytečný popisek režimu. Pravidlo návrhu je uložené v DESIGN_SYSTEM.md a připomenuté v AGENTS.md.

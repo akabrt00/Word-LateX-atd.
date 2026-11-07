@@ -6,7 +6,7 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 
 | Funkce | Průběžný stav |
 |---|---|
-| Jednodušší úvod | Dvě hlavní akce a poslední projekty; ostatní volby v Další možnosti. Bez animované ukázky. Chybějící LaTeX automaticky odkryje diagnostiku, Python je označený jako volitelný. Ověřeno bezokenním vykreslením ve světlém/tmavém motivu a menším okně |
+| Úvod v TUL vzhledu | Nový dokument, otevření, přímo dostupný import a poslední projekty. Česká animovaná ukázka LaTeXu a stránky v barvách TUL Writeru, s pozastavením, pokračováním a statickým režimem při omezeném pohybu. Chybějící LaTeX automaticky odkryje diagnostiku, Python je volitelný |
 | Údaje existující prezentace | Načtení ze zdroje a lokální změny fakulty, názvu, autorů, pracoviště, data a kontaktů; revize main.tex, historie, no-op a zachování snímků. Ověřeny backendové konflikty, 24 bezokenních kontrol sdíleného formuláře a skutečné PDF po editaci; vlastní syntaxe se odmítá |
 | Průvodci dalšími TUL šablonami | Druhý krok pro BP/DP, prezentaci a poster; vlastní pole a více autorů u prezentace/posteru. Ověřeno 21 bezokenních kontrol formuláře, backendová validace a skutečné PDF všech tří průvodců; nativní desktopový průchod se neopakoval |
 | Údaje existující semestrálky | Formulář čte aktuální zdroj, mění sedm známých hodnot a popisek autorů; ochrana revizí zdroje/stylu, samostatná historie. Živě ověřen přechod skupina ↔ jeden autor, PDF i konflikt externího stylu. Vlastní makra nebo nejednoznačné deklarace odmítá |
