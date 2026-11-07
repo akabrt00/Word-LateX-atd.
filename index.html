@@ -71,7 +71,7 @@
         Run file
       </button>
       <button id="btn-run" class="btn" title="Run every notebook that produces figures (⇧⌘↵)">Run notebooks</button>
-      <button id="btn-compile" class="btn btn-primary" title="Save and compile (⌘↵)">Kompilovat <kbd>⌘↵</kbd></button>
+      <button id="btn-compile" class="btn btn-primary" title="Uložit otevřené změny a vytvořit PDF (⌘↵)">Vytvořit PDF <kbd>⌘↵</kbd></button>
       <button id="btn-settings" class="icon-btn" title="Settings" aria-label="Settings" aria-haspopup="true">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2.5 5h5.5M12 5h1.5M2.5 11h1.5M8 11h5.5"/><circle cx="10" cy="5" r="1.75"/><circle cx="6" cy="11" r="1.75"/></svg>
       </button>
@@ -154,12 +154,12 @@
         </div>
         <section id="log-panel" hidden>
           <header>
-            <span id="log-title">Log</span>
+            <span id="log-title">Průběh</span>
             <span class="log-tabs" role="tablist">
-              <button id="log-tab-problems" role="tab" aria-selected="false" aria-controls="problems">Problems</button>
-              <button id="log-tab-output" role="tab" aria-selected="true" aria-controls="log">Output</button>
+              <button id="log-tab-problems" role="tab" aria-selected="false" aria-controls="problems">Problémy</button>
+              <button id="log-tab-output" role="tab" aria-selected="true" aria-controls="log">Podrobnosti</button>
             </span>
-            <button id="log-close" class="icon-btn" title="Hide log" aria-label="Hide log">
+            <button id="log-close" class="icon-btn" title="Skrýt průběh" aria-label="Skrýt průběh">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
             </button>
           </header>
@@ -184,8 +184,8 @@
       <section id="pdf-pane">
         <div id="pdf-bar" hidden>
           <span id="pdf-page-label"></span>
-          <button id="pdf-download" class="icon-btn" title="Save a copy of the PDF" aria-label="Save a copy of the PDF"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.75v7.5M5 7.25l3 3 3-3"/><path d="M2.75 10.5v1.75a1 1 0 001 1h8.5a1 1 0 001-1V10.5"/></svg></button>
-          <input id="pdf-find" type="text" placeholder="Find in PDF" aria-label="Find in PDF" spellcheck="false" autocomplete="off" />
+          <button id="pdf-download" class="btn" title="Uložit kopii právě zobrazeného PDF" disabled><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.75v7.5M5 7.25l3 3 3-3"/><path d="M2.75 10.5v1.75a1 1 0 001 1h8.5a1 1 0 001-1V10.5"/></svg>Uložit PDF…</button>
+          <input id="pdf-find" type="text" placeholder="Hledat v PDF" aria-label="Hledat v PDF" spellcheck="false" autocomplete="off" />
           <span id="pdf-find-count" aria-live="polite"></span>
           <span class="pdf-zoom">
             <button id="pdf-zoom-out" class="icon-btn" title="Zoom out" aria-label="Zoom out"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8h9"/></svg></button>
@@ -204,9 +204,10 @@
         <div id="pdf-scroll">
         <div id="pdf">
           <div class="pdf-empty">
-            <p>No preview yet.</p>
-            <p>Press <kbd>⌘</kbd><kbd>↵</kbd> to compile the paper.</p>
-            <p>Double-click the PDF to jump to its source.</p>
+            <p>Tady uvidíte svůj dokument v PDF.</p>
+            <p>Otevřené změny se před vytvořením automaticky uloží.</p>
+            <button type="button" class="btn btn-primary" data-create-pdf>Vytvořit PDF</button>
+            <p>Hotové PDF pak můžete uložit do vybrané složky.</p>
           </div>
         </div>
         </div>
@@ -215,9 +216,9 @@
     <footer id="statusbar">
       <span id="sb-branch" class="sb-item" hidden></span>
       <button id="sb-problems" class="sb-item"></button>
-      <button id="status" class="status" title="Show or hide the log" hidden>
+      <button id="status" class="status" title="Zobrazit nebo skrýt průběh" hidden>
         <span class="status-mark" aria-hidden="true"></span>
-        <span id="status-text"></span>
+        <span id="status-text" aria-live="polite"></span>
       </button>
       <span class="sb-gap"></span>
       <button id="sb-track" class="sb-item sb-track" title="Track changes is on: what you type and delete is marked. Click to turn it off." hidden>Tracking changes</button>
@@ -307,13 +308,13 @@
       <span>Writing checks</span>
       <input id="setting-lint" type="checkbox" role="switch" />
     </label>
-    <h3 class="settings-group">Build</h3>
+    <h3 class="settings-group">PDF</h3>
     <label class="settings-row">
-      <span>Compile on save</span>
+      <span>Vytvořit PDF při uložení</span>
       <input id="setting-compile-on-save" type="checkbox" role="switch" />
     </label>
     <label class="settings-row">
-      <span>Compile as you type</span>
+      <span>Průběžně vytvářet PDF</span>
       <input id="setting-compile-on-type" type="checkbox" role="switch" />
     </label>
     <h3 class="settings-group">AI</h3>

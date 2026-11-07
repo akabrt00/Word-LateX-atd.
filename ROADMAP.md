@@ -1,5 +1,9 @@
 # Roadmap
 
+## Aktivní priorita — alfa a omega
+
+Uživatel 2026-11-07 určil výhradní současné zaměření: **založit dokument → psát → uložit → získat PDF**. Ostatní níže uvedené funkční etapy jsou odložené. Každá další změna má tuto běžnou cestu zjednodušit nebo přímo podpořit její spolehlivost. Stav, akceptační scénáře a následující překážky jsou v [docs/UX_WORKFLOW.md](docs/UX_WORKFLOW.md).
+
 ## Etapa 0 – audit a rozhodnutí
 
 Vybrán Scribe MIT se zachováním historie. Audit, licence, architektura, AI návrh a design systém jsou připravené. Převzetí AGPL kódu není součástí rozhodnutí.

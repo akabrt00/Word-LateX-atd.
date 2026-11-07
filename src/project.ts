@@ -61,7 +61,7 @@ export async function openProject(path: string) {
   $("project-name").textContent = baseName(path);
   renderCrumb();
   setStatus("");
-  showLog("Log", "", false);
+  showLog("Průběh", "", false);
   showWelcome(false);
 
   // Prefer a file that declares \documentclass as the compile root.

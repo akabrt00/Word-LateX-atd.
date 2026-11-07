@@ -12,6 +12,7 @@ import { picturesLayer } from "./darkpdf";
 import { view } from "./editor";
 import { sizes, togglePane } from "./layout";
 import { revealLine } from "./project";
+import { PdfExportFlow } from "./pdf-export-flow";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -25,6 +26,13 @@ const pdfEmpty = box.firstElementChild!.cloneNode(true);
 
 let pdfJob = 0;
 let pdfDoc: PDFDocumentProxy | null = null;
+let pdfBuildBusy = false;
+let pdfExportBusy = false;
+export function canExportPdf() { return !!root && !!pdfDoc && !pdfBuildBusy && !pdfExportBusy; }
+function updatePdfExportButton() {
+  $<HTMLButtonElement>("pdf-download").disabled = !canExportPdf();
+}
+export function setPdfBuildBusy(busy: boolean) { pdfBuildBusy = busy; updatePdfExportButton(); }
 /** 1 means "fit the pane's width". */
 let zoom = 1;
 
@@ -35,6 +43,7 @@ const ZOOM_MAX = 4;
 export function resetPdf() {
   lastPdf = null;
   pdfDoc = null;
+  updatePdfExportButton();
   pdfJob++;
   zoom = 1;
   matches = [];
@@ -45,13 +54,15 @@ export function resetPdf() {
   box.replaceChildren(pdfEmpty.cloneNode(true));
 }
 
-export async function renderPdf(rel: string) {
+export async function renderPdf(rel: string, isCurrent = () => true) {
+  const project = root;
+  if (!project) return;
   const job = ++pdfJob;
-  lastPdf = rel;
   // the banner of a comparison goes as soon as anything else is shown
   if (!rel.startsWith("build/diff/")) $("pdf-diff").hidden = true;
-  const bytes = await invoke<ArrayBuffer>("read_binary", { root, rel });
+  const bytes = await invoke<ArrayBuffer>("read_binary", { root: project, rel });
   const doc = await pdfjs.getDocument({ data: new Uint8Array(bytes) }).promise;
+  if (job !== pdfJob || root !== project || !isCurrent()) return;
   const frag = document.createDocumentFragment();
   // The page column is `zoom` times the pane wide; past 100% the pane scrolls sideways.
   const width = Math.max(200, scroller.clientWidth * zoom - 48);
@@ -64,7 +75,7 @@ export async function renderPdf(rel: string) {
     canvas.width = vp.width;
     canvas.height = vp.height;
     await page.render({ canvasContext: canvas.getContext("2d")!, viewport: vp }).promise;
-    if (job !== pdfJob) return; // a newer render started
+    if (job !== pdfJob || root !== project || !isCurrent()) return; // a newer render or context took over
     // The wrapper carries the page's size in PDF points, which SyncTeX and search positions use.
     const sheet = document.createElement("div");
     sheet.className = "pdf-page";
@@ -90,13 +101,15 @@ export async function renderPdf(rel: string) {
       container: layer,
       viewport: page.getViewport({ scale: cssScale }),
     }).render();
-    if (job !== pdfJob) return;
+    if (job !== pdfJob || root !== project || !isCurrent()) return;
     frag.appendChild(sheet);
   }
 
   // Keep the reading position across recompiles and zoom changes, as a fraction of the document.
   const at = scroller.scrollHeight > 0 ? scroller.scrollTop / scroller.scrollHeight : 0;
   pdfDoc = doc;
+  lastPdf = rel;
+  updatePdfExportButton();
   box.style.width = zoom === 1 ? "" : `${zoom * 100}%`;
   box.replaceChildren(frag);
   box.classList.remove("rescaling");
@@ -143,7 +156,7 @@ function updatePageLabel() {
   // The page under a line 40% down the pane is the one being read.
   const line = scroller.getBoundingClientRect().top + scroller.clientHeight * 0.4;
   const reading = pages.find((p) => p.getBoundingClientRect().bottom >= line) ?? pages[pages.length - 1];
-  $("pdf-page-label").textContent = `Page ${reading.dataset.page} of ${pages.length}`;
+  $("pdf-page-label").textContent = `Strana ${reading.dataset.page} z ${pages.length}`;
 }
 
 let labelQueued = false;
@@ -166,7 +179,7 @@ function showMatch(index: number) {
   matchAt = matches.length ? (index + matches.length) % matches.length : -1;
   const count = $("pdf-find-count");
   if (matchAt === -1) {
-    count.textContent = $<HTMLInputElement>("pdf-find").value.trim() ? "No matches" : "";
+    count.textContent = $<HTMLInputElement>("pdf-find").value.trim() ? "Nenalezeno" : "";
     return;
   }
   const hit = matches[matchAt];
@@ -399,18 +412,26 @@ export async function showInPdf() {
 }
 
 // ---------- saving a copy of the PDF ----------
-/** Save the PDF in the preview wherever the user chooses, named after the project. */
+const pdfExport = new PdfExportFlow({
+  capture: async () => {
+    const project = root, displayed = pdfDoc;
+    if (!project || !displayed || pdfBuildBusy) return null;
+    return { name: `${baseName(project)}.pdf`, bytes: new Uint8Array(await displayed.getData()) };
+  },
+  choose: name => save({ title: "Uložit PDF", defaultPath: name, filters: [{ name: "PDF", extensions: ["pdf"] }] }),
+  write: async (bytes, destination) => { await invoke("export_pdf", bytes, { headers: { "x-dest": encodeURIComponent(destination) } }); },
+  busy: busy => { pdfExportBusy = busy; updatePdfExportButton(); },
+});
+
+/** Save exactly the displayed PDF, even if its project changes during the dialog. */
 export async function downloadPdf() {
-  if (!root || !lastPdf) return;
-  const name = `${baseName(root)}.pdf`;
-  const dest = await save({ title: "Save the PDF", defaultPath: name, filters: [{ name: "PDF", extensions: ["pdf"] }] });
-  if (!dest) return;
+  if (!canExportPdf()) return;
+  setStatus("Připravuji PDF k uložení…", "busy");
   try {
-    await invoke("copy_out", { root, rel: lastPdf, dest });
-    setStatus(`Saved ${baseName(dest)}`, "ok");
-  } catch (e) {
-    setStatus(String(e), "err");
-  }
+    const destination = await pdfExport.save();
+    if (destination) setStatus(`PDF uloženo: ${baseName(destination)}`, "ok");
+    else setStatus("Uložení PDF zrušeno.");
+  } catch (error) { setStatus(`PDF se nepodařilo uložit: ${String(error)}`, "err"); }
 }
 
 $("pdf-download").onclick = downloadPdf;

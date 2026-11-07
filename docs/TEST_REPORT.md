@@ -1,5 +1,20 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Hlavní pracovní cesta — první iterace — 2026-11-07
+
+Výchozí čistý commit 2bbf249. Priorita uživatele: založit dokument → psát → uložit → získat PDF. Tato iterace zpřehledňuje tvorbu PDF, automatické uložení otevřených editorů a export přesné zobrazené verze. Ostatní překážky této cesty zůstávají v docs/UX_WORKFLOW.md; celá priorita není dokončená.
+
+Prostředí: Windows/PowerShell, Node v24.15.0, npm 11.12.1, Rust/cargo 1.99.1, místní MiKTeX a izolovaný bezokenní Edge. Bez nových závislostí. Testy používají dočasné projekty a smyšlené názvy, ne uživatelova data.
+
+- `npm test`: 24 prošlo, 0 selhalo; zahrnuje zachování exportovaného snímku při změně projektu během dialogu, zrušení, souběh a opakování po chybě. Finální `npm run check`: exit 0.
+- `npm run test:workflow`: finálně 21 kontrol prošlo, exit 0. Skutečné index.html, build.ts, preview.ts, diagnostika a PDF.js včetně canvasu; nativní IPC, dialogy a editorové adaptéry jsou testovací. Ověřeno pořadí uložení obou editorů, chyby uložení, neúspěšný překlad, neplatné PDF, blokování opakovaných akcí, přepnutí projektu během uložení/překladu, změna hlavního souboru během načítání PDF, přesné exportované bajty a obnova ovladačů. Před rozšířením o poslední závod prošlo 20 kontrol.
+- Regrese `npm run test:workspace` a `npm run test:metadata`: postupně 21 a 24 kontrol prošlo, exit 0.
+- `cargo test --manifest-path src-tauri/Cargo.toml --offline --lib -- --test-threads=1 --skip tests::lists_and_compiles_example`: 57 prošlo, 0 selhalo, 13 ignorováno, 1 filtrován. Notebookový test zůstává vynechán kvůli dříve doloženému chybějícímu matplotlib; nejde o úspěch tohoto testu.
+- `cargo test --manifest-path src-tauri/Cargo.toml --offline --lib pdf_export::tests::compiled_document_exports_byte_for_byte -- --ignored --test-threads=1`: 1 prošel. Skutečný nový dokument přeložen pdfLaTeXem; exportované PDF se bajt po bajtu shoduje a zdroj zůstal zachovaný. Dva běžné backendové exportní testy navíc ověřují přepsání pouze zvoleného PDF, českou cestu, odmítnutí neplatných dat, jiné přípony, relativní cesty a chybějící složky.
+- `npm run build`: exit 0. Finální `npm run tauri build -- --debug --no-bundle`: exit 0, sestaveno src-tauri/target/debug/tul-writer.exe bez spuštění. Ignorovaný log workflow-desktop-build.log. Existující varování velikosti chunků a neúčinných dynamických importů přetrvávají. `git diff --check`: bez chyb.
+
+Živé desktopové okno, skutečný nativní dialog přes Tauri a instalátor nebyly spuštěny na přání uživatele nepřebírat obrazovku. Browserové ověření a skutečný TeX/backendový export jsou oddělené kontroly, nikoli plný nativní průchod. Rozlišení uloženého textu od zastaralého náhledu PDF je další otevřená položka.
+
 ## TUL animace a upřesnění jednoduchosti – 2026-11-07
 
 Výchozí čistý commit 9fb41b2. Uživatel upřesnil, že jednoduchost znamená snadnou práci, a požádal o animovanou ukázku v TUL vzhledu. Upraveny návrhové instrukce v AGENTS.md a DESIGN_SYSTEM.md. Na úvod vrácena česká ilustrační animace zdroje a vznikající stránky: Inter, fialový akcent, zdroj podle aktivního motivu, bílá stránka. Import je přímo dostupný bez rozbalování. Nový modul welcome-demo.ts používá pevný ukázkový obsah; nemá přístup k projektům ani překladači.

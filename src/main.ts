@@ -21,7 +21,7 @@ import { view } from "./editor";
 import { sizes, togglePane } from "./layout";
 import { activeCell, cellRunners, isNotebook, restartKernel } from "./notebook";
 import { closeProject, listFiles, openFile, openFolder, openProject } from "./project";
-import { canShowInPdf, focusPdfFind, goToSelectionSource, hasPdf, hasPdfSelection, lastPdf, rerenderPdfSoon, showInPdf, zoomPdf } from "./preview";
+import { canExportPdf, canShowInPdf, downloadPdf, focusPdfFind, goToSelectionSource, hasPdf, hasPdfSelection, lastPdf, rerenderPdfSoon, showInPdf, zoomPdf } from "./preview";
 import { refreshEditors, setCompileOnSave, setCompileOnType, settings, toggleSettings, updateSettings, zoom } from "./settings";
 import { appearance, appearanceListeners, applyAppearance, isDark, updateAppearance } from "./appearance";
 import { focusOn, toggleFocus } from "./focus";
@@ -64,8 +64,8 @@ $("btn-semester-details").onclick = () => { void editDocumentDetails(); };
 // ---------- log ----------
 function toggleLog() {
   if (logPanel.hidden && !logEl.textContent) {
-    $("log-title").textContent = "Log";
-    logEl.textContent = "Nothing has run yet. Compile the paper or run a notebook to see its output here.";
+    $("log-title").textContent = "Průběh";
+    logEl.textContent = "Zatím tu není žádný výstup. Zvolte Vytvořit PDF; tady pak najdete podrobnosti o průběhu.";
     setLogView("output");
   }
   logPanel.hidden = !logPanel.hidden;
@@ -128,7 +128,8 @@ register(
   { id: "file.open", group: "File", title: "Open Project…", keys: "Mod-o", run: openFolder },
   { id: "file.import", group: "File", title: "Import from Overleaf or Git…", run: importProject },
   { id: "file.newProject", group: "File", title: "Nový dokument…", run: newProject },
-  { id: "file.save", group: "File", title: "Save", keys: "Mod-s", run: saveFile, enabled: () => !!current && !VIEWABLE.test(current) && !/\.(csv|tsv)$/i.test(current) },
+  { id: "file.save", group: "File", title: "Uložit", keys: "Mod-s", run: saveFile, enabled: () => !!current && !VIEWABLE.test(current) && !/\.(csv|tsv)$/i.test(current) },
+  { id: "file.savePdf", group: "File", title: "Uložit PDF…", enabled: canExportPdf, run: downloadPdf },
   {
     id: "file.reveal", group: "File", title: "Reveal in Finder", enabled: hasProject,
     run: () => revealItemInDir(current ? `${root}/${current}` : root!),
@@ -216,7 +217,7 @@ register(
   { id: "view.focus", group: "View", title: "Focus Mode", keys: "Mod-Alt-f", enabled: () => !!current && !$("editor").hidden, checked: focusOn, run: () => toggleFocus() },
   { id: "view.pdfDark", group: "View", title: "Dark PDF", checked: () => appearance.pdfDark, run: toggleDarkPdf },
 
-  { id: "build.compile", group: "Build", title: "Compile", keys: "Mod-Enter", enabled: hasProject, run: compile },
+  { id: "build.compile", group: "Build", title: "Vytvořit PDF", keys: "Mod-Enter", enabled: hasProject, run: compile },
   { id: "build.runNotebooks", group: "Build", title: "Run Notebooks", keys: "Mod-Shift-Enter", enabled: hasProject, run: runNotebook },
   {
     id: "build.runCell", group: "Build", title: "Run Cell", keys: "Shift-Enter", passive: true,
@@ -233,11 +234,11 @@ register(
   { id: "build.showInSource", group: "Build", title: "Show PDF Selection in Source", enabled: hasPdfSelection, run: goToSelectionSource },
   { id: "build.showInPdf", group: "Build", title: "Show in PDF", keys: "Mod-Shift-j", enabled: canShowInPdf, run: showInPdf },
   {
-    id: "build.compileOnSave", group: "Build", title: "Compile on Save", enabled: hasProject,
+    id: "build.compileOnSave", group: "Build", title: "Vytvořit PDF při uložení", enabled: hasProject,
     checked: () => settings.compileOnSave, run: () => setCompileOnSave(!settings.compileOnSave),
   },
   {
-    id: "build.compileOnType", group: "Build", title: "Compile as You Type", enabled: hasProject,
+    id: "build.compileOnType", group: "Build", title: "Průběžně vytvářet PDF", enabled: hasProject,
     checked: () => settings.compileOnType, run: () => setCompileOnType(!settings.compileOnType),
   },
   {
@@ -366,12 +367,12 @@ const MENU_ICON = {
 
 createMenubar($("menubar"), [
   {
-    title: "File",
+    title: "Soubor",
     icon: MENU_ICON.file,
     entries: [
       "file.new", "file.newNotebook", "file.newFolder", "file.upload", "-",
       "file.newProject", "file.open", "file.import", { title: "Open Recent", icon: ICONS.recent, submenu: recentEntries }, "-",
-      "file.save", "file.rename", "file.trash", "-",
+      "file.save", "file.savePdf", "file.rename", "file.trash", "-",
       "file.export", "file.reveal", "-",
       "file.closeTab", "file.close",
     ],
@@ -413,7 +414,7 @@ createMenubar($("menubar"), [
     ],
   },
   {
-    title: "Build",
+    title: "PDF",
     icon: MENU_ICON.build,
     entries: [
       "build.compile", "build.compileOnSave", "build.compileOnType", "-",
@@ -442,6 +443,9 @@ createMenubar($("menubar"), [
 // ---------- wire up ----------
 $("btn-open").onclick = openFolder;
 $("btn-compile").onclick = () => compile();
+$("pdf").addEventListener("click", event => {
+  if ((event.target as Element).closest("[data-create-pdf]")) void compile();
+});
 $("btn-run").onclick = runNotebook;
 $("btn-settings").onclick = () => toggleSettings();
 $("welcome-open").onclick = openFolder;

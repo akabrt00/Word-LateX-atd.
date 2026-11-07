@@ -1,0 +1,108 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="/src/style.css"><link rel="stylesheet" href="/src/tul-writer.css">
+<script type="module">
+const source = new DOMParser().parseFromString(await fetch("/index.html").then(r => r.text()), "text/html");
+source.querySelectorAll("script").forEach(script => script.remove());
+document.body.replaceChildren(...source.body.children);
+document.getElementById("welcome").classList.add("hidden");
+document.getElementById("app").classList.remove("hidden");
+const result = document.createElement("pre"); result.id = "workspace-test-result"; result.hidden = true; document.body.append(result);
+try {
+  const { setRoot, setMainFile, setCurrent } = await import("/src/core.ts");
+  const { workflow } = await import("/tests/browser/workflow-mocks.ts");
+  let checks = 0;
+  const check = (condition, message) => { if (!condition) throw Error(message); checks++; };
+  const status = () => document.getElementById("status-text").textContent;
+  const bytesFor = text => {
+    const objects = [
+      "<< /Type /Catalog /Pages 2 0 R >>", "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+      "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+      "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    ];
+    const stream = `BT /F1 16 Tf 30 150 Td (${text}) Tj ET`;
+    objects.push(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+    let pdf = "%PDF-1.4\n"; const offsets = [0];
+    objects.forEach((object, index) => { offsets.push(pdf.length); pdf += `${index+1} 0 obj\n${object}\nendobj\n`; });
+    const xref = pdf.length;
+    pdf += `xref\n0 ${objects.length+1}\n0000000000 65535 f \n` + offsets.slice(1).map(offset => `${String(offset).padStart(10,"0")} 00000 n \n`).join("");
+    return new TextEncoder().encode(pdf + `trailer\n<< /Size ${objects.length+1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+  };
+  let pdfBytes = bytesFor("Project A"), compileHook, chooseHook, readHook, compileOk = true;
+  const exports = [], dialogs = [];
+  window.__TAURI_INTERNALS__ = { invoke: async (command, args, options) => {
+    if (command === "compile") {
+      workflow.calls.push("compile");
+      if (compileHook) await compileHook();
+      return { ok: compileOk, pdf: compileOk ? "build/main.pdf" : null, engine: "pdflatex", log: "" };
+    }
+    if (command === "read_binary") { if (readHook) await readHook(); return pdfBytes.slice().buffer; }
+    if (command === "plugin:dialog|save") { dialogs.push(args); return chooseHook ? chooseHook() : "C:\\Exports\\Prace.pdf"; }
+    if (command === "export_pdf") { exports.push({ bytes: [...args], destination: decodeURIComponent(options.headers["x-dest"]) }); return; }
+    if (command === "read_file") return "";
+    throw Error(`Unexpected IPC: ${command}`);
+  } };
+  const preview = await import("/src/preview.ts");
+  const { compile } = await import("/src/build.ts");
+  const reset = () => {
+    setRoot("C:\\Project A"); setMainFile("main.tex"); setCurrent("main.tex");
+    workflow.calls.length = 0; workflow.saveError = ""; workflow.sideError = ""; workflow.onSave = null;
+    compileHook = null; chooseHook = null; readHook = null; compileOk = true;
+    pdfBytes = bytesFor("Project A"); preview.resetPdf();
+  };
+
+  reset();
+  check(document.querySelector("[data-create-pdf]").textContent === "Vytvořit PDF", "Empty preview has a direct PDF action");
+  await compile();
+  check(workflow.calls.join("|") === "save|saveSide|compile", "PDF creation saves both editors first");
+  check(status() === "PDF je připravené", "Successful completion has a clear result message");
+  check(document.querySelectorAll("#pdf canvas").length === 1 && !document.getElementById("pdf-bar").hidden, "Real PDF.js renders the resulting page");
+  check(!document.getElementById("pdf-download").disabled && document.getElementById("pdf-download").textContent.includes("Uložit PDF"), "Export is visible and enabled only after a real render");
+  const original = [...pdfBytes];
+  chooseHook = async () => {
+    setRoot("C:\\Project B"); preview.resetPdf(); pdfBytes = bytesFor("Project B");
+    await preview.renderPdf("build/B.pdf");
+    return "C:\\Exports\\Project A.pdf";
+  };
+  await preview.downloadPdf();
+  check(JSON.stringify(exports.at(-1).bytes) === JSON.stringify(original), "Export keeps A bytes while another project and preview replace it");
+  check(dialogs.at(-1).options.defaultPath === "Project A.pdf", "Dialog name belongs to the captured project");
+  check(exports.at(-1).destination.endsWith("Project A.pdf"), "Binary export receives the exact chosen destination");
+
+  reset(); workflow.saveError = "FILE_CONFLICT: source changed";
+  await compile();
+  check(workflow.calls.join("|") === "save" && !preview.lastPdf, "Main save conflict never compiles or displays a new PDF");
+  check(status().includes("FILE_CONFLICT"), "Save conflict stays visible to the user");
+  check(!document.getElementById("btn-compile").disabled && !document.querySelector("[data-create-pdf]").disabled, "Failed save allows a retry from either action");
+
+  reset(); workflow.sideError = "Side file changed"; await compile();
+  check(workflow.calls.join("|") === "save|saveSide" && !preview.lastPdf, "Side save conflict also prevents compilation");
+
+  reset(); workflow.onSave = () => setRoot("C:\\Other project"); await compile();
+  check(workflow.calls.join("|") === "save", "Switching projects during save never saves a different side editor");
+
+  reset(); compileHook = () => setRoot("C:\\Other project"); await compile();
+  check(!preview.lastPdf && document.querySelectorAll("#pdf canvas").length === 0, "A completed old project build never replaces another project's preview");
+
+  reset(); readHook = () => setMainFile("other.tex"); await compile();
+  check(!preview.lastPdf && document.querySelectorAll("#pdf canvas").length === 0, "Changing the main document during PDF loading cannot publish the old result");
+
+  reset(); compileOk = false; await compile();
+  check(!preview.lastPdf && status().includes("nepodařilo vytvořit"), "Failed compilation is not reported as a ready PDF");
+
+  reset(); pdfBytes = new Uint8Array([1,2,3]); await compile();
+  check(!preview.lastPdf && document.getElementById("pdf-download").disabled, "An invalid PDF never becomes an exportable preview");
+
+  reset(); let release;
+  compileHook = () => new Promise(resolve => { release = resolve; });
+  const pending = compile();
+  for (let i=0; !release && i<100; i++) await new Promise(resolve => setTimeout(resolve,10));
+  await compile();
+  check(workflow.calls.filter(call => call === "compile").length === 1, "Repeated clicks create only one build");
+  check(document.getElementById("btn-compile").disabled && document.getElementById("pdf-download").disabled, "Build and export controls reflect the pending operation");
+  release(); await pending;
+  check(!document.getElementById("btn-compile").disabled && !document.getElementById("pdf-download").disabled, "Controls recover after successful rendering");
+  preview.resetPdf();
+  check(!!document.querySelector("[data-create-pdf]") && document.getElementById("pdf-download").disabled, "Reset restores the contextual PDF action without a stale export");
+  result.textContent = JSON.stringify({ ok: true, checks });
+} catch (error) { result.textContent = JSON.stringify({ ok:false, error:String(error.stack||error) }); }
+</script>

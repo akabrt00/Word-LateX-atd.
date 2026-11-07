@@ -2,6 +2,13 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Hlavní pracovní cesta — první iterace (2026-11-07)
+
+- Výhradní priorita projektu je nyní založit dokument → psát → uložit → získat PDF. Scénáře a další překážky jsou v docs/UX_WORKFLOW.md; jiné funkční etapy jsou odložené.
+- Vytvořit PDF s viditelnou informací o automatickém uložení, přímou akcí v prázdném náhledu a českým průběhem. Uložit PDF má textový ovladač i položku v nabídce Soubor; související volby a panel problémů jsou česky.
+- Export zachytí bajty zobrazeného PDF před otevřením dialogu a atomicky uloží vybranou kopii. Další překlad ani změna projektu ji nezamění; nepřijímá jinou příponu než PDF. Zrušení nebo chyba se správně odliší od úspěchu.
+- Dokončený překlad nebo náhled pro jiný projekt se nepublikuje v aktuálním projektu. Uložení změn, tvorba PDF a export mají ochranu proti souběžnému opakování; chybný náhled se nenabízí k exportu. Ověření a omezení v docs/TEST_REPORT.md.
+
 ## TUL ukázka a jednoduchá práce – 2026-11-07
 
 - Po upřesnění uživatele obnovena animace psaní a vznikající stránky s českým obsahem, typografií Inter a fialovým akcentem TUL Writeru. Barvy zdroje respektují motiv; hotová stránka zůstává bílá. Ukázku lze pozastavit, obnovit a přehrát znovu, omezený pohyb dostává statický výsledek.

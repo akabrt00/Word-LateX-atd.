@@ -12,13 +12,13 @@ let problems: Problem[] = [];
 
 export const problemCount = (severity: Problem["severity"]) => problems.filter((p) => p.severity === severity).length;
 
-const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+const plural = (n: number, one: string, few: string, many: string) => `${n} ${n === 1 ? one : n >= 2 && n <= 4 ? few : many}`;
 
 /** "2 errors, 1 warning", or "" when there is nothing to report. */
 export function problemSummary(): string {
   const errors = problemCount("error");
   const warnings = problemCount("warning");
-  return [errors && plural(errors, "error"), warnings && plural(warnings, "warning")].filter(Boolean).join(", ");
+  return [errors && plural(errors, "chyba", "chyby", "chyb"), warnings && plural(warnings, "varování", "varování", "varování")].filter(Boolean).join(", ");
 }
 
 /** Replaces the problem list. `log` is the raw compiler output, kept behind the Output tab. */
@@ -67,13 +67,13 @@ export function setProblems(next: Problem[], log: string, visible: boolean, titl
   if (!problems.length) {
     const none = document.createElement("div");
     none.className = "empty";
-    none.textContent = title === "Compile" ? "No problems found in the last compile." : "Nothing to fix.";
+    none.textContent = title === "Compile" ? "Při posledním vytvoření PDF nebyly zjištěny problémy." : "Není co opravit.";
     frag.appendChild(none);
   }
   list.replaceChildren(frag);
 
-  $("log-title").textContent = title;
-  $("log-tab-problems").textContent = problems.length ? `Problems (${problems.length})` : "Problems";
+  $("log-title").textContent = title === "Compile" ? "Vytvoření PDF" : title;
+  $("log-tab-problems").textContent = problems.length ? `Problémy (${problems.length})` : "Problémy";
   // With nothing parsed out of a failed compile, the raw output is the only useful thing to show.
   setLogView(problems.length || !log ? "problems" : "output");
   logPanel.hidden = !visible;
@@ -84,7 +84,7 @@ export function setProblems(next: Problem[], log: string, visible: boolean, titl
 export function clearProblems() {
   problems = [];
   $("problems").replaceChildren();
-  $("log-tab-problems").textContent = "Problems";
+  $("log-tab-problems").textContent = "Problémy";
   renderProblemCount();
   markProblemsInEditor();
 }

@@ -2,6 +2,8 @@
 
 Komunikujte česky. Kód a komentáře mohou být anglicky. Začněte README.md, ARCHITECTURE.md, DECISIONS.md a FEATURES.md. Respektujte původní MIT licenci Scribe. Nepřebírejte AGPL kód Oleafly bez výslovného rozhodnutí o licencování celého odvozeného díla.
 
+Aktivní priorita podle uživatele (2026-11-07): plně se věnovat běžné cestě založit dokument → psát → uložit → získat PDF. To je „alfa a omega“ projektu. Ostatní funkční etapy odložit; technické změny dělat tehdy, když přímo podporují jednoduchost a spolehlivost této cesty. Konkrétní scénáře a otevřené překážky jsou v docs/UX_WORKFLOW.md.
+
 ## Pracovní postup
 
 1. Zkontrolujte git status; neodstraňujte uživatelské změny.

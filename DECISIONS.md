@@ -1,5 +1,15 @@
 # Rozhodnutí
 
+## ADR-014 – Export zobrazeného PDF a kontext hlavního toku (2026-11-07)
+
+V rámci uživatelem určené priority běžné pracovní cesty používá hlavní akce název Vytvořit PDF; ukládá hlavní a boční editor jako dosud. Projekt a hlavní soubor se zachytí při zahájení. Po asynchronních krocích se kontroluje, že kontext stále odpovídá; dokončený výsledek jiného projektu nesmí přepsat aktuální náhled. Preview publikuje lastPdf až po úspěšném vykreslení, nikoli před načtením. Nejde o nový compiler worker ani jeho cancel/timeout.
+
+Uložit PDF ukládá právě zobrazenou verzi. Původní opakované čtení souboru přes copy_out mohlo po dalším překladu nebo změně projektu vrátit jiná data. PdfExportFlow proto získá bajty z konkrétního PDF.js dokumentu a název původního projektu před otevřením dialogu. Během jednoho exportu nezakládá další dialog; zrušení nic nezapisuje a chyba dovolí opakování. Ostatní použití copy_out zůstávají samostatná.
+
+Nativní dialog určí cílovou cestu. Raw příkaz export_pdf předává bajty a percent-encoded x-dest, bez JSON pole jednotlivých bajtů. Backend požaduje absolutní cestu s příponou .pdf a hlavičku %PDF-; nejde o obecnou validaci formátu. Dočasný soubor vznikne ve zvolené složce, provede se flush a atomická náhrada. Původní cíl zůstává zachovaný při neplatném vstupu nebo selhání přípravy. Příkaz nevybírá jiný soubor a nepřepisuje LaTeX zdroj.
+
+Uložený zdroj a aktuálnost PDF jsou odlišné stavy. Tato iterace nezavádí autosave, watcher ani indikátor zastaralého PDF po další editaci; tyto UX potřeby zůstávají v hlavní prioritě docs/UX_WORKFLOW.md.
+
 ## ADR-013 – Dodatečná úprava údajů prezentace (2026-11-07)
 
 Formulář Údaje práce podporuje vedle semestrálky také nové prezentace tul-presentation s main.tex. Sdílený frontend načte tagovaný snapshot z read_document_details; zápis používá typově oddělené save_semester_details a save_presentation_details. Před načtením se uloží a uzavře boční editor, kontroluje se projekt a stav hlavního editoru. Zkratky aplikace se zadrží v modálu. Úspěšný zápis a následné selhání načtení editoru se hlásí odlišně, aby se nenabízel další zápis se starou revizí.

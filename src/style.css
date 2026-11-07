@@ -1789,10 +1789,11 @@ body.dragging-file #files * { cursor: grabbing; }
 
 #pdf-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  height: 36px;
-  padding: 0 8px 0 14px;
+  min-height: 36px;
+  padding: 4px 8px 4px 14px;
   flex-shrink: 0;
   background: var(--panel);
   border-bottom: 1px solid var(--border);
@@ -1803,9 +1804,10 @@ body.dragging-file #files * { cursor: grabbing; }
 }
 
 #pdf-page-label { flex-shrink: 0; font-variant-numeric: tabular-nums; }
-#pdf-download { flex-shrink: 0; width: 24px; height: 24px; margin-left: -2px; }
+#pdf-download { flex-shrink: 0; height: 26px; gap: 6px; padding: 0 8px; }
 #pdf-find { flex: 1; min-width: 60px; max-width: 220px; height: 24px; margin-left: auto; font-size: 12px; }
 #pdf-find-count { flex-shrink: 0; min-width: 7ch; font-variant-numeric: tabular-nums; }
+#pdf-find-count:empty { display: none; }
 .pdf-zoom { display: flex; align-items: center; flex-shrink: 0; }
 .pdf-zoom .icon-btn { width: 24px; height: 24px; }
 .pdf-zoom .btn { height: 24px; min-width: 48px; padding: 0 6px; justify-content: center; font-size: 12px; font-variant-numeric: tabular-nums; }
@@ -1922,7 +1924,10 @@ body.dragging-file #files * { cursor: grabbing; }
   text-align: center;
   color: var(--muted);
   line-height: 2;
+  max-width: 32em;
+  padding: 20px;
 }
+.pdf-empty [data-create-pdf] { margin: 16px 0; height: 36px; padding: 0 16px; }
 
 .pdf-empty p:first-child { color: var(--fg-dim); font-weight: 500; }
 

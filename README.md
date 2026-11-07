@@ -4,6 +4,14 @@ Nezávislý studentský desktopový textový procesor pro Windows. Pracovní for
 
 ## Spuštění ve Windows
 
+### Běžná práce s dokumentem
+
+Zvolte **Nový dokument**, vyplňte průvodce a upravte dokument v editoru. **Uložit** v nabídce **Soubor** nebo Ctrl+S uloží rozepsanou práci. Tlačítko **Vytvořit PDF** samo nejprve uloží změny v hlavním i bočním editoru a potom zobrazí výsledek vedle textu; není nutné před ním zvlášť ukládat.
+
+Hotový výsledek uložíte přes **Uložit PDF…** přímo nad náhledem nebo v nabídce **Soubor**. Vyberete jen umístění kopie. Ukládá se přesná zobrazená verze PDF; změna projektu nebo další vytvoření PDF během otevřeného dialogu ji nezamění. Po dalších úpravách textu zvolte **Vytvořit PDF** znovu, aby se promítly také do výsledku.
+
+Pokud se změny nepodaří uložit, tvorba PDF se zastaví a text zůstane v editoru. Průběh rozlišuje ukládání, vytváření a hotové PDF; chyby a technický výstup najdete dole v kartách **Problémy** a **Podrobnosti**.
+
 ### Pracovní prostor a nové dokumenty
 
 Úvod nabízí **Nový dokument**, **Otevřít projekt**, přímo dostupný import a poslední práce. Vedle nich je animovaná ilustrační ukázka psaní v barvách TUL Writeru, kterou lze pozastavit nebo přehrát znovu; respektuje nastavení omezeného pohybu. Pod **Další možnosti** najdete diagnostiku, zkratky a **Nastavit složku a šablonu…**; stejné nastavení je dostupné přes ozubené kolečko v editoru. Chybějící překladač LaTeXu tuto část automaticky otevře. Výchozí složka je systémová složka Dokumenty / TUL Writer. Nastavení se ukládá do uživatelské konfigurace aplikace a platí i po restartu pro všechny nové projekty na tomto PC.
@@ -14,7 +22,7 @@ Pro **TUL semestrální práci** následuje druhý krok: součást TUL (celá un
 
 Nový projekt obsahuje .tulwriter/project.json s hlavním souborem a nastavením překladače. Semestrální práce používá pdfLaTeX + BibTeX, závěrečná práce XeLaTeX + Biber, prezentace XeLaTeX a poster LuaLaTeX. Tyto nástroje a potřebné TeX balíčky musí být lokálně dostupné. Pomocné skripty ani latexmkrc z balíčků se automaticky nespouštějí. Ukázkové údaje nahraďte vlastními podle návodů uvnitř projektu.
 
-V otevřené semestrální práci TUL lze přes **Údaje práce** změnit titulní stranu i dodatečně. Formulář načítá aktuální údaje ze zdroje včetně ručních úprav v podporovaném tvaru. Před otevřením uloží hlavní i boční editor a boční panel zavře. **Uložit údaje** upraví pouze příslušné hodnoty, případně popisek Autor/Autoři práce; obsah práce zůstane zachovaný. Změny mají samostatný bod v historii. Pro nové PDF spusťte **Kompilovat**. Pokud se zdroj nebo styl mezitím změnil, formulář uložení odmítne a je potřeba jej znovu otevřít. Hodnoty s vlastními LaTeX makry se upravují přímo ve zdroji; tento formulář je nepřevádí.
+V otevřené semestrální práci TUL lze přes **Údaje práce** změnit titulní stranu i dodatečně. Formulář načítá aktuální údaje ze zdroje včetně ručních úprav v podporovaném tvaru. Před otevřením uloží hlavní i boční editor a boční panel zavře. **Uložit údaje** upraví pouze příslušné hodnoty, případně popisek Autor/Autoři práce; obsah práce zůstane zachovaný. Změny mají samostatný bod v historii. Pro nové PDF zvolte **Vytvořit PDF**. Pokud se zdroj nebo styl mezitím změnil, formulář uložení odmítne a je potřeba jej znovu otevřít. Hodnoty s vlastními LaTeX makry se upravují přímo ve zdroji; tento formulář je nepřevádí.
 
 **Údaje práce** fungují také v prezentacích TUL založených novým průvodcem: fakulta, název, autoři, pracoviště, datum, e-mail a telefon. Hodnoty se čtou z aktuálního main.tex; mění se pouze podporované deklarace, snímky a ostatní soubory se zachovají. Komentáře, BOM, konce řádků a nezměněné hodnoty se nepřepisují. Zdrojový seznam autorů oddělený čárkou a mezerou se zobrazí jako jednotlivé řádky; totéž platí pro čárky uvnitř titulů/jmen, protože tato šablona neuchovává původní členění seznamu. Vlastní makra, volitelné krátké názvy, jiné volby třídy či jiný způsob vložení data upravte přímo ve zdroji. Změněný nebo smazaný zdroj blokuje uložení a zachová rozepsaný formulář. Závěrečná práce a poster dodatečný formulář zatím nemají.
 
@@ -33,7 +41,7 @@ Vyžaduje Node.js 24+, Rust stable MSVC, Microsoft C++ Build Tools (Desktop deve
     npm ci
     npm run tauri dev
 
-Otevřete složku examples/first-project. Upravte main.tex, uložte Ctrl+S a zkompilujte Ctrl+Enter. Výsledek se zobrazí v pravém PDF panelu a uloží do build/main.pdf. Soubor sections/results.tex ověřuje vícesouborový projekt. V nabídce lze nastavit hlavní soubor. Projekt lze předat také argumentem --project ABSOLUTNI_CESTA výslednému EXE.
+Otevřete složku examples/first-project. Upravte main.tex, uložte Ctrl+S a zvolte Vytvořit PDF (Ctrl+Enter). Výsledek se zobrazí v pravém PDF panelu a uloží do build/main.pdf. Soubor sections/results.tex ověřuje vícesouborový projekt. V nabídce lze nastavit hlavní soubor. Projekt lze předat také argumentem --project ABSOLUTNI_CESTA výslednému EXE.
 
 Pokud otevřený soubor mezitím změní nebo odstraní jiný program, uložení se zastaví. Volba „Ponechat moje úpravy“ zachová váš text v editoru; před načtením jiné verze jej můžete zkopírovat. „Načíst z disku“ výslovně nahradí neuložený obsah aktuálním souborem. Totéž platí pro boční editor a notebooky. Automatické sledování změn na pozadí a obnova po pádu zatím nejsou implementované.
 
@@ -45,6 +53,8 @@ Pokud otevřený soubor mezitím změní nebo odstraní jiný program, uložení
 Průchod vytvářecím průvodcem bez otevírání okna ověří `npm run test:workspace`. Použije samostatný dočasný profil Edge/Chrome a testovací IPC bez zápisu skutečných dokumentů nebo nastavení aplikace. Ve Windows se prohlížeč hledá automaticky; jinde nastavte `TUL_WRITER_TEST_BROWSER` na cestu k Chromium prohlížeči. Testuje návrat, přepínání šablon, zachování údajů, chybový stav, odesílaná metadata a ochranu proti dvojímu vytvoření.
 
 Sdílený formulář pro dodatečnou editaci semestrálky a prezentace ověří `npm run test:metadata` ve stejném bezokenním prostředí, s testovacími adaptéry editoru. Kontroluje načtení, správné revize zápisu, konflikty, zámek během ukládání, přepnutí projektu a selhání následného načtení editoru.
+
+Průchod vytvořením a uložením PDF ověří `npm run test:workflow`: skutečný PDF.js, syntetický dokument a testovací adaptéry editorů, překladu a nativního dialogu. Kontroluje uložení před překladem, chyby, opakované kliknutí, změnu projektu a shodu exportu se zobrazenou verzí. Reálný překlad a export testuje samostatný Rust integrační test v pdf_export.rs.
 
 Pro úplnou Rust sadu včetně notebooků použijte Python s requirements-test.txt. Ve Windows lze vytvořit .tools/test-python přes py -m venv, nainstalovat pip install -r requirements-test.txt a přidat jeho Scripts do PATH pro testovací příkaz. Aplikace umí najít také standardní Windows launcher py.
 

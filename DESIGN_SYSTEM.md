@@ -22,6 +22,8 @@ Tmavý accent je vlastní přístupná odvozená UI barva, nikoli nová oficiál
 
 ## Komponenty
 
+Aktivní priorita je běžná pracovní cesta podle docs/UX_WORKFLOW.md. Akce pojmenovávat podle výsledku pro uživatele: Vytvořit PDF, Uložit PDF. Včas říct, co se uloží automaticky, rozlišit probíhající operaci od úspěchu nebo chyby a nabídnout běžnou akci přímo tam, kde ji uživatel potřebuje.
+
 Upřesněný směr uživatele (2026-11-07): jednoduchost znamená snadnou práci v programu. Prioritou je málo nutných kroků, srozumitelné popisky, rozumné předvolby a dobře dostupné běžné akce. Každou úpravu posuzovat podle toho, zda se v programu snadněji píše a pracuje s dokumentem. Vizuální bohatost a animace jsou vítané, pokud respektují identitu TUL Writeru a nebrání práci. Chyba, která brání hlavnímu úkolu, zůstává snadno dostupná; zachovat klávesnicové ovládání.
 
 Úvodní obrazovka: vlevo nový dokument, otevření projektu, přímo dostupný import a poslední práce. Pracovní prostor, diagnostika a zkratky jsou pod Další možnosti; chybějící překladač tuto část otevře automaticky, nepřítomnost volitelného Pythonu nikoli. Vpravo česká animovaná ukázka zdroje a vznikající stránky: Inter, fialový akcent a barvy aktivního motivu. Ukázku lze pozastavit, obnovit a přehrát znovu; při omezeném pohybu se ukáže hotová statická stránka. Nejde o skutečně kompilovaný dokument. V menším okně má přednost přehledná stránka před kódem, při úzkém zobrazení jsou části pod sebou.

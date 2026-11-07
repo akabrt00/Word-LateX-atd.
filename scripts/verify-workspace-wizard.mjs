@@ -14,7 +14,7 @@ const browser = process.env.TUL_WRITER_TEST_BROWSER || [
 ].find(existsSync);
 if (!browser) throw new Error("Set TUL_WRITER_TEST_BROWSER to a Chromium browser executable.");
 const scenario = process.argv[2] || "workspace-wizard";
-if (!["workspace-wizard", "document-metadata"].includes(scenario)) throw Error("Unknown browser scenario.");
+if (!["workspace-wizard", "document-metadata", "document-workflow"].includes(scenario)) throw Error("Unknown browser scenario.");
 const profile = await mkdtemp(join(tmpdir(), "tul-wizard-test-"));
 const server = await createServer({
   configFile: false,
@@ -25,6 +25,9 @@ const server = await createServer({
     name: "metadata-editor-test-adapters",
     enforce: "pre",
     resolveId(source, importer) {
+      const file = importer?.split("?")[0].replaceAll("\\", "/");
+      if (file?.endsWith("/src/build.ts") && ["./editor", "./welcome", "./problems", "./project", "./settings", "./split", "./texindex", "./sidebar"].includes(source)) return resolve("tests/browser/workflow-mocks.ts");
+      if (file?.endsWith("/src/preview.ts") && ["./appearance", "./darkpdf", "./editor", "./layout", "./project"].includes(source)) return resolve("tests/browser/workflow-mocks.ts");
       if (importer?.split("?")[0].replaceAll("\\", "/").endsWith("/src/document-metadata.ts") && ["./core", "./project", "./split"].includes(source)) {
         return resolve("tests/browser/metadata-editor-mocks.ts");
       }

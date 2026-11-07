@@ -4,7 +4,7 @@ import { ask } from "@tauri-apps/plugin-dialog";
 import { $, current, mainFile, NOTEBOOK_SOURCE, root, setStatus, showLog, VIEWABLE } from "./core";
 import { explain, parseLog, Problem } from "./diagnostics";
 import { view } from "./editor";
-import { renderPdf } from "./preview";
+import { renderPdf, setPdfBuildBusy } from "./preview";
 import { installLatex } from "./welcome";
 import { problemSummary, setProblems } from "./problems";
 import { listFiles, save } from "./project";
@@ -90,11 +90,11 @@ export async function runNotebook() {
 export let compiling = false;
 
 /** Problems from a log, with plain-words hints; brace errors also say where the open { is. */
-async function problemsFrom(log: string): Promise<Problem[]> {
-  const found = parseLog(log, mainFile);
+async function problemsFrom(log: string, project: string, main: string): Promise<Problem[]> {
+  const found = parseLog(log, main);
   const texts = new Map<string, string>();
   for (const file of new Set(found.map((p) => p.file))) {
-    const text = file === current && !$("editor").hidden ? view.state.doc.toString() : await invoke<string>("read_file", { root, rel: file }).catch(() => "");
+    const text = root === project && file === current && !$("editor").hidden ? view.state.doc.toString() : await invoke<string>("read_file", { root: project, rel: file }).catch(() => "");
     texts.set(file, text);
   }
   return explain(found, (file) => texts.get(file) ?? null);
@@ -119,44 +119,57 @@ export function compileSoon() {
 /** `quiet`: a compile nobody asked for (while typing) doesn't open the log on failure. */
 export async function compile({ quiet = false } = {}) {
   if (!root || compiling) return;
+  const project = root, main = mainFile;
   compiling = true;
-  $<HTMLButtonElement>("btn-compile").disabled = true;
+  setPdfBuildBusy(true);
+  for (const button of document.querySelectorAll<HTMLButtonElement>("#btn-compile, [data-create-pdf]")) button.disabled = true;
   $("pdf-pane").classList.add("busy"); // the preview shows that it is about to be replaced
+  $("pdf-pane").setAttribute("aria-busy", "true");
   try {
+    setStatus("Ukládám změny před vytvořením PDF…", "busy");
     await save();
+    if (root !== project || mainFile !== main) return;
     await saveSide(); // the side pane may hold part of the paper
+    if (root !== project || mainFile !== main) return;
 
     // auto-run stale notebooks before compiling
     // Notebook execution is an explicit user action in TUL Writer.
 
-    setStatus(`Compiling ${mainFile}…`, "busy");
-    const res = await invoke<CompileResult>("compile", { root, main: mainFile });
+    setStatus("Vytvářím PDF…", "busy");
+    const res = await invoke<CompileResult>("compile", { root: project, main });
+    if (root !== project || mainFile !== main) return;
     // The parsed problems lead; the raw log stays one tab away.
-    setProblems(await problemsFrom(res.log), res.log, !res.ok && !quiet);
+    const problems = await problemsFrom(res.log, project, main);
+    if (root !== project || mainFile !== main) return;
+    setProblems(problems, res.log, !res.ok && !quiet);
     const summary = problemSummary();
     if (res.ok && res.pdf) {
-      await renderPdf(res.pdf);
-      setStatus(`Compiled with ${res.engine}${summary ? ` · ${summary}` : ""}`, "ok");
+      await renderPdf(res.pdf, () => root === project && mainFile === main);
+      if (root !== project || mainFile !== main) return;
+      setStatus(`PDF je připravené${summary ? ` · ${summary}` : ""}`, "ok");
       refreshFiles();
     } else {
-      setStatus(summary ? `Compile failed: ${summary}` : `Compile failed (${res.engine})`, "err");
+      setStatus(summary ? `PDF se nepodařilo vytvořit: ${summary}` : "PDF se nepodařilo vytvořit. Podrobnosti najdete dole v panelu.", "err");
     }
   } catch (e) {
-    showLog("Compile log", String(e));
-    setStatus("Couldn't compile", "err");
+    if (root !== project || mainFile !== main) return;
+    showLog("Vytvoření PDF — podrobnosti", String(e));
+    setStatus(`PDF se nepodařilo vytvořit: ${String(e)}`, "err");
     // No TeX at all: offer to install it rather than leave the user with an error.
     if (String(e).includes("No TeX engine")) {
-      const yes = await ask("Scribe needs LaTeX to compile papers, and none was found on this computer.\n\nInstall Tectonic now? It is about 20 MB, and fetches the packages a paper needs as it compiles.", {
-        title: "Install LaTeX",
-        okLabel: "Install",
+      const yes = await ask("K vytvoření PDF potřebujete překladač LaTeXu. Na tomto počítači nebyl nalezen.\n\nChcete nainstalovat Tectonic? Při prvním použití stáhne potřebné balíčky.", {
+        title: "Chybí překladač pro vytvoření PDF",
+        okLabel: "Nainstalovat",
       });
       if (yes) await installLatex();
     }
   } finally {
     refreshIndexSoon(); // notebooks may have produced new figures or values
     $("pdf-pane").classList.remove("busy");
+    $("pdf-pane").setAttribute("aria-busy", "false");
     compiling = false;
-    $<HTMLButtonElement>("btn-compile").disabled = false;
+    setPdfBuildBusy(false);
+    for (const button of document.querySelectorAll<HTMLButtonElement>("#btn-compile, [data-create-pdf]")) button.disabled = false;
   }
 }
 

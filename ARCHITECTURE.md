@@ -12,6 +12,8 @@ updates.ts zobrazuje nabídku a modální stav instalace. Čistý UpdateFlow odd
 
 ## Současný tok
 
+Vytvoření PDF v build.ts zachytí projekt a hlavní soubor před uložením editorů; při změně kontextu přestane publikovat výsledek. preview.ts zveřejní PDF až po úspěšném načtení a vykreslení. PdfExportFlow zachytí název a bajty aktuálního PDF.js dokumentu ještě před nativním dialogem. Raw IPC export_pdf předá tyto bajty modulu pdf_export.rs, který ověří hlavičku a cílovou PDF cestu a provede atomickou náhradu. Nemění zdroj dokumentu a neopakuje čtení sestaveného souboru, který se mohl mezitím změnit. Podrobnosti v ADR-014.
+
 welcome-demo.ts je izolovaná ilustrační animace pevně připraveného zdroje a HTML stránky na úvodu. Nečte ani nezapisuje uživatelův dokument a nespouští TeX. Časovač se zastaví při odchodu z úvodu nebo skrytí aplikace; ukázka má pauzu/obnovení a při omezeném pohybu statický výsledek. Tento HTML náhled není součástí dokumentového modelu ani ukládací cesty.
 
 Zakládání závěrečné práce, prezentace a posteru používá template-form.ts a tagovaný objekt TemplateDetails. Backend template_details.rs připraví validované změny pevně známých deklarací ještě před založením projektu; workspace.rs je zapíše až do nové rozbalené kopie. Sdílený dvoukrokový tok zachovává samostatně rozepsané formuláře všech typů. Podrobnosti a fakultní aliasy v ADR-011.
