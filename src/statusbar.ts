@@ -25,8 +25,8 @@ function fileKind(): string {
 /** File kind and compile target. Also clears the cursor readout when no editor is showing. */
 export function renderFileInfo() {
   $("sb-kind").textContent = fileKind();
-  $("sb-main").textContent = root ? `Paper: ${mainFile}` : "";
-  $("sb-main").title = "The file Compile builds. Opening a .tex file with \\documentclass makes it the paper.";
+  $("sb-main").textContent = root ? `Hlavní: ${mainFile}` : "";
+  $("sb-main").title = "Tento soubor se kompiluje; může spojovat další kapitoly. Otevření souboru s \\documentclass jej nastaví jako hlavní.";
   const editing = !!current && (!$("editor").hidden || !$("notebook-view").hidden);
   if (!editing) {
     $("sb-cursor").textContent = "";

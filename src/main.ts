@@ -246,10 +246,10 @@ register(
     run: () => openPath(`${root}/${lastPdf}`),
   },
 
-  { id: "help.shortcuts", group: "Help", title: "Keyboard Shortcuts", run: commandPalette },
+  { id: "help.shortcuts", group: "Help", title: "Klávesové zkratky", run: commandPalette },
   { id: "help.updates", group: "Help", title: "Zkontrolovat aktualizace…", run: () => checkForUpdates() },
   { id: "help.whatsnew", group: "Help", title: "What's New", run: () => showWhatsNew() },
-  { id: "help.tour", group: "Help", title: "Take the Tour", enabled: hasProject, run: startTour },
+  { id: "help.tour", group: "Help", title: "Průvodce prací s dokumentem", enabled: hasProject, run: startTour },
   { id: "edit.table", group: "Insert", title: "Table…", enabled: () => !!activeEditor()?.dom.dataset.path?.endsWith(".tex"), run: editTable },
   { id: "edit.tikz", group: "Edit", title: "Preview TikZ", keys: "Mod-Alt-k", enabled: () => PICTURE_FILE.test(activeEditor()?.dom.dataset.path ?? ""), run: () => previewTikz(activeEditor()) },
   { id: "edit.equation", group: "Insert", title: "Equation…", keys: "Mod-Alt-e", enabled: () => !!activeEditor()?.dom.dataset.path?.endsWith(".tex"), run: editEquation },
@@ -437,7 +437,7 @@ createMenubar($("menubar"), [
     icon: MENU_ICON.notes,
     entries: ["file.newNote", "file.todaysNote", "file.quickNote", "file.notePdf", "-", "file.review", "file.anki"],
   },
-  { title: "Help", icon: MENU_ICON.help, entries: ["help.shortcuts", "help.tour", "-", "help.whatsnew", "help.updates", "help.about"] },
+  { title: "Nápověda", icon: MENU_ICON.help, entries: ["help.shortcuts", "help.tour", "-", "help.whatsnew", "help.updates", "help.about"] },
 ]);
 
 // ---------- wire up ----------

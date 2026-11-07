@@ -12,6 +12,8 @@ updates.ts zobrazuje nabídku a modální stav instalace. Čistý UpdateFlow odd
 
 ## Současný tok
 
+workspace.ts rozlišuje vytvoření a otevření. Po získání createdPath už případný retry pouze volá openProject s requireMain a nepíše další projekt. Otevření musí skutečně načíst hlavní zdroj; běžné otevření bez příznaku obnovuje předchozí relaci. tour.ts samostatně spravuje opožděný start a jeho zrušení při přechodech projektu. Izolované browserové scénáře oddělují pravý project.ts/DocumentSession od testovacích adaptérů ostatních UI služeb.
+
 saveFile v build.ts je společný příkaz pro lištu, nabídku a zkratky obou editorů. Postupně ukládá hlavní a boční zdroj; kontroluje projekt i oba otevřené soubory a zbylé neuložené změny. Teprve úspěch může spustit volitelnou kompilaci. save/saveSide zůstávají samostatné nízkoúrovňové operace pro interní přechody a původní revizní ochranu.
 
 Čistý document-progress.ts odděluje množinu neuložených souborů od monotónní revize místních změn a revize zobrazeného PDF. Core a boční editor hlásí změny/uložení; build zachytí revizi po uložení editorů, preview ji publikuje až po vykreslení a zobrazuje stav. Uložení revizi nevrací zpět. Reset projektu zruší předchozí doklad aktuálnosti; jinak otevřené PDF má neověřený stav. Nejde o filesystem watcher nebo obecný graf závislostí TeXu.

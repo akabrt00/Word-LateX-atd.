@@ -26,6 +26,10 @@
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 .welcome-workspace p { max-width: 350px; overflow-wrap: anywhere; color: var(--fg-dim); font-size: 12px; margin: 8px 0 12px; }
 .workspace-dialog { position: fixed; inset: 0; margin: auto; width: min(620px, calc(100vw - 40px)); max-height: calc(100vh - 60px); overflow: auto; padding: 30px; color: var(--fg); background: var(--panel); border: 1px solid var(--border-hi); border-radius: 14px; box-shadow: 0 24px 80px #0005; }
+.workspace-wizard { overflow: hidden; padding: 0; }
+.workspace-wizard form { display: flex; flex-direction: column; max-height: calc(100vh - 60px); min-height: 0; }
+.workspace-scroll { overflow: auto; min-height: 0; padding: 30px 30px 0; }
+.workspace-wizard .workspace-actions { flex-shrink: 0; margin: 0; padding: 16px 30px; border-top: 1px solid var(--border); }
 .workspace-dialog::backdrop { background: #0008; }
 .workspace-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .workspace-heading .tul-eyebrow { margin: 0 0 8px; }
@@ -35,6 +39,7 @@
 .workspace-dialog [hidden] { display: none !important; }
 .workspace-dialog input, .workspace-dialog select, .workspace-dialog textarea { width: 100%; height: auto; min-height: 42px; padding: 10px 12px; color: var(--fg); background: var(--bg); border: 1px solid var(--border-hi); border-radius: 6px; font: inherit; line-height: 1.5; font-weight: 400; }
 .workspace-dialog textarea { resize: vertical; }
+.workspace-name-label small { color: var(--muted); font-weight: 400; font-size: 12px; line-height: 1.6; }
 .semester-authors-hint { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .workspace-folder { margin: 20px 0; }
 .workspace-folder > span { font-weight: 600; }

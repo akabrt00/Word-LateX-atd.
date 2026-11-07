@@ -1,5 +1,11 @@
 # Rozhodnutí
 
+## ADR-017 – Vytvoření dokumentu a jeho otevření jako dva výsledky (2026-11-07)
+
+Jakmile create_template_project vrátí cestu, dokument existuje. Následná chyba otevření nesmí vrátit formulář k opětovnému vytváření nebo zamlčet jeho umístění. Průvodce proto ponechá uloženou cestu, zamkne původní údaje a nabídne pouze opakované otevření či zavření. Opakování nevolá zápis nastavení ani založení. Parametr requireMain v openProject ověřuje čitelné otevření hlavního zdroje a pro nový dokument upřednostní hlavní soubor před starou aktivní kapitolou stejné cesty. Výchozí otevření existujícího projektu nadále obnovuje relaci. Výběr cílového adresáře a backendová revizní/cestová ochrana se nemění.
+
+Frontend kontroluje název složky podle Windows pravidel backendu před krokem s údaji. Okolní mezery odstraní a stejnou normalizovanou cestu ukazuje v přehledu. Backend zůstává konečnou autoritou, zejména při kolizi existujícího projektu nebo změně práv.
+
 ## ADR-016 – Jednotný příkaz Uložit (2026-11-07)
 
 Běžné Uložit ukládá oba otevřené zdrojové editory bez rozhodování podle fokusu: kliknutí do nabídky nebo lišty jej může změnit. Zkratka bočního editoru proto používá stejný saveFile jako hlavní editor a nabídka. Interní save/saveSide zůstávají samostatné. Operace zachytí projekt a otevřené soubory, nezasáhne nový kontext po přepnutí, blokuje opakovaný submit a nepovažuje později připsaný text za uložený. Částečný úspěch není úspěchem celého příkazu; kompilace při uložení navazuje až po obou potvrzeních. Undo/revizní ukládání zdrojů se nemění a export PDF zůstává samostatný.

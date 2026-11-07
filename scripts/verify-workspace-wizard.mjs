@@ -2,7 +2,7 @@
 import { createServer } from "vite";
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
@@ -14,11 +14,11 @@ const browser = process.env.TUL_WRITER_TEST_BROWSER || [
 ].find(existsSync);
 if (!browser) throw new Error("Set TUL_WRITER_TEST_BROWSER to a Chromium browser executable.");
 const scenario = process.argv[2] || "workspace-wizard";
-if (!["workspace-wizard", "document-metadata", "document-workflow"].includes(scenario)) throw Error("Unknown browser scenario.");
+if (!["workspace-wizard", "document-metadata", "document-workflow", "project-opening"].includes(scenario)) throw Error("Unknown browser scenario.");
 const profile = await mkdtemp(join(tmpdir(), "tul-wizard-test-"));
 const server = await createServer({
   configFile: false,
-  cacheDir: resolve("output/browser-cache", scenario),
+  cacheDir: join(profile, "vite-cache"),
   optimizeDeps: { noDiscovery: true, include: ["@tauri-apps/api/core", "@tauri-apps/plugin-dialog", "@tauri-apps/plugin-opener"] },
   server: { host: "127.0.0.1", port: 0, open: false },
   plugins: [{
@@ -26,6 +26,8 @@ const server = await createServer({
     enforce: "pre",
     resolveId(source, importer) {
       const file = importer?.split("?")[0].replaceAll("\\", "/");
+      if (scenario === "project-opening" && file?.endsWith("/src/project.ts") && !["@tauri-apps/api/core", "@tauri-apps/plugin-dialog", "./core", "./document-files", "./document-progress"].includes(source)) return resolve("tests/browser/project-opening-mocks.ts");
+      if (file?.endsWith("/src/workspace.ts") && source === "./project") return resolve("tests/browser/workspace-opening-mocks.ts");
       if (file?.endsWith("/src/build.ts") && ["./editor", "./welcome", "./problems", "./project", "./settings", "./split", "./texindex", "./sidebar"].includes(source)) return resolve("tests/browser/workflow-mocks.ts");
       if (file?.endsWith("/src/preview.ts") && ["./appearance", "./darkpdf", "./editor", "./layout", "./project"].includes(source)) return resolve("tests/browser/workflow-mocks.ts");
       if (importer?.split("?")[0].replaceAll("\\", "/").endsWith("/src/document-metadata.ts") && ["./core", "./project", "./split"].includes(source)) {
@@ -41,7 +43,7 @@ const connect = async url => {
   await new Promise((resolve, reject) => {
     const timer = setTimeout(() => { socket.close(); reject(Error("Browser connection timed out.")); }, 5000);
     socket.onopen = () => { clearTimeout(timer); resolve(); };
-    socket.onerror = error => { clearTimeout(timer); reject(error); };
+    socket.onerror = error => { clearTimeout(timer); reject(Error(`Browser connection failed: ${url}: ${error.message || "WebSocket error"}`)); };
   });
   return socket;
 };
@@ -49,6 +51,11 @@ try {
   await server.listen();
   const address = server.httpServer.address();
   const url = `http://127.0.0.1:${address.port}/tests/browser/${scenario}.html`;
+  // Finish Vite's first HTML/inline-module transform before Chromium navigation.
+  // On a busy Windows machine this cold transform can exceed the CDP command timeout.
+  const warmed = await fetch(url, { signal: AbortSignal.timeout(60000) });
+  if (!warmed.ok) throw Error(`Test page could not be prepared: ${warmed.status}`);
+  await warmed.text();
   child = spawn(browser, [
     "--headless=new", "--disable-gpu", "--no-first-run", "--disable-background-networking",
     `--user-data-dir=${profile}`, "--remote-debugging-port=0", "--remote-debugging-address=127.0.0.1", "about:blank",
@@ -67,7 +74,14 @@ try {
     catch { await delay(100); }
   }
   if (!port) throw Error(`Headless browser did not start: ${browserLog}`);
-  browserSocket = await connect(`ws://127.0.0.1:${port}${browserEndpoint}`);
+  const connectReady = async url => {
+    let lastError;
+    while (Date.now() < deadline) {
+      try { return await connect(url); } catch (error) { lastError = error; await delay(100); }
+    }
+    throw lastError || Error("Browser protocol endpoint was not ready.");
+  };
+  browserSocket = await connectReady(`ws://127.0.0.1:${port}${browserEndpoint}`);
   let page;
   while (Date.now() < deadline) {
     try {
@@ -78,7 +92,7 @@ try {
     await delay(100);
   }
   if (!page) throw Error("Headless test page was not found.");
-  socket = await connect(page.webSocketDebuggerUrl);
+  socket = await connectReady(page.webSocketDebuggerUrl);
   let nextId = 0;
   const pending = new Map();
   socket.onmessage = event => {
@@ -109,6 +123,37 @@ try {
   if (!result) throw Error(`Browser did not report a result: ${browserLog}`);
   if (!result.ok) throw new Error(result.error);
   console.log(`${scenario}: ${result.checks} browser checks passed.`);
+  if (process.env.TUL_WRITER_TEST_SCREENSHOT === "1" && ["workspace-wizard", "document-workflow"].includes(scenario)) {
+    await mkdir(resolve("output"), { recursive: true });
+    await send("Emulation.setDeviceMetricsOverride", { width: 820, height: 620, deviceScaleFactor: 1, mobile: false });
+    const prepared = await send("Runtime.evaluate", { awaitPromise: true, expression: `(async () => {
+      const font = document.createElement("link"); font.rel="stylesheet"; font.href="/node_modules/@fontsource-variable/inter/index.css"; document.head.append(font);
+      if (${JSON.stringify(scenario)} === "workspace-wizard") {
+        await (await import("/src/workspace.ts")).showWorkspace(true);
+        const name=document.getElementById("workspace-name"); name.value="Semestrální práce"; name.dispatchEvent(new Event("input"));
+        document.getElementById("workspace-test-result").hidden=true;
+      } else {
+        (await import("/src/core.ts")).showLog("", "", false);
+        document.getElementById("app").style.width="";
+        const {createMenubar}=await import("/src/menubar.ts");
+        createMenubar(document.getElementById("menubar"), ["Soubor","Edit","Insert","View","Kompilace","Review","Notes","Nápověda"].map(title=>({title,entries:[]})));
+      }
+      await document.fonts.ready;
+    })()` });
+    if (prepared.result?.exceptionDetails) throw Error(JSON.stringify(prepared.result.exceptionDetails));
+    for (const mode of ["light", "dark"]) {
+      const themed = await send("Runtime.evaluate", { awaitPromise: true, expression: `(async () => {
+        const {applyTheme,BUILT_IN}=await import("/src/themes.ts"); applyTheme(BUILT_IN.find(theme=>theme.id==="tul-${mode}"));
+        await new Promise(resolve=>setTimeout(resolve,500));
+      })()` });
+      if (themed.result?.exceptionDetails) throw Error(JSON.stringify(themed.result.exceptionDetails));
+      const capture = await send("Page.captureScreenshot", { format: "png" });
+      if (!capture.result?.data) throw Error("Browser screenshot was not captured.");
+      await writeFile(resolve("output", `${scenario}-${mode}.png`), Buffer.from(capture.result.data, "base64"));
+    }
+  }
+} catch (error) {
+  throw new Error(`${error.stack || error}\nIsolated browser log:\n${browserLog}`);
 } finally {
   socket?.close();
   // Close only the isolated test browser, including when navigation fails.

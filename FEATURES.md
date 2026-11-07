@@ -6,6 +6,8 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 
 | Funkce | Průběžný stav |
 |---|---|
+| Založení a první otevření | Včasná validace názvu složky, přehled cesty/šablony a opakované otevření vytvořeného projektu bez duplicity. Nový dokument ověřuje skutečné otevření hlavního zdroje. 38 kontrol průvodce, 13 kontrol reálného project.ts/DocumentSession s adaptéry a backendová ochrana nepřepsání |
+| První orientace | Český průvodce uložení → kompilace → PDF → soubory. Obnoví fokus, nebere šipky editoru a ruší opožděný start po změně projektu. Hlavní cíl kompilace je česky; hlavní cesta má 54 browserových kontrol |
 | Běžné uložení | Uložit v liště, nabídce a Ctrl+S v obou editorech ukládá oba otevřené zdroje s potvrzením. Nezávisí na fokusu; chrání souběh, změnu kontextu, konflikt i další psaní. Automatická kompilace až po úspěchu. 46 browserových kontrol hlavní cesty; skutečný nativní průchod zůstává otevřený |
 | Uložení a aktuálnost | Oddělený ukazatel otevřených neuložených změn a aktuálnosti PDF podle místních úprav; uložení neodstraní zastaralost. Překlad zachytí revizi a zachová upozornění při psaní během tvorby PDF. Neověřená PDF nemají příznak aktuálnosti; změny mimo aplikaci se nesledují. Evidence v docs/TEST_REPORT.md |
 | Hlavní cesta k PDF | Překompilovat automaticky uloží hlavní/boční editor a obnoví náhled; samostatné Uložit PDF… v náhledu i nabídce Soubor uloží soubor do počítače. Český průběh odlišuje kompilaci od exportu. Zachycení přesné zobrazené verze před dialogem, atomický export. Testováno skutečným PDF.js, regresními testy a reálným TeX překladem/exportem; celý UX krok 1 zůstává aktivní |

@@ -2,6 +2,15 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Založení, první otevření a orientace (2026-11-07)
+
+- Průvodce má samostatný posuvný obsah a stále viditelnou spodní lištu Zpět/Zrušit/Pokračovat, ověřenou v obou TUL motivech při 820 × 620. Ostatní formuláře zachovávají své rozložení.
+
+- Průvodce včas odmítne neplatné názvy složek Windows a odstraní okolní mezery. Srozumitelnější popis šablon a rozdílu složka/titulní název; cílová cesta a šablona zůstávají viditelné v druhém kroku.
+- Vytvoření a otevření jsou samostatné stavy. Po chybě otevření se nabídne opakování nad existujícím projektem, nikoli další vytváření. Nový dokument musí skutečně otevřít hlavní soubor; běžná obnova kapitoly existujícího projektu zůstává.
+- Český čtyřkrokový průvodce běžnou prací, přístupné popisky, návrat fokusu a zrušení opožděného startu po změně projektu. Šipky v editoru průvodce neovládají. Český ukazatel hlavního souboru kompilace.
+- Nová browserová regrese skutečného otevírání a revizního ukládání; stabilnější příprava izolovaného Vite testu a volitelné snímky obou TUL motivů.
+
 ## Jednotné uložení otevřených změn (2026-11-07)
 
 - Viditelné Uložit v hlavní liště; nabídka a Ctrl+S v obou editorech nyní ukládají hlavní i boční zdroj nezávisle na fokusu. Náhled v hlavním panelu neblokuje uložení bočního textu.

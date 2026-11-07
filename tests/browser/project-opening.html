@@ -1,0 +1,69 @@
+<!doctype html><meta charset="utf-8">
+<script type="module">
+const source = new DOMParser().parseFromString(await fetch("/index.html").then(r => r.text()), "text/html");
+source.querySelectorAll("script").forEach(script => script.remove());
+document.body.replaceChildren(...source.body.children);
+const result = document.createElement("pre"); result.id="workspace-test-result"; result.hidden=true; document.body.append(result);
+try {
+  const core = await import("/src/core.ts");
+  const { projectMock, view, createEditorState } = await import("/tests/browser/project-opening-mocks.ts");
+  const calls = [], writes = [];
+  let files, contents, failList, failRead, conflict, onWrite;
+  const reset = () => {
+    core.setRoot(null); core.setCurrent(null); core.assignDirty(false);
+    projectMock.restore=null; projectMock.main="main.tex"; projectMock.sideError="";
+    calls.length=0; writes.length=0; failList=false; failRead=false; conflict=false; onWrite=null;
+    files=["main.tex","chapter.tex"];
+    contents={ "main.tex":"\\documentclass{article}\n\\begin{document}\nOriginal\n\\end{document}", "chapter.tex":"\\section{Kapitola}\nText" };
+  };
+  window.__TAURI_INTERNALS__ = { invoke: async (command, args) => {
+    calls.push({ command, args });
+    if (command === "list_files") { if (failList) throw "Missing folder"; return files; }
+    if (command === "read_document") { if (failRead) throw "Source not readable"; return {content:contents[args.rel],revision:"r1"}; }
+    if (command === "save_document") {
+      if (conflict) throw "FILE_CONFLICT: external change";
+      writes.push(args); contents[args.rel]=args.content; await onWrite?.(); return "r2";
+    }
+    if (command.startsWith("plugin:dialog|")) return false;
+    throw Error(`Unexpected IPC ${command}`);
+  } };
+  const { openProject, save } = await import("/src/project.ts");
+  let checks=0;
+  const check=(condition,message)=>{ if(!condition) throw Error(message); checks++; };
+  const rejects=async(action)=>{try{await action();return false;}catch{return true;}};
+
+  reset(); await openProject("C:\\New document", {requireMain:true});
+  check(core.current==="main.tex" && core.mainFile==="main.tex" && view.state.doc.toString()===contents["main.tex"], "A new document opens its actual main source");
+  check(calls.filter(c=>c.command==="read_document").every(c=>c.args.root==="C:\\New document"), "Source reads stay in the chosen project");
+
+  reset(); projectMock.restore="chapter.tex"; await openProject("C:\\Existing");
+  check(core.current==="chapter.tex" && core.mainFile==="main.tex", "Normal reopening restores the chapter without changing the compile target");
+  reset(); projectMock.restore="chapter.tex"; await openProject("C:\\Reused folder name", {requireMain:true});
+  check(core.current==="main.tex", "Creation ignores an old active chapter and explicitly opens the main source");
+
+  const kept=view.state.doc.toString(), keptRoot=core.root; failList=true;
+  check(await rejects(()=>openProject("C:\\Missing", {requireMain:true})) && core.root===keptRoot && view.state.doc.toString()===kept, "An inaccessible new folder reports failure and preserves the current document");
+  check(document.getElementById("welcome-error").textContent.includes("nelze otevřít"), "Folder opening failure has a Czech explanation");
+
+  reset(); failRead=true;
+  check(await rejects(()=>openProject("C:\\Unreadable", {requireMain:true})) && core.current===null && writes.length===0, "Listing a source is not treated as successfully opening it");
+
+  reset(); await openProject("C:\\Original");
+  view.setState(createEditorState("Moje rozepsané změny")); core.setDirty(true); conflict=true;
+  const before=calls.filter(c=>c.command==="list_files").length;
+  check(await rejects(()=>openProject("C:\\Other")) && core.root==="C:\\Original" && core.dirty && view.state.doc.toString()==="Moje rozepsané změny", "Save conflict prevents project switching and preserves unsaved text");
+  check(calls.filter(c=>c.command==="list_files").length===before && writes.length===0, "No new project is read or source overwritten after a rejected save");
+
+  reset(); await openProject("C:\\Typing");
+  view.setState(createEditorState("Původní rozepsaný text")); core.setDirty(true);
+  onWrite=()=>{ view.setState(createEditorState("Novější text během ukládání")); core.setDirty(true); };
+  check(await rejects(()=>openProject("C:\\Other")) && core.root==="C:\\Typing" && core.dirty && view.state.doc.toString().includes("Novější"), "Typing during IPC save keeps the new buffer and blocks leaving");
+  check(writes[0].expectedRevision==="r1" && writes[0].content==="Původní rozepsaný text", "Real DocumentSession writes the captured content with its acknowledged revision");
+  onWrite=null; await save();
+  check(!core.dirty && writes.at(-1).expectedRevision==="r2" && writes.at(-1).content.includes("Novější"), "Retry uses the completed disk revision and saves the newer text");
+
+  reset(); await openProject("C:\\Side conflict"); projectMock.sideError="Side save failed";
+  check(await rejects(()=>openProject("C:\\Other")) && core.root==="C:\\Side conflict", "A side-editor save error also prevents switching the project");
+  result.textContent=JSON.stringify({ok:true,checks});
+} catch(error) { result.textContent=JSON.stringify({ok:false,error:String(error.stack||error)}); }
+</script>

@@ -11,6 +11,7 @@
     "test:workspace": "node scripts/verify-workspace-wizard.mjs",
     "test:metadata": "node scripts/verify-workspace-wizard.mjs document-metadata",
     "test:workflow": "node scripts/verify-workspace-wizard.mjs document-workflow",
+    "test:opening": "node scripts/verify-workspace-wizard.mjs project-opening",
     "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml",
     "check": "tsc --noEmit"
   },

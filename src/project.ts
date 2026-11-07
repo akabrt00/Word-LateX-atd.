@@ -14,7 +14,7 @@ import { documentProgress } from "./document-progress";
 import { resetPdf } from "./preview";
 import { setPaperless } from "./layout";
 import { closeReader, isPaper, openReader } from "./reader";
-import { tourOnFirstProject } from "./tour";
+import { closeTour, tourOnFirstProject } from "./tour";
 import { restoreCursor, restoreSession, saveSession } from "./session";
 import { loadSettings, resetSettings, toggleSettings } from "./settings";
 import { closeSide, sideFile } from "./split";
@@ -32,7 +32,7 @@ export async function openFolder() {
   if (typeof picked === "string") await openProject(picked);
 }
 
-export async function openProject(path: string) {
+export async function openProject(path: string, { requireMain = false } = {}) {
   const errEl = $("welcome-error");
   errEl.hidden = true;
   if (dirty) await save();
@@ -43,14 +43,16 @@ export async function openProject(path: string) {
   } catch {
     setRecent(getRecent().filter((p) => p !== path));
     renderRecent();
-    errEl.textContent = `Can't open ${baseName(path)}. The folder may have been moved or deleted.`;
+    errEl.textContent = `Projekt ${baseName(path)} nelze otevřít. Složka mohla být přesunutá, odstraněná nebo není přístupná.`;
     errEl.hidden = false;
+    if (requireMain) throw new Error(errEl.textContent);
     return;
   }
 
   await closeSide();
   await stopKernel();
   await resetTerminal();
+  closeTour();
   setRoot(path);
   documentSession = null;
   setCurrent(null);
@@ -71,7 +73,7 @@ export async function openProject(path: string) {
   // Back to where this project was left; a project opened for the first time starts on its paper.
   const hasPaper = files.some((f) => f.endsWith(".tex"));
   setPaperless(!hasPaper);
-  if (!(await restoreSession(files))) {
+  if (!(await restoreSession(files)) || requireMain) {
     // A notes project starts on its index, its readme, or any note.
     const note = files.find((f) => /(^|\/)index\.md$/i.test(f)) ?? files.find((f) => /^readme\.md$/i.test(f)) ?? files.find((f) => /\.md$/i.test(f));
     if (files.includes(mainFile)) await openFile(mainFile);
@@ -79,6 +81,7 @@ export async function openProject(path: string) {
     else showNoFile();
   }
   refreshIndex().catch(() => {});
+  if (requireMain && current !== mainFile) throw new Error(`Hlavní soubor ${mainFile} se nepodařilo otevřít. Dokument zůstává uložený ve složce ${path}.`);
   tourOnFirstProject();
 }
 
@@ -100,6 +103,7 @@ export async function closeProject() {
   await stopKernel();
   await resetTerminal();
   $("btn-run-file").hidden = true;
+  closeTour();
   setRoot(null);
   documentSession = null;
   setCurrent(null);

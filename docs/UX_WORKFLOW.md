@@ -34,6 +34,8 @@ Implementováno samostatné Neuložené změny / Otevřené změny uloženy a in
 
 ## Navazující práce výhradně v této prioritě
 
+Další dokončený celek: kontrola názvu složky před titulními údaji, zřetelné rozlišení názvu složky a práce, přehled šablony/cesty v druhém kroku a zotavení po chybě otevření bez duplicitního založení. Nový dokument otevírá hlavní zdroj; běžná obnova projektu zachovává kapitolu. Český čtyřkrokový průvodce popisuje pouze hlavní pracovní cestu a nezasahuje do šipek editoru. Automatické ověření včetně reálného project.ts je v TEST_REPORT.md. Osobní desktopový průchod a obnova rozepsané práce po pádu aplikace jsou nadále otevřené.
+
 Další automaticky ověřený celek: Uložit v liště, nabídce i obou editorech ukládá oba otevřené zdroje s potvrzením, nezávisle na fokusu. Ověřeny oba konflikty, částečné uložení, přepnutí projektu, dvojí stisk, další psaní i kompilace při uložení. Lišta se zalamuje v menším okně. Živý desktopový průchod zůstává na uživateli.
 
 1. Při osobním průchodu ověřit srozumitelnost nového rozlišení uloženého textu a aktuálnosti PDF.

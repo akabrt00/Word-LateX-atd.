@@ -1,10 +1,13 @@
 <!doctype html>
 <meta charset="utf-8">
+<link rel="stylesheet" href="/src/style.css"><link rel="stylesheet" href="/src/tul-writer.css">
 <title>Workspace wizard regression</title>
 <style>[hidden] { display: none !important; }</style>
 <pre id="workspace-test-result">pending</pre>
+<div id="editor"><div class="cm-content" contenteditable="true" tabindex="-1">Testovací editor</div></div>
 <script type="module">
 import { showWorkspace } from "/src/workspace.ts";
+import { opening } from "/tests/browser/workspace-opening-mocks.ts";
 
 let checks = 0;
 const check = (condition, message) => { if (!condition) throw Error(message); checks++; };
@@ -22,24 +25,39 @@ const calls = [];
 let rejectCreation = false;
 let resolveCreation;
 let holdCreation = false;
+let createdResult = "";
+let settingsWrites = 0;
 window.__TAURI_INTERNALS__ = { invoke: async (command, args) => {
   if (command === "read_workspace_settings") return { documentsDir: "C:\\Wizard-test", defaultTemplate: "tul-semester" };
-  if (command === "write_workspace_settings") return;
+  if (command === "write_workspace_settings") { settingsWrites++; return; }
   if (command === "create_template_project") {
     calls.push(args);
     if (rejectCreation) throw Error("Test: složka už existuje");
     if (holdCreation) await new Promise(resolve => { resolveCreation = resolve; });
-    return ""; // The mock does not create files or open a project.
+    return createdResult; // No files are created; opening uses a separate test adapter.
   }
   throw Error(`Unexpected IPC: ${command}`);
 } };
 
 try {
   await showWorkspace(true);
+  check(field("workspace-submit").getBoundingClientRect().bottom <= dialog().getBoundingClientRect().bottom, "Primary actions remain visible while the form body scrolls");
+  const beforeInvalid = settingsWrites;
+  for (const name of ["../outside", "CON", "aux.txt", "bad:name", "name.", "   ", "a\tb", "COM1.tex"]) {
+    set("workspace-name", name); await submit();
+    check(!field("workspace-name").checkValidity() && settingsWrites === beforeInvalid && calls.length === 0 && field("semester-details").hidden, `Invalid folder name is rejected before metadata or settings writes: ${JSON.stringify(name)}`);
+  }
+  set("workspace-name", "  Moje práce  "); choose("blank");
+  check(field("workspace-destination").textContent.endsWith("\\Moje práce"), "Destination previews the normalized folder name");
+  await submit();
+  check(calls.at(-1).name === "Moje práce", "Surrounding whitespace is removed before folder creation");
+
+  await showWorkspace(true);
   set("workspace-name", "První dokument");
   choose("tul-thesis");
   await submit();
   check(field("template-title").value === "První dokument", "Title defaults to folder name");
+  check(!field("workspace-summary").hidden && field("workspace-summary").textContent.includes("Závěrečná práce") && field("workspace-summary").textContent.includes("\\První dokument"), "Metadata step keeps the chosen template and destination visible");
   check(!field("semester-details").matches(":enabled"), "Semester controls stay disabled in thesis form");
   set("template-title", "Vlastní název DP");
   set("thesis-author", "Autorka DP");
@@ -119,6 +137,19 @@ try {
   choose("tul-thesis");
   await submit();
   check(!dialog() && calls.length === beforeSettings, "Workspace settings never create a document");
+
+  createdResult = "C:\\Wizard-test\\Recovery"; opening.fail = true;
+  await showWorkspace(true); set("workspace-name", "Recovery"); choose("blank"); await submit();
+  for (let i=0; !field("workspace-submit")?.textContent.includes("Zkusit") && i<300; i++) await new Promise(resolve => setTimeout(resolve,10));
+  check(dialog().querySelector(".workspace-error").textContent.includes(createdResult), "Failed first opening shows the saved project's exact folder");
+  check(opening.calls.at(-1).requireMain && field("workspace-name").disabled && dialog().querySelector(".workspace-back").hidden, "Opening requires a real main file and cannot return to duplicate creation");
+  const createdCount = calls.length;
+  await submit();
+  check(calls.length === createdCount && opening.calls.length === 2, "Retry opening does not create the project again");
+  opening.fail = false;
+  await submit(); await waitForClose(document.querySelector("dialog"));
+  check(!dialog() && opening.calls.length === 3 && calls.length === createdCount, "A successful opening retry closes recovery without rewriting source");
+  check(document.activeElement === document.querySelector("#editor .cm-content"), "After creation the editor receives keyboard focus");
   field("workspace-test-result").textContent = JSON.stringify({ ok: true, checks });
 } catch (error) {
   field("workspace-test-result").textContent = JSON.stringify({ ok: false, checks, error: String(error.stack || error) });

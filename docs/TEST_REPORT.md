@@ -1,5 +1,20 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Založení, otevření a první orientace — 2026-11-07
+
+Výchozí commit 8dd5811. Rozsah: včasná frontendová validace názvů Windows a normalizace mezer, přehled cesty/šablony, odlišení založení od otevření s bezpečným retry, requireMain a český průvodce základní prací s životním cyklem/fokusem. Backend a závislosti se neměnily. Windows/PowerShell, Node v24.15.0, npm 11.12.1, Rust/cargo 1.99.1 a izolovaný Edge; pouze testovací obsah.
+
+- Finální `npm test`: 28 prošlo, 0 selhalo; `npm run check`: exit 0. `npm run build`: exit 0 po dokončení průvodce; ignorovaný log wizard-workflow-build.log, známá varování bundleru přetrvávají.
+- `npm run test:workspace`: 37 kontrol prošlo. Včetně osmi neplatných názvů bez zápisu nastavení/vytvoření, ořezání mezer, cesty v druhém kroku, zachování údajů a retry po chybě otevření bez dalšího vytvoření. Otevření projektu je zde testovací adaptér; kontrola předání requireMain a přesunu fokusu na testovací editovatelný prvek, nikoli plný CodeMirror.
+- `npm run test:workflow`: 54 kontrol prošlo, včetně čtyř kroků české orientace, nepřevzetí šipek z textového pole, nezduplikování aktivního průvodce, návratu fokusu a rušení opožděného startu. Regrese `npm run test:metadata`: 24 kontrol prošlo, exit 0.
+- Nové `npm run test:opening`: 13 kontrol prošlo. Skutečné project.ts, document-files.ts, core.ts a DocumentSession; editor, relace, náhled a další UI mají adaptéry, diskové IPC je testovací. Ověřeny hlavní soubor versus obnovená kapitola, nedostupná složka/zdroj, obě chyby ukládání před přepnutím projektu, zachování novějšího bufferu během zápisu, původní očekávaná revize a správná dokončená revize při opakování. Nejde o nativní end-to-end test.
+- `cargo test --manifest-path src-tauri/Cargo.toml --offline --lib workspace::tests::new_projects_never_merge_or_escape_the_workspace -- --test-threads=1`: 1 prošel, 0 selhalo. Nepřepsání uživatelské práce, neplatné cesty a jména ověřeny skutečným backendem.
+- Dva první starty workspace sady selhaly při navázání WebSocketu a Page.navigate, nikoli na asercích. Doplněna diagnostika, omezené čekání na připravený protokol a především předehřátí HTML/inline modulu Vite před spuštěním prohlížeče. Následný běh prošel; chyby asercí se neopakují automaticky. Profily jsou izolované a zavírají se, uživatelovy prohlížeče se neovládaly.
+- Pozdější vizuální opakování narazilo také na Runtime.enable a timeout předehřívání HTML; tyto starty nejsou úspěchy testů. Vite cache je nyní oddělená pro každý dočasný profil. Finální běh po poslední úpravě rozložení prošel 38 kontrolami, exit 0, včetně stále viditelných spodních akcí. Vizuálně ověřené output/workspace-wizard-light.png a workspace-wizard-dark.png (820 × 620) potvrzují opravu původně odsunutých tlačítek. Obecné formuláře metadat mají původní rozložení. Snímky obsahují testovací data, nejde o nativní okno. Finální themed snímek hlavní pracovní plochy se kvůli neúspěšnému startu nezískal; jejích 54 behaviorálních kontrol prošlo v samostatném běhu.
+- Finální `npm run tauri build -- --debug --no-bundle`: exit 0 včetně frontendového sestavení a posledního omezení nového rozložení jen na průvodce založením. Aktuální src-tauri/target/debug/tul-writer.exe je sestavené bez spuštění. Ignorovaný log workflow-final-desktop.log; známá varování bundleru přetrvávají. Předchozí společný příkaz skončil exit 1 kvůli startu browserového testu, samotné nativní sestavení v něm mělo exit 0; oba výsledky byly vypsány odděleně. `git diff --check`: bez chyb.
+
+Plný nativní průchod a instalace se na přání uživatele neprovádí. Obnova neuloženého textu po pádu, externí sledování souborů a kompletní přístupnost aplikace zůstávají mimo tuto dokončenou iteraci; nezaměňují se za úspěch aktuálních testů.
+
 ## Jednotný příkaz Uložit — 2026-11-07
 
 Výchozí commit 1bc6db3. Společné uložení obou editorů z lišty, nabídky a zkratek, explicitní potvrzení výsledku, zámek opakování a kontrola kontextu/neuložených změn. Backend ani závislosti se neměnily; Windows/PowerShell, Node v24.15.0, npm 11.12.1 a izolovaný Edge.

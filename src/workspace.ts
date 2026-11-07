@@ -7,11 +7,11 @@ import { readTemplateDetails, templateFields, templateHeadings } from "./templat
 
 interface WorkspaceSettings { documentsDir: string; defaultTemplate: string; }
 const starters = [
-  { id: "tul-semester", name: "TUL · Semestrální práce", detail: "Verze 1.3 · pdfLaTeX + BibTeX. V dalším kroku vyberete fakultu a vyplníte údaje titulní strany." },
-  { id: "tul-thesis", name: "TUL · Závěrečná práce", detail: "Komunitní uspořádání 0.8 · bakalářská nebo diplomová práce. V dalším kroku vyplníte titulní údaje a studijní program." },
-  { id: "tul-presentation", name: "TUL · Prezentace", detail: "TULpresentation · univerzitní varianta 16:9. V dalším kroku vyplníte název, autory, pracoviště a datum." },
-  { id: "tul-poster", name: "TUL · Akademický poster", detail: "TULposter · návrh ve vývoji · A1 na výšku. V dalším kroku vyplníte název, autory, pracoviště a případně kontakt." },
-  { id: "blank", name: "Prázdný LaTeX dokument", detail: "Jednoduchý main.tex bez univerzitní šablony · pdfLaTeX." },
+  { id: "tul-semester", name: "TUL · Semestrální práce", detail: "Semestrální práce s titulní stranou, kapitolami a literaturou. V dalším kroku vyplníte fakultu a údaje práce." },
+  { id: "tul-thesis", name: "TUL · Závěrečná práce", detail: "Bakalářská nebo diplomová práce. V dalším kroku vyplníte titulní údaje a studijní program." },
+  { id: "tul-presentation", name: "TUL · Prezentace", detail: "Prezentace se snímky 16:9. V dalším kroku vyplníte název, autory, pracoviště a datum." },
+  { id: "tul-poster", name: "TUL · Akademický poster", detail: "Akademický plakát A1 na výšku; šablona ve vývoji. V dalším kroku vyplníte název, autory a pracoviště." },
+  { id: "blank", name: "Prázdný LaTeX dokument", detail: "Jednoduchý dokument bez univerzitní šablony. Můžete rovnou začít psát." },
 ];
 
 
@@ -27,20 +27,30 @@ export async function refreshWorkspaceLabel() {
 
 let activeDialog: HTMLDialogElement | null = null;
 
+function folderNameError(value: string): string {
+  if (!value) return "Zadejte název složky dokumentu.";
+  if ([...value].length > 100) return "Název složky může mít nejvýše 100 znaků.";
+  if (value.endsWith(".")) return "Název složky nesmí končit tečkou.";
+  if (/[\p{Cc}<>:"/\\|?*]/u.test(value)) return 'V názvu složky nepoužívejte znaky <>:"/\\|?*.';
+  if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(value)) return "Tento název je vyhrazený systémem Windows. Zvolte jiný.";
+  return "";
+}
+
 export async function showWorkspace(create: boolean, legacy?: () => Promise<void>) {
   if (activeDialog) { activeDialog.focus(); return; }
   const dialog = document.createElement("dialog");
   activeDialog = dialog;
-  dialog.className = "workspace-dialog";
+  dialog.className = "workspace-dialog workspace-wizard";
   dialog.setAttribute("aria-labelledby", "workspace-title");
   dialog.innerHTML = `
     <form>
+      <div class="workspace-scroll">
       <div class="workspace-heading"><div><p class="tul-eyebrow">Pracovní prostor</p><h2 id="workspace-title"></h2></div><button type="button" class="icon-btn workspace-close" aria-label="Zavřít">×</button></div>
       <p class="workspace-intro"></p>
       <div class="workspace-project-step">
-      <label class="workspace-name-label">Název složky dokumentu<input id="workspace-name" name="name" type="text" placeholder="Například Semestrální práce – modelování" maxlength="100" required autocomplete="off" /></label>
+      <label class="workspace-name-label">Název složky dokumentu<input id="workspace-name" name="name" type="text" placeholder="Například Semestrální práce – modelování" maxlength="100" required autocomplete="off" aria-describedby="workspace-name-hint" /><small id="workspace-name-hint"></small></label>
       <div class="workspace-folder"><span>Složka pro nové dokumenty</span><div><output id="workspace-directory"></output><button type="button" class="btn" id="workspace-choose">Změnit…</button></div><small>Každý dokument vznikne ve vlastní podsložce. Toto nastavení platí pro celý počítač.</small></div>
-      <label>Výchozí šablona<select id="workspace-template"></select></label>
+      <label><span id="workspace-template-label"></span><select id="workspace-template"></select></label>
       <p id="workspace-template-detail" class="workspace-detail"></p>
       <p id="workspace-destination" class="workspace-destination"></p>
       <div class="workspace-links"><button type="button" class="workspace-link" id="workspace-source">Prohlédnout TUL šablony ↗</button><button type="button" class="workspace-link" id="workspace-legacy">Další šablony…</button></div>
@@ -49,7 +59,9 @@ export async function showWorkspace(create: boolean, legacy?: () => Promise<void
 ${semesterFields}
       </fieldset>
       <div id="template-details" hidden></div>
+      <p id="workspace-summary" class="workspace-destination" hidden></p>
       <p class="workspace-error" role="alert" hidden></p>
+      </div>
       <div class="workspace-actions"><button type="button" class="btn workspace-back" hidden>Zpět</button><button type="button" class="btn workspace-cancel">Zrušit</button><button type="submit" class="btn btn-primary" id="workspace-submit"></button></div>
     </form>`;
   const field = <T extends HTMLElement>(selector: string) => dialog.querySelector<T>(selector)!;
@@ -68,6 +80,7 @@ ${semesterFields}
   let settings: WorkspaceSettings;
   let busy = false;
   let detailsStep = false;
+  let createdPath: string | null = null;
   let titleEdited = false;
   title.oninput = () => { titleEdited = true; };
   const otherForms = new Map<string, HTMLFieldSetElement>();
@@ -108,9 +121,16 @@ ${semesterFields}
     loadOtherForm();
     const semester = select.value === "tul-semester";
     const hasWizard = semester || !!templateFields[select.value];
+    const folderName = name.value.trim();
+    name.setCustomValidity(create ? folderNameError(folderName) : "");
+    field("#workspace-name-hint").textContent = hasWizard ? "Pod tímto názvem najdete složku v počítači. Název na titulní straně můžete v dalším kroku změnit." : "Pod tímto názvem najdete složku dokumentu v počítači.";
+    field("#workspace-template-label").textContent = create ? "Šablona dokumentu" : "Výchozí šablona";
     field("#workspace-directory").textContent = settings.documentsDir;
     field("#workspace-template-detail").textContent = starters.find(s => s.id === select.value)?.detail ?? "";
-    field("#workspace-destination").textContent = create ? `Vznikne: ${settings.documentsDir.replace(/[\\/]+$/, "")} / ${name.value || "název dokumentu"}` : "";
+    const destination = `${settings.documentsDir.replace(/[\\/]+$/, "")}${settings.documentsDir.includes("\\") ? "\\" : "/"}${folderName || "název dokumentu"}`;
+    field("#workspace-destination").textContent = create ? `Vznikne: ${destination}` : "";
+    field("#workspace-summary").hidden = !detailsStep;
+    field("#workspace-summary").textContent = `${starters.find(s => s.id === select.value)?.name} · Složka: ${destination}`;
     field(".workspace-project-step").hidden = detailsStep;
     metadata.hidden = !detailsStep || !semester;
     metadata.disabled = !detailsStep || !semester;
@@ -125,7 +145,7 @@ ${semesterFields}
   const close = () => { if (!busy) dialog.close(); };
   field(".workspace-close").onclick = close;
   field(".workspace-cancel").onclick = close;
-  field(".workspace-back").onclick = () => { detailsStep = false; error.hidden = true; update(); name.focus(); };
+  field(".workspace-back").onclick = () => { detailsStep = false; error.hidden = true; update(); field(".workspace-scroll").scrollTop = 0; name.focus(); };
   dialog.addEventListener("cancel", event => { if (busy) event.preventDefault(); });
   dialog.addEventListener("keydown", event => { event.stopPropagation(); });
   dialog.addEventListener("close", () => { activeDialog = null; dialog.remove(); });
@@ -139,15 +159,46 @@ ${semesterFields}
       if (typeof picked === "string") { settings.documentsDir = picked; update(); }
     } catch (e) { error.textContent = String(e); error.hidden = false; }
   };
+  const openCreated = async () => {
+    busy = true;
+    submit.disabled = true;
+    submit.textContent = "Otevírám dokument…";
+    field<HTMLButtonElement>(".workspace-cancel").disabled = true;
+    field<HTMLButtonElement>(".workspace-close").disabled = true;
+    try {
+      const { openProject } = await import("./project");
+      await openProject(createdPath!, { requireMain: true });
+      busy = false;
+      dialog.close();
+      document.querySelector<HTMLElement>("#editor .cm-content[contenteditable=true]")?.focus();
+    } catch (openError) {
+      busy = false;
+      error.textContent = `Dokument je vytvořený ve složce ${createdPath}. Otevření se nepodařilo: ${String(openError)} Můžete jej zkusit otevřít znovu; nový dokument se už nevytváří.`;
+      error.hidden = false;
+      error.scrollIntoView({ block: "nearest" });
+      field<HTMLButtonElement>(".workspace-back").hidden = true;
+      const cancel = field<HTMLButtonElement>(".workspace-cancel");
+      cancel.textContent = "Zavřít";
+      cancel.disabled = false;
+      field<HTMLButtonElement>(".workspace-close").disabled = false;
+      submit.disabled = false;
+      submit.textContent = "Zkusit otevřít znovu";
+      submit.focus();
+    }
+  };
   form.onsubmit = async event => {
     event.preventDefault();
-    if (busy || !form.reportValidity()) return;
+    if (busy) return;
+    if (createdPath) { await openCreated(); return; }
+    if (!form.reportValidity()) return;
+    name.value = name.value.trim();
     if (create && (select.value === "tul-semester" || templateFields[select.value]) && !detailsStep) {
       if (select.value === "tul-semester") { if (!titleEdited) title.value = name.value.trim(); }
       else if (otherForm && !otherTitlesEdited.has(select.value)) otherForm.querySelector<HTMLInputElement>("#template-title")!.value = name.value.trim();
       detailsStep = true;
       error.hidden = true;
       update();
+      field(".workspace-scroll").scrollTop = 0;
       (select.value === "tul-semester" ? faculty : otherForm?.querySelector<HTMLSelectElement>("#template-faculty"))?.focus();
       return;
     }
@@ -167,28 +218,23 @@ ${semesterFields}
       await invoke("write_workspace_settings", { settings });
       await refreshWorkspaceLabel();
       const path = create ? await invoke<string>("create_template_project", { name: name.value, templateId: select.value, semesterDetails, templateDetails }) : null;
-      busy = false;
-      dialog.close();
       if (path) {
-        try {
-          const { openProject } = await import("./project");
-          await openProject(path);
-        } catch (openError) {
-          const { setStatus } = await import("./core");
-          setStatus(`Dokument byl vytvořen v ${path}. Otevření se nepodařilo: ${String(openError)}`, "err");
-        }
-      }
+        createdPath = path;
+        await openCreated();
+      } else { busy = false; dialog.close(); }
     } catch (e) {
       busy = false;
       error.textContent = String(e);
       error.hidden = false;
       for (const control of form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | HTMLSelectElement>("input,textarea,button,select")) control.disabled = false;
       update();
+      error.scrollIntoView({ block: "nearest" });
     }
   };
   try {
     settings = await invoke<WorkspaceSettings>("read_workspace_settings");
     select.value = settings.defaultTemplate;
+    if (!select.value) select.value = starters[0].id;
     update();
     document.body.append(dialog);
     dialog.showModal();

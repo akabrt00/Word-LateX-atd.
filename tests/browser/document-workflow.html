@@ -183,10 +183,29 @@ try {
   reset(); settings.compileOnSave = true; await saveFile();
   check(workflow.calls.join("|") === "save|saveSide|save|saveSide|compile", "Enabled compile-on-save runs only after both source saves succeed");
 
-  document.getElementById("menubar").textContent = "Soubor Edit Insert View Kompilace Review Notes Help";
+  document.getElementById("menubar").textContent = "Soubor Edit Insert View Kompilace Review Notes Nápověda";
   document.getElementById("menubar").style.whiteSpace = "nowrap";
   document.getElementById("app").style.width = "820px";
   check(["btn-save", "btn-compile", "btn-settings"].every(id => document.getElementById(id).getBoundingClientRect().right <= 821), "Primary workflow controls remain inside the minimum desktop width");
+
+  const { startTour, closeTour, tourOnFirstProject } = await import("/src/tour.ts");
+  const beforeTour = document.getElementById("btn-save"); beforeTour.focus(); startTour();
+  check(document.getElementById("tour-title").textContent.includes("Uložte") && document.querySelector(".tour-count").textContent === "1 ze 4", "First-run guidance begins with the ordinary save workflow in Czech");
+  const nextTour = () => document.querySelector(".tour-card .btn-primary").click();
+  nextTour(); check(document.getElementById("tour-title").textContent === "Obnovte náhled", "Tour distinguishes compilation from saving source");
+  nextTour(); check(document.getElementById("tour-title").textContent === "Uložte výsledné PDF", "Tour gives PDF export its own step");
+  const scratch = document.createElement("input"); document.body.append(scratch); scratch.focus();
+  scratch.dispatchEvent(new KeyboardEvent("keydown", { key:"ArrowRight", bubbles:true, cancelable:true }));
+  check(document.getElementById("tour-title").textContent === "Uložte výsledné PDF", "Nonmodal tour does not steal editing arrow keys");
+  scratch.remove(); nextTour(); startTour();
+  check(document.querySelectorAll(".tour-card").length === 1 && document.getElementById("tour-title").textContent.includes("Orientujte"), "Starting an active tour cannot duplicate or reset it");
+  nextTour(); check(!document.querySelector(".tour-card") && document.activeElement === beforeTour, "Finishing returns focus to the workflow and removes guidance");
+  localStorage.removeItem("scribe.tour"); tourOnFirstProject(); setRoot(null);
+  await new Promise(resolve => setTimeout(resolve,750));
+  check(!document.querySelector(".tour-card"), "Delayed first-run guidance never appears after leaving the project");
+  reset(); tourOnFirstProject(); closeTour(); await new Promise(resolve => setTimeout(resolve,750));
+  check(!document.querySelector(".tour-card"), "Closing guidance also cancels a queued automatic start");
+  await compile();
   result.textContent = JSON.stringify({ ok: true, checks });
 } catch (error) { result.textContent = JSON.stringify({ ok:false, error:String(error.stack||error) }); }
 </script>
