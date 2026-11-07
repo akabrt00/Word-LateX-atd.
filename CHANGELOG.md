@@ -2,6 +2,11 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Jednodušší rozhraní – 2026-11-07
+
+- Klidnější úvod s novým dokumentem, otevřením projektu a posledními pracemi. Import, nastavení, nástroje a zkratky zůstávají pod Další možnosti; chybějící překladač je automaticky odkryje.
+- Odstraněna dekorativní animace a nadbytečný popisek režimu v pracovní liště. Barva názvu respektuje motiv; diagnostika a přehled zkratek jsou česky, Python je označen jako volitelný. Návrhový směr je uložen v DESIGN_SYSTEM.md.
+
 ## Údaje prezentací – 2026-11-07
 
 - Údaje práce nově upravují také podporované existující prezentace TUL: fakulta, název, autoři, pracoviště, datum a kontakty. Změny mají kontrolu revize main.tex a samostatnou historii; snímky a jiné soubory se zachovávají.

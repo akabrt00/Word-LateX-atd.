@@ -20,6 +20,8 @@ Ověřeno automatické vydání 0.2.5, skutečné privátní stažení a odmítn
 
 ## Bezprostřední další etapa – bezpečná editace
 
+2026-11-07: na přání uživatele sjednocen návrhový směr „v jednoduchosti je krása“. Úvod byl zjednodušen na dvě hlavní akce a poslední práce, ostatní volby jsou na vyžádání. Další úpravy pracovního rozhraní mají zachovat stejnou hierarchii podle DESIGN_SYSTEM.md.
+
 2026-11-07: spojeny historie obou PC včetně podepsaných aktualizací a editace semestrálních údajů. Místní rozpracované průvodce ostatními TUL šablonami jsou zachované odděleně od synchronizačního commitu. Živé GUI a instalační kontroly při tomto předání neproběhly.
 
 Druhý krok vytvářecího průvodce doplněn pro závěrečnou práci (BP/DP), prezentaci a poster. Dodatečná editace nyní funguje u semestrálky a podporovaných prezentací. Další rozšíření metadat: editace ve stávajících závěrečných pracích a posterech.

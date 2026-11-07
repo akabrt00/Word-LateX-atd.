@@ -1,5 +1,17 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Jednodušší úvod – 2026-11-07
+
+Výchozí čistý commit 7782dd4. Na přání uživatele „v jednoduchosti je krása“ zjednodušen úvod na nový dokument, otevření projektu a poslední práce. Import, pracovní prostor, diagnostika a zkratky zůstávají pod nativním details/summary Další možnosti; chybějící TeX tuto část otevře automaticky. Python je volitelný. Odstraněn dekorativní typewriter včetně časovačů a souvisejících stylů; z pracovní lišty odstraněn pouze nadbytečný popisek režimu. Pravidlo návrhu je uložené v DESIGN_SYSTEM.md a připomenuté v AGENTS.md.
+
+Prostředí stejné Windows/PowerShell, Node v24.15.0 a npm 11.12.1. Žádné nové závislosti. Backend a zdrojové transakce dokumentů se neměnily.
+
+- `npm test`: 21 prošlo, 0 selhalo. `npm run check`: exit 0. `npm run build`: exit 0; existující varování velikosti chunků a neúčinných dynamických importů zůstávají. Ignorovaný log simple-welcome-build.log.
+- Dočasné ověření `node output/prepare-welcome-preview.mjs` a `node output/welcome-preview-runner.mjs` mimo sandbox: 6 kontrol chování a čtyři rozvržení prošly, exit 0. Použit skutečný index.html a CSS, skutečné renderSetup/renderRecent/renderShortcuts, izolovaný bezokenní Edge, mock check_tools a testovací adaptéry projektových akcí. Ověřeny dvě hlavní akce, zachované poslední projekty, dostupný import/nastavení, absence dekorativní animace, automatické odkrytí instalace při chybějícím TeXu a zachování sbalení při chybějícím volitelném Pythonu.
+- Vizuálně prohlédnuté PNG: output/welcome-light.png a welcome-dark.png (1400 × 860), welcome-small.png a welcome-options.png (820 × 620, sbalené a rozbalené možnosti). Kontrola horizontálního přetečení prošla. Při zachycení se vyčkává na načtení fontů a ustálení barevných přechodů. Testovací projekty a cesty jsou ukázkové, nikoli uživatelova data. Dočasný preview i snímky zůstávají v ignorovaném output/.
+- `git diff --check`: bez chyb. Rust testy se neopakovaly, protože backend se neměnil. Živé nativní okno ani instalátor nebyly otevřeny na přání uživatele zachovat ovládání počítače; nejedná se o úplný desktopový průchod.
+- `npm run tauri build -- --debug --no-bundle`: exit 0, aktuální src-tauri/target/debug/tul-writer.exe sestaveno. Ignorovaný log simple-welcome-desktop.log. Instalace ani spuštění aplikace neproběhly.
+
 ## Úpravy údajů existujících prezentací – 2026-11-07
 
 Výchozí čistý commit 83408bd. Rozsah: sdílené tlačítko Údaje práce pro podporovanou semestrálku i prezentaci TUL; čtení skutečného main.tex, sedm lokálních změn, revize zdroje, samostatná historie a zachování snímků. Souběžný zásah nebo odstranění souboru zablokuje zápis. No-op nemění bajty ani historii. Opravena také semestrální editace ručně přeuspořádaných deklarací a rozlišení úspěšného zápisu od následné chyby obnovení editoru. Windows release workflow nyní zahrnuje také regresní sady semester_edit a presentation_edit.

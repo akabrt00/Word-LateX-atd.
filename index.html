@@ -11,27 +11,26 @@
 <body>
   <section id="welcome">
     <div class="welcome-drag" data-tauri-drag-region></div>
-    <div class="welcome-panel"><p class="tul-eyebrow">Psaní · LaTeX · Výzkum</p><h1 class="tul-brand">TUL <span>Writer</span></h1><p class="tul-subtitle">Váš dokument. Skutečný LaTeX.<br>Lokální pracovní prostředí pro odborné psaní.</p>
+    <div class="welcome-panel"><h1 class="tul-brand">TUL <span>Writer</span></h1><p class="tul-subtitle">Začněte novým dokumentem nebo pokračujte v rozepsané práci.</p>
       <div class="welcome-actions">
-        <button id="welcome-open" class="btn btn-primary btn-lg">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4.25a1 1 0 011-1h3l1.5 1.5H13a1 1 0 011 1v6.5a1 1 0 01-1 1H3a1 1 0 01-1-1v-8z"/></svg>
-          Otevřít projekt <kbd>⌘O</kbd>
-        </button>
-        <button id="welcome-import" class="btn btn-outline btn-lg" title="Bring in a project from Overleaf (its zip download or git link) or any git repository">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.75v7.5M5 7.25l3 3 3-3"/><path d="M2.75 10.5v1.75a1 1 0 001 1h8.5a1 1 0 001-1V10.5"/></svg>
-          Importovat z Overleafu
-        </button>
-        <button id="welcome-new" class="btn btn-outline btn-lg" title="Založit dokument ve výchozí složce z vybrané šablony">
+        <button id="welcome-new" class="btn btn-primary btn-lg" title="Založit dokument z vybrané šablony">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.25v9.5M3.25 8h9.5"/></svg>
           Nový dokument
         </button>
+        <button id="welcome-open" class="btn btn-outline btn-lg">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4.25a1 1 0 011-1h3l1.5 1.5H13a1 1 0 011 1v6.5a1 1 0 01-1 1H3a1 1 0 01-1-1v-8z"/></svg>
+          Otevřít projekt
+        </button>
       </div>
-      <section class="welcome-section welcome-workspace"><h2>Pracovní prostor</h2><p id="welcome-workspace-path">Načítám složku dokumentů…</p><button id="welcome-workspace" class="btn btn-outline">Nastavit složku a šablonu…</button></section>
       <p id="welcome-error" class="welcome-error" role="alert" hidden></p>
       <section id="recent" class="welcome-section" hidden>
         <h2>Poslední projekty</h2>
         <ul id="recent-list" class="welcome-list"></ul>
       </section>
+      <details id="welcome-options" class="welcome-options">
+        <summary>Další možnosti</summary>
+        <button id="welcome-import" class="btn btn-outline" title="Importovat ZIP z Overleafu nebo projekt z Git repozitáře">Importovat projekt…</button>
+        <section class="welcome-section welcome-workspace"><h2>Pracovní prostor</h2><p id="welcome-workspace-path">Načítám složku dokumentů…</p><button id="welcome-workspace" class="btn btn-outline">Nastavit složku a šablonu…</button></section>
       <section class="welcome-section">
         <h2>Na tomto počítači</h2>
         <ul id="setup-list" class="welcome-list setup"></ul>
@@ -40,11 +39,8 @@
         <h2>Klávesové zkratky</h2>
         <ul id="shortcut-list" class="welcome-list shortcuts"></ul>
       </section>
+      </details>
       <p class="welcome-version">TUL Writer <span class="app-version"></span> · Základ Scribe (MIT)</p><p class="tul-independent">Nezávislý studentský projekt. Nejde o oficiální software Technické univerzity v Liberci.</p>
-    </div>
-    <div class="welcome-stage" aria-hidden="true">
-      <pre id="typewriter" class="typewriter"></pre>
-      <div class="paper"><div id="paper" class="paper-body"></div></div>
     </div>
   </section>
 
@@ -61,7 +57,7 @@
     </header>
     <header id="toolbar">
       <nav id="menubar" aria-label="Application menu"></nav>
-      <span class="tb-spacer"></span><span id="tul-mode-label">LaTeX + PDF</span><button id="btn-semester-details" class="btn" title="Upravit údaje semestrální práce nebo prezentace TUL">Údaje práce</button><button id="tul-ai-toggle" class="btn" aria-controls="tul-ai-center" aria-expanded="false">AI centrum</button>
+      <span class="tb-spacer"></span><button id="btn-semester-details" class="btn" title="Upravit údaje semestrální práce nebo prezentace TUL">Údaje práce</button><button id="tul-ai-toggle" class="btn" aria-controls="tul-ai-center" aria-expanded="false">AI centrum</button>
       <button id="btn-run-file" class="btn" title="Run this Python file in the terminal (⌘R)" hidden>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4.5 2.8v10.4a.6.6 0 00.9.5l8.4-5.2a.6.6 0 000-1L5.4 2.3a.6.6 0 00-.9.5z"/></svg>
         Run file

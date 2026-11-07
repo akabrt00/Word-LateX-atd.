@@ -22,7 +22,9 @@ Tmavý accent je vlastní přístupná odvozená UI barva, nikoli nová oficiál
 
 ## Komponenty
 
-Úvodní obrazovka: samostatný slovní název, otevření/import/založení projektu, poslední projekty, diagnostika nástrojů.
+Základní směr na přání uživatele (2026-11-07): krása v jednoduchosti. Každá obrazovka má jasnou hlavní akci, klidnou typografii a dostatek volného prostoru. Pokročilé možnosti se ukazují na vyžádání. Chyba, která brání hlavnímu úkolu, musí zůstat snadno dostupná; jednoduchost nesmí skrývat problém ani rušit klávesnicové ovládání.
+
+Úvodní obrazovka: jeden sloupec, Nový dokument a Otevřít projekt, poslední práce. Import, pracovní prostor, diagnostika a zkratky jsou pod Další možnosti. Chybějící překladač tuto část otevře automaticky; nepřítomnost volitelného Pythonu nikoli. Bez dekorativní animace nebo reklamní ukázky kódu. Akcent zvýrazňuje hlavní akci a používá barvu aktivního motivu.
 Pracovní plocha: soubory/struktura vlevo, zdroj uprostřed, PDF vpravo. AI centrum je nyní zavíratelný pravý overlay; cílově dockovaný panel s vlastní nastavitelnou šířkou.
 Editorové režimy nyní popisujeme jako LaTeX + PDF. Nenabízíme nefunkční přepínač Word Mode.
 Cílový ribbon: Soubor, Domů, Vložení, Rozložení, Reference, Rovnice, Revize, Zobrazení, AI asistent; kontextové nástroje obrázků a tabulek až s implementovanými operacemi.

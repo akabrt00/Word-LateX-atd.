@@ -52,7 +52,7 @@ import { loadProfile } from "./profile";
 import { renderProblemCount } from "./statusbar";
 import { closeTab, openTabs } from "./tabs";
 import { canRunFile, runFile, shellAlive, showTerminal, stopTerminal, termPanel } from "./terminal";
-import { getRecent, importProject, installLatex, newProject, renderRecent, renderSetup, renderShortcuts, setRecent, startTypewriter } from "./welcome";
+import { getRecent, importProject, installLatex, newProject, renderRecent, renderSetup, renderShortcuts, setRecent } from "./welcome";
 
 import { initAiCenter } from "./ai-center";
 import { refreshWorkspaceLabel, showWorkspace } from "./workspace";
@@ -539,7 +539,6 @@ checkForUpdatesLater();
 renderRecent();
 renderShortcuts();
 renderSetup();
-startTypewriter();
 
 initAiCenter();
 invoke<string | null>("initial_project").then(path => { if (path) return openProject(path); }).catch(e => setStatus(String(e), "err"));

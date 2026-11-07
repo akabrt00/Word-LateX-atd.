@@ -5,7 +5,7 @@
 .update-progress { color: var(--fg); background: var(--panel); border: 1px solid var(--border-hi); border-radius: 8px; padding: 24px; max-width: 460px; }
 .update-progress::backdrop { background: #0006; }
 .tul-brand { margin: 0 0 12px; font-size: 34px; line-height: 1.1; font-weight: 700; letter-spacing: -.8px; }
-.tul-brand span { color: #5948AD; }
+.tul-brand span { color: var(--accent); }
 .tul-subtitle { color: var(--fg-dim); line-height: 1.6; margin: 0 0 28px; max-width: 33em; }
 .tul-independent { color: var(--muted); font-size: 12px; line-height: 1.6; }
 .tul-eyebrow { color: var(--accent); font-size: 11px; font-weight: 650; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
@@ -22,7 +22,6 @@
 .tul-ai-card p { margin: 8px 0; color: var(--fg-dim); }
 .tul-ai-card ul { padding-left: 18px; color: var(--fg-dim); }
 #tul-ai-center .btn { margin-top: 8px; }
-#tul-mode-label { color: var(--muted); font-size: 11px; white-space: nowrap; padding: 0 8px; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 .welcome-workspace p { max-width: 350px; overflow-wrap: anywhere; color: var(--fg-dim); font-size: 12px; margin: 8px 0 12px; }
