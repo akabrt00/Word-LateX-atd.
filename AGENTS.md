@@ -20,6 +20,8 @@ Aktivní priorita podle uživatele (2026-11-07): plně se věnovat běžné cest
 
 ## Automatická synchronizace s GitHubem
 
+Aktualizace oprávnění 2026-11-07: uživatel změnil origin na veřejný repozitář a přímo v chatu výslovně souhlasil s veřejným odesláním commitu 1a3a155 i dalších dokončených a ověřených změn tohoto projektu do main. Toto průběžné oprávnění platí pro zdrojový kód a související projektovou dokumentaci; běžný commit/push znovu nepotvrzujte. Souhlas s veřejnou synchronizací kódu sám o sobě nemění ochranu veřejného vydávání instalátorů v scripts/publish-update.mjs ani pravidla podpisových klíčů.
+
 Uživatel dne 2026-11-05 výslovně povolil průběžné vytváření commitů a automatický push po každém dokončeném úkolu. Toto oprávnění platí i pro následující úkoly; nevyžadujte opakované potvrzení běžného commitu a push.
 
 - Hlavní vzdálené úložiště je origin: https://github.com/akabrt00/Word-LateX-atd..git. Výchozí pracovní větev je main, která sleduje origin/main. Remote upstream zachovává původní Scribe a není cílem nahrávání našich změn.
