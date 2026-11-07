@@ -2,7 +2,7 @@
 
 Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živým testem; testováno = konkrétní evidence v docs/TEST_REPORT.md.
 
-| Funkce | Stav 0.1 |
+| Funkce | Průběžný stav |
 |---|---|
 | Údaje existující semestrálky | Formulář čte aktuální zdroj, mění sedm známých hodnot a popisek autorů; ochrana revizí zdroje/stylu, samostatná historie. Živě ověřen přechod skupina ↔ jeden autor, PDF i konflikt externího stylu. Vlastní makra nebo nejednoznačné deklarace odmítá |
 | Český panel Soubory | Živě ověřeny popisky, nabídky souboru/složky, vytvoření souboru a česká validace cesty; ostatní panely a hlavní nabídka zůstávají částečně anglické |
@@ -29,8 +29,8 @@ Legenda: převzato = nalezeno ve zdroji, ještě ne potvrzeno kompletním živý
 | TUL šablony a zakládání dokumentů | Čtyři nezměněné offline balíčky z portálu TUL × LaTeX; nová vlastní podsložka bez přepisování, volba šablony a nastavení enginu/bibliografie |
 | Průvodce semestrální prací | Dva kroky, výběr TUL / sedmi fakult / CXI, název, 1–20 autorů po řádcích, předmět, rok a volitelné nastavení data/verze. Předvyplní pouze novou kopii, ošetří speciální znaky; nativní i PDF ověření prošlo. Ostatní typy zatím bez průvodce |
 | Překladač podle šablony | Explicitní pdfLaTeX / XeLaTeX / LuaLaTeX, BibTeX / Biber a navazující průchody; původní projekty zachovávají dosavadní automatickou detekci |
-| Windows EXE/MSI | Sestavené testovací DEBUG EXE/MSI; instalace na čistém systému neověřena |
-| Podepsané aktualizace | Vypnuto; upstream aktualizace Scribe se neinstalují |
+| Windows EXE/MSI | Podepsané aktualizační DEBUG i RELEASE NSIS/MSI; automatické privátní vydání 0.2.5. Authenticode, instalace a odinstalace na čistém systému neověřeny |
+| Podepsané aktualizace | Vlastní privátní GitHub Release kanál; živě ověřeno stažení automatického 0.2.5, podpis a odmítnutí změněného balíčku/verze. Nabídka po startu i ruční kontrola, revizní uložení před instalací; vyžaduje GitHub CLI přihlášení. Skutečná instalace/restart zbývá; evidence v docs/TEST_REPORT.md |
 | Kompletní české UI | Částečně; převzaté obrazovky zůstávají anglické |
 | GitHub synchronizace projektu | Origin akabrt00/Word-LateX-atd.; main a automatický commit/push po dokončených úkolech podle AGENTS.md |
 

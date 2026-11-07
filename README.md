@@ -40,7 +40,13 @@ Přímý pdflatex běží dvakrát pro odkazy; automatická bibliografie a alter
 
     npm run tauri build
 
-Tauri může vytvořit NSIS EXE a WiX MSI v src-tauri/target/release/bundle. Podpisy a vlastní aktualizační kanál zatím nejsou nastaveny. Stav skutečného sestavení a ověření je v docs/TEST_REPORT.md. Nezaměňovat zdrojovou konfiguraci instalátoru za ověřenou instalaci.
+Tauri vytváří NSIS EXE a WiX MSI v src-tauri/target/release/bundle. Pro podepsané lokální sestavení jsou potřeba TAURI_SIGNING_PRIVATE_KEY a TAURI_SIGNING_PRIVATE_KEY_PASSWORD mimo projekt. Stav skutečného sestavení a ověření je v docs/TEST_REPORT.md. Nezaměňovat sestavený instalátor za ověřenou instalaci.
+
+### Aktualizace nainstalované aplikace
+
+Od verze 0.2 má TUL Writer vlastní podepsaný aktualizační kanál. Starší verze 0.1 vyžaduje jednorázovou ruční instalaci nové verze z [privátních vydání](https://github.com/akabrt00/Word-LateX-atd./releases/latest). Poté aplikace nabídne novější vydání při spuštění; kontrolu lze vyvolat také přes **Help → Zkontrolovat aktualizace…**. Instalace začne až tlačítkem **Aktualizovat a restartovat**, po ověření podpisu a úspěšném uložení otevřených editorů.
+
+Soukromé stahování vyžaduje [GitHub CLI](https://cli.github.com/) a jednorázové `gh auth login --hostname github.com` k účtu s přístupem k repozitáři na každém PC. Token zůstává v backendu. Pro běžné používání není potřeba Git checkout, Node.js ani Rust. TeX a WebView2 jsou nadále nutné. Nová verze je dostupná až po úspěšném sestavení v GitHub Actions, nikoli okamžitě po změně zdrojů. Podrobný postup a omezení: [docs/UPDATES.md](docs/UPDATES.md).
 
 ## Dokumentace
 

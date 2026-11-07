@@ -27,7 +27,11 @@ Uživatel dne 2026-11-05 výslovně povolil průběžné vytváření commitů a
 - Jestliže není co commitovat, nevytvářejte prázdný commit; ověřte, zda již lokální stav odpovídá GitHubu.
 - Při chybě autorizace nebo push zachovejte lokální commit, jasně popište nedokončenou synchronizaci a potřebný krok uživatele. Tokeny ani hesla nevypisujte, neukládejte do projektu ani nevkládejte do remote URL.
 
-## Bezpečnost a pravdivost
+## Soukromé aktualizace aplikace
+
+Uživatel dne 2026-11-06 požádal o aktualizace nainstalované aplikace a výslovně schválil uložení podpisového klíče a hesla do šifrovaných GitHub Actions secrets. Workflow release.yml po push na main testuje, podepisuje a vytváří privátní vydání. Toto oprávnění nepovoluje veřejné publikování ani změnu viditelnosti. Neotáčejte podpisový klíč bez migračního plánu; neposílejte jeho obsah do logu ani commitu. Podrobnosti v docs/UPDATES.md. Úspěch git push, úspěch CI a skutečně ověřená instalace jsou tři rozdílné kontroly.
+
+## Bezpečnost aplikace
 
 AI API klíče nepatří do projektu ani logu; použijte OS credential store. Než připojíte skutečného poskytovatele, domluvte účet a rozsah odesílaných souborů. Neprohlašujte staticky nalezenou funkci za otestovanou. Selhání nebo přeskočení testu se nesmí vydávat za úspěch.
 

@@ -12,7 +12,13 @@ Hlavním vzdáleným úložištěm projektu je od 2026-11-05 GitHub repozitář 
 
 Samostatná identita, Tauri konfigurace, ukázkový vícesouborový projekt, přímý MiKTeX compiler fallback, explicitní notebook execution, vlastní ikony, AI centrum a experiment zdrojových transakcí. Průběžný stav akceptačních bodů a omezení je v docs/TEST_REPORT.md.
 
-## Bezprostřední další etapa – 0.2
+## Distribuční krok – 0.2 (2026-11-06)
+
+Implementován updater nainstalované aplikace z privátních GitHub Releases, podpisy svázané s verzí, automatický Windows workflow po push na main a explicitní nabídka instalace s uložením dokumentů. Zdrojový projekt se uživatelům automaticky nesynchronizuje. Testy, skutečný stav kanálu a zbývající ověření instalace/restartu jsou v docs/TEST_REPORT.md. Před veřejnou distribucí zbývá Authenticode, čistá VM a ověření všech instalačních cest.
+
+Ověřeno automatické vydání 0.2.5, skutečné privátní stažení a odmítnutí podvrženého balíčku/verze. Další akceptační krok: ručně nainstalovat bootstrap a na čistém Windows účtu provést skutečný upgrade se zachováním projektu a restartem. Optimalizace CI cache je oddělena od tohoto již funkčního distribučního toku.
+
+## Bezprostřední další etapa – bezpečná editace
 
 Implementován formulář Údaje práce pro dodatečnou úpravu titulní strany existující semestrálky, s načtením ze zdroje, kontrolou revizí zdroje/stylu a samostatnými body historie. Další rozšíření: stejné ovládání pro další ověřené TUL šablony.
 
@@ -32,7 +38,7 @@ Pracovní prostor a základní TUL předvolby: implementována globální složk
 6. UI režimy LaTeX/Hybrid/Word až po funkčním napojení. Neznámý blok přepne do zdroje; přímá změna zdroje invaliduje projekci. Paginace je aproximace, PDF zůstává autorita.
 7. Dokončit české popisky hlavního toku a testy klávesnice, focusu a obou motivů.
 
-Definition of done 0.2: tři režimy bezpečně upraví podporovaný jednoduchý dokument, neznámé bloky zůstanou beze změny, externí konflikt je odmítnut, autosave se zotaví po pádu a PDF odpovídá označené revizi.
+Definition of done této etapy: tři režimy bezpečně upraví podporovaný jednoduchý dokument, neznámé bloky zůstanou beze změny, externí konflikt je odmítnut, autosave se zotaví po pádu a PDF odpovídá označené revizi. Distribuční verze 0.2 sama tato kritéria bezpečné vizuální editace nenaplňuje.
 
 ## Etapa 2 – základ Word Mode
 

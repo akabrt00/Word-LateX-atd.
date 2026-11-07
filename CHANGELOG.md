@@ -11,6 +11,16 @@ Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
 - Zopakováno 11 frontendových a 36 Rust testů i dva skutečné PDF překlady. Živě ověřen český panel Soubory, popisky vzhledu šablony, odmítnutí cesty mimo projekt, uložení českých poznámek a založení semestrálky se dvěma autory až do PDF bez chyb a varování. Produkční kód se při tomto ověření neměnil; podrobnosti a neprovedené kontroly v docs/TEST_REPORT.md.
 
+## 0.2 – podepsané aktualizace (2026-11-06)
+
+- Vlastní aktualizace Windows x64 ze soukromých GitHub Releases, kontrola po spuštění a přes nabídku Help. Instalace vyžaduje kliknutí uživatele, ověřený podpis a úspěšné uložení otevřených souborů.
+- Podpis instalačního balíčku je svázaný s verzí; odmítnutí změněného balíčku, nesouladu verze a cizích URL. Přihlášení přes GitHub CLI zůstává mimo frontend a projekt.
+- Automatické testování, sestavení NSIS/MSI a publikace privátní aktualizace z main. Jedinečná verze major.minor.číslo-běhu, ochrana před publikováním staršího commitu a veřejným vydáním.
+- Lokální šifrovaný podpisový klíč s DPAPI heslem, provisioning GitHub Actions secrets po výslovném schválení uživatele. Doplněny smluvní testy toku instalace a release nástrojů.
+- Při skutečné síťové diagnostice nalezena a opravena chybějící inicializace TLS provideru před vytvořením HTTP klienta updateru.
+- Windows CI používá bezpečnou pracovní cestu nezávislou na tečce na konci názvu GitHub repozitáře.
+- Opraveno dohledání privátního draftu podle ID a párování podpisů při změně mezer na tečky v GitHub názvech; CI uchová sestavené artefakty i při chybě publikace a využívá Rust cache. Publisher vybírá pouze instalátory právě sestavené verze.
+
 ## Vývoj – 2026-11-05
 
 - Panel Soubory, jeho tlačítka a místní nabídky jsou česky včetně zadávání názvů, validací a potvrzení přesunu do koše. Windows akce nově uvádí Průzkumníka místo Finderu.
