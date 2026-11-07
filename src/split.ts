@@ -11,6 +11,7 @@ import { FILE_ICON } from "./sidebar";
 import { readDocument, resolveFileConflict } from "./document-files";
 import type { DocumentSession } from "./document-session";
 import { documentProgress } from "./document-progress";
+import { saveFile } from "./build";
 
 const pane = $("work-side");
 const handle = $("split-handle");
@@ -149,7 +150,7 @@ export async function openToSide(rel: string) {
         sideDirty = true;
         renderTitle(rel);
       },
-      onSave: () => { saveSide(); },
+      onSave: () => { void saveFile(); },
     }),
   });
   renderTitle(rel);

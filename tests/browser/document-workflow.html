@@ -8,9 +8,9 @@ document.getElementById("welcome").classList.add("hidden");
 document.getElementById("app").classList.remove("hidden");
 const result = document.createElement("pre"); result.id = "workspace-test-result"; result.hidden = true; document.body.append(result);
 try {
-  const { setRoot, setMainFile, setCurrent, setDirty } = await import("/src/core.ts");
+  const { setRoot, setMainFile, setCurrent, setDirty, assignDirty, renderCrumb } = await import("/src/core.ts");
   const { documentProgress } = await import("/src/document-progress.ts");
-  const { workflow } = await import("/tests/browser/workflow-mocks.ts");
+  const { workflow, settings } = await import("/tests/browser/workflow-mocks.ts");
   let checks = 0;
   const check = (condition, message) => { if (!condition) throw Error(message); checks++; };
   const status = () => document.getElementById("status-text").textContent;
@@ -43,11 +43,13 @@ try {
     throw Error(`Unexpected IPC: ${command}`);
   } };
   const preview = await import("/src/preview.ts");
-  const { compile } = await import("/src/build.ts");
+  const { compile, saveFile } = await import("/src/build.ts");
   const reset = () => {
     setRoot(null);
     setRoot("C:\\Project A"); setMainFile("main.tex"); setCurrent("main.tex");
+    assignDirty(false); renderCrumb(); settings.compileOnSave = false;
     workflow.calls.length = 0; workflow.saveError = ""; workflow.sideError = ""; workflow.onSave = null;
+    workflow.onSideSave = null;
     compileHook = null; chooseHook = null; readHook = null; compileOk = true;
     pdfBytes = bytesFor("Project A"); preview.resetPdf();
   };
@@ -141,6 +143,50 @@ try {
   preview.resetPdf();
   check(!!document.querySelector("[data-create-pdf]") && document.getElementById("pdf-download").disabled, "Reset restores the contextual PDF action without a stale export");
   check(document.getElementById("pdf-freshness").hidden, "Reset removes the previous PDF provenance message");
+
+  reset(); await compile(); workflow.calls.length = 0;
+  setDirty(true); documentProgress.changed("chapter.tex");
+  workflow.onSave = () => setDirty(false);
+  workflow.onSideSave = () => documentProgress.saved("chapter.tex");
+  await saveFile();
+  check(workflow.calls.join("|") === "save|saveSide" && status() === "Otevřené změny jsou uložené", "Ordinary Save writes both editors and confirms completion without compiling");
+  check(documentProgress.unsaved.size === 0 && documentProgress.pdfState === "stale", "Saving both sources leaves the older preview stale");
+  check(!document.getElementById("btn-save").disabled && document.getElementById("btn-save").textContent.includes("Uložit"), "Visible Save allows the next operation");
+
+  reset(); settings.compileOnSave = true; setDirty(true); workflow.saveError = "FILE_CONFLICT: main.tex";
+  await saveFile();
+  check(workflow.calls.join("|") === "save" && status().includes("nebylo dokončeno") && documentProgress.unsaved.has("main.tex"), "Main save error preserves pending text and prevents automatic compilation");
+
+  reset(); settings.compileOnSave = true; setDirty(true); documentProgress.changed("chapter.tex");
+  workflow.onSave = () => setDirty(false); workflow.sideError = "FILE_CONFLICT: chapter.tex";
+  await saveFile();
+  check(workflow.calls.join("|") === "save|saveSide" && documentProgress.unsaved.has("chapter.tex") && !documentProgress.unsaved.has("main.tex"), "Partial save reports failure without acknowledging the conflicted side source");
+
+  reset(); let finishSave;
+  workflow.onSave = () => new Promise(resolve => { finishSave = resolve; });
+  const pendingSave = saveFile(); await saveFile();
+  check(workflow.calls.join("|") === "save" && document.getElementById("btn-save").disabled, "Repeated Save does not enqueue a second operation");
+  finishSave(); await pendingSave;
+  check(workflow.calls.join("|") === "save|saveSide" && !document.getElementById("btn-save").disabled, "Save lock releases after completion");
+
+  reset(); workflow.onSave = () => setRoot("C:\\Other project"); await saveFile();
+  check(workflow.calls.join("|") === "save", "Save command never crosses into a different project's side buffer");
+
+  reset(); settings.compileOnSave = true;
+  workflow.onSideSave = () => setDirty(true); await saveFile();
+  check(workflow.calls.join("|") === "save|saveSide" && status().includes("další úpravy"), "Typing into a saved main buffer during side save is not acknowledged or compiled");
+
+  reset(); setCurrent("figure.pdf"); documentProgress.changed("chapter.tex");
+  workflow.onSideSave = () => documentProgress.saved("chapter.tex"); await saveFile();
+  check(workflow.calls.join("|") === "save|saveSide" && !documentProgress.unsaved.size, "Save remains available to side text when the main pane shows a preview");
+
+  reset(); settings.compileOnSave = true; await saveFile();
+  check(workflow.calls.join("|") === "save|saveSide|save|saveSide|compile", "Enabled compile-on-save runs only after both source saves succeed");
+
+  document.getElementById("menubar").textContent = "Soubor Edit Insert View Kompilace Review Notes Help";
+  document.getElementById("menubar").style.whiteSpace = "nowrap";
+  document.getElementById("app").style.width = "820px";
+  check(["btn-save", "btn-compile", "btn-settings"].every(id => document.getElementById(id).getBoundingClientRect().right <= 821), "Primary workflow controls remain inside the minimum desktop width");
   result.textContent = JSON.stringify({ ok: true, checks });
 } catch (error) { result.textContent = JSON.stringify({ ok:false, error:String(error.stack||error) }); }
 </script>

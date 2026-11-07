@@ -6,7 +6,7 @@ Nezávislý studentský desktopový textový procesor pro Windows. Pracovní for
 
 ### Běžná práce s dokumentem
 
-Zvolte **Nový dokument**, vyplňte průvodce a upravte dokument v editoru. **Uložit** v nabídce **Soubor** nebo Ctrl+S uloží rozepsanou práci. Tlačítko **Překompilovat** samo nejprve uloží změny v hlavním i bočním editoru a potom zobrazí výsledek vedle textu; není nutné před ním zvlášť ukládat.
+Zvolte **Nový dokument**, vyplňte průvodce a upravte dokument v editoru. **Uložit** v liště, nabídce **Soubor** nebo Ctrl+S v kterémkoli editoru uloží změny hlavního i bočního editoru a potvrdí dokončení. Funguje i při náhledu obrázku/PDF v hlavním panelu, pokud píšete v bočním editoru. Tlačítko **Překompilovat** samo nejprve uloží změny v obou editorech a potom zobrazí výsledek vedle textu; není nutné před ním zvlášť ukládat.
 
 Hotový výsledek uložíte přes **Uložit PDF…** přímo nad náhledem nebo v nabídce **Soubor**. Vyberete jen umístění kopie. Ukládá se přesná zobrazená verze PDF; změna projektu nebo další kompilace během otevřeného dialogu ji nezamění. Po dalších úpravách textu zvolte **Překompilovat** znovu, aby se promítly také do výsledku.
 

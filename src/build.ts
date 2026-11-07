@@ -1,7 +1,7 @@
 // Running notebooks and compiling the paper.
 import { invoke } from "@tauri-apps/api/core";
 import { ask } from "@tauri-apps/plugin-dialog";
-import { $, current, mainFile, NOTEBOOK_SOURCE, root, setStatus, showLog, VIEWABLE } from "./core";
+import { $, changeListeners, current, mainFile, NOTEBOOK_SOURCE, root, setStatus, showLog } from "./core";
 import { explain, parseLog, Problem } from "./diagnostics";
 import { view } from "./editor";
 import { renderPdf, setPdfBuildBusy } from "./preview";
@@ -9,7 +9,7 @@ import { installLatex } from "./welcome";
 import { problemSummary, setProblems } from "./problems";
 import { listFiles, save } from "./project";
 import { settings } from "./settings";
-import { saveSide, sideFocused } from "./split";
+import { saveSide, sideFile } from "./split";
 import { refreshIndexSoon } from "./texindex";
 import { refreshFiles } from "./sidebar";
 import { CompileResult, NotebookInfo, RunResult } from "./types";
@@ -175,13 +175,36 @@ export async function compile({ quiet = false } = {}) {
   }
 }
 
-/** What ⌘S does: save, then compile if the project is set to compile on save. */
+export let saving = false;
+export const canSave = () => !!root && !saving;
+function updateSaveButton() {
+  $<HTMLButtonElement>("btn-save").disabled = !canSave();
+  $("btn-save").setAttribute("aria-busy", String(saving));
+}
+changeListeners.push(updateSaveButton);
+
+/** Toolbar, menu and either editor's shortcut all save the open source buffers. */
 export async function saveFile() {
+  if (!root || saving) return;
+  const project = root, file = current, side = sideFile;
+  const sameContext = () => root === project && current === file && sideFile === side;
+  let compileAfter = false;
+  saving = true;
+  updateSaveButton();
   try {
-    if (sideFocused()) await saveSide();
-    else await save();
-    if (settings.compileOnSave && root && current && !VIEWABLE.test(current)) await compile();
+    setStatus("Ukládám otevřené změny…", "busy");
+    await save();
+    if (!sameContext()) return;
+    await saveSide();
+    if (!sameContext()) return;
+    if (documentProgress.unsaved.size) throw new Error("Během ukládání přibyly další úpravy. Zvolte Uložit znovu.");
+    setStatus("Otevřené změny jsou uložené", "ok");
+    compileAfter = settings.compileOnSave;
   } catch (error) {
-    setStatus(String(error), "err");
+    if (sameContext()) setStatus(`Uložení nebylo dokončeno: ${String(error)}`, "err");
+  } finally {
+    saving = false;
+    updateSaveButton();
   }
+  if (compileAfter && sameContext()) await compile();
 }

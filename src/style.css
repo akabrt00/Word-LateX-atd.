@@ -256,7 +256,7 @@ select {
 /* ── app shell ── */
 #app {
   display: grid;
-  grid-template-rows: 36px 40px minmax(0, 1fr) 24px;
+  grid-template-rows: 36px auto minmax(0, 1fr) 24px;
   height: 100%;
 }
 
@@ -407,9 +407,11 @@ body.fullscreen #titlebar, body:not(.mac) #titlebar { padding-left: 8px; }
 
 #toolbar {
   display: flex;
+  flex-wrap: wrap;
+  min-height: 40px;
   align-items: center;
   gap: 4px;
-  padding: 0 8px;
+  padding: 5px 8px;
   background: var(--panel);
   border-bottom: 1px solid var(--border);
   user-select: none;

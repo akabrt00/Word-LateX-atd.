@@ -12,6 +12,8 @@ updates.ts zobrazuje nabídku a modální stav instalace. Čistý UpdateFlow odd
 
 ## Současný tok
 
+saveFile v build.ts je společný příkaz pro lištu, nabídku a zkratky obou editorů. Postupně ukládá hlavní a boční zdroj; kontroluje projekt i oba otevřené soubory a zbylé neuložené změny. Teprve úspěch může spustit volitelnou kompilaci. save/saveSide zůstávají samostatné nízkoúrovňové operace pro interní přechody a původní revizní ochranu.
+
 Čistý document-progress.ts odděluje množinu neuložených souborů od monotónní revize místních změn a revize zobrazeného PDF. Core a boční editor hlásí změny/uložení; build zachytí revizi po uložení editorů, preview ji publikuje až po vykreslení a zobrazuje stav. Uložení revizi nevrací zpět. Reset projektu zruší předchozí doklad aktuálnosti; jinak otevřené PDF má neověřený stav. Nejde o filesystem watcher nebo obecný graf závislostí TeXu.
 
 Vytvoření PDF v build.ts zachytí projekt a hlavní soubor před uložením editorů; při změně kontextu přestane publikovat výsledek. preview.ts zveřejní PDF až po úspěšném načtení a vykreslení. PdfExportFlow zachytí název a bajty aktuálního PDF.js dokumentu ještě před nativním dialogem. Raw IPC export_pdf předá tyto bajty modulu pdf_export.rs, který ověří hlavičku a cílovou PDF cestu a provede atomickou náhradu. Nemění zdroj dokumentu a neopakuje čtení sestaveného souboru, který se mohl mezitím změnit. Podrobnosti v ADR-014.

@@ -1,5 +1,9 @@
 # Rozhodnutí
 
+## ADR-016 – Jednotný příkaz Uložit (2026-11-07)
+
+Běžné Uložit ukládá oba otevřené zdrojové editory bez rozhodování podle fokusu: kliknutí do nabídky nebo lišty jej může změnit. Zkratka bočního editoru proto používá stejný saveFile jako hlavní editor a nabídka. Interní save/saveSide zůstávají samostatné. Operace zachytí projekt a otevřené soubory, nezasáhne nový kontext po přepnutí, blokuje opakovaný submit a nepovažuje později připsaný text za uložený. Částečný úspěch není úspěchem celého příkazu; kompilace při uložení navazuje až po obou potvrzeních. Undo/revizní ukládání zdrojů se nemění a export PDF zůstává samostatný.
+
 Upřesnění názvosloví od uživatele 2026-11-07: v aktuálním UI se akce z ADR-014/015 jmenuje **Překompilovat**, nikoli Vytvořit PDF. Uloží změny a obnoví náhled. **Uložit PDF…** zůstává samostatný export; tento rozdíl má být patrný i v průběhu a potvrzení výsledku. Implementace překladu, revizí a snapshot exportu se nemění.
 
 ## ADR-015 – Uložení zdroje a aktuálnost náhledu (2026-11-07)

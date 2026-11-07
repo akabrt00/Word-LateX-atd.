@@ -1,5 +1,15 @@
 # Ověření milníku 0.1 – 2026-11-05
 
+## Jednotný příkaz Uložit — 2026-11-07
+
+Výchozí commit 1bc6db3. Společné uložení obou editorů z lišty, nabídky a zkratek, explicitní potvrzení výsledku, zámek opakování a kontrola kontextu/neuložených změn. Backend ani závislosti se neměnily; Windows/PowerShell, Node v24.15.0, npm 11.12.1 a izolovaný Edge.
+
+- `npm test`: 28 prošlo, 0 selhalo; `npm run check`: exit 0. `git diff --check`: bez chyb.
+- `npm run test:workflow`: opakovaný běh 46 kontrol prošlo, exit 0. První běh skončil timeoutem Runtime.evaluate při komunikaci s izolovaným prohlížečem; není úspěchem. Skutečný build/core/preview a PDF.js, testovací adaptéry save/saveSide a nativního IPC. Doplněny případy obou ukládaných editorů, dílčího úspěchu/chyby, zámku a opakování, změny projektu, psaní během ukládání, náhledu v hlavním panelu a kompilace až po úspěchu. Test rozložení s reprezentativní šířkou nabídky potvrdil dostupnost hlavních ovladačů v šířce 820 px; nejde o skutečnou nativní nabídku.
+- `npm run build`: exit 0, známá varování bundleru přetrvávají; ignorovaný log save-all-build.log. EXE se sestaví společně s navazujícím ověřeným průvodcem, bez spuštění.
+
+Rust/TeX testy se neopakovaly, protože revizní zápis a překladač se neměnily. Nativní okno/instalátor nebyly spuštěny. Kontrola Vim :wq a připojení zkratky bočního editoru proběhla staticky; browserová sada volá společný saveFile přímo. Živé ověření je otevřené.
+
 ## Oddělení kompilace a exportu v názvosloví — 2026-11-07
 
 Výchozí commit bdba244. Uživatel upřesnil, že akce kompilace nemá být pojmenovaná PDF. Hlavní a kontextové ovladače nyní mají Překompilovat; nabídky, nastavení, průběh, problémy a starší náhled používají stejné názvosloví. Uložit PDF… zůstává samostatný export. Chování překladu, ukládání zdrojů a snapshot exportu se neměnilo. Ve výchozím nastavení jsou automatické kompilace vypnuté jako dosud.

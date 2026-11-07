@@ -18,7 +18,8 @@ import { python } from "@codemirror/lang-python";
 import { autocompletion, closeBrackets, closeBracketsKeymap, Completion, CompletionContext, completionKeymap } from "@codemirror/autocomplete";
 import { tags as t } from "@lezer/highlight";
 import { compile, compileSoon, saveFile } from "./build";
-import { $, current, setDirty } from "./core";
+import { $, current, root, setDirty } from "./core";
+import { documentProgress } from "./document-progress";
 import { mathPreview } from "./mathpreview";
 import { isNote, notesCompletion, notesExtension } from "./notes";
 import { outlineChanged } from "./outline";
@@ -201,8 +202,9 @@ export const vimKeys = (on: boolean): Extension => (on ? vim() : []);
 Vim.defineEx("write", "w", () => { saveFile(); });
 Vim.defineEx("quit", "q", () => { if (current) closeTab(current); });
 Vim.defineEx("wq", "wq", async () => {
+  const file = current, project = root;
   await saveFile();
-  if (current) closeTab(current);
+  if (file && root === project && current === file && !documentProgress.unsaved.size) closeTab(file);
 });
 
 // codemirror's basicSetup without its line-number gutter, which numbersConf supplies instead.

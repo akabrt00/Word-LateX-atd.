@@ -12,7 +12,7 @@ import { allCommands, formatKeys, installKeybindings, isEnabled, register, runCo
 import { COMMAND_ICONS, ICONS } from "./icons";
 import { createMenubar, MenuEntry, openContextMenu } from "./menubar";
 import { closePalette, openPalette } from "./palette";
-import { compile, runNotebook, saveFile } from "./build";
+import { canSave, compile, runNotebook, saveFile } from "./build";
 import { getVersion } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { save } from "@tauri-apps/plugin-dialog";
@@ -128,7 +128,7 @@ register(
   { id: "file.open", group: "File", title: "Open Project…", keys: "Mod-o", run: openFolder },
   { id: "file.import", group: "File", title: "Import from Overleaf or Git…", run: importProject },
   { id: "file.newProject", group: "File", title: "Nový dokument…", run: newProject },
-  { id: "file.save", group: "File", title: "Uložit", keys: "Mod-s", run: saveFile, enabled: () => !!current && !VIEWABLE.test(current) && !/\.(csv|tsv)$/i.test(current) },
+  { id: "file.save", group: "File", title: "Uložit", keys: "Mod-s", run: saveFile, enabled: canSave },
   { id: "file.savePdf", group: "File", title: "Uložit PDF…", enabled: canExportPdf, run: downloadPdf },
   {
     id: "file.reveal", group: "File", title: "Reveal in Finder", enabled: hasProject,
@@ -442,6 +442,7 @@ createMenubar($("menubar"), [
 
 // ---------- wire up ----------
 $("btn-open").onclick = openFolder;
+$("btn-save").onclick = () => { void saveFile(); };
 $("btn-compile").onclick = () => compile();
 $("pdf-pane").addEventListener("click", event => {
   if ((event.target as Element).closest("[data-create-pdf]")) void compile();

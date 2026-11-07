@@ -1,6 +1,7 @@
 export const workflow = {
   calls: [] as string[], problems: [] as { severity: string }[],
   saveError: "", sideError: "", onSave: null as null | (() => Promise<void> | void),
+  onSideSave: null as null | (() => Promise<void> | void),
 };
 export const view = { state: { doc: { toString: () => "\\documentclass{article}\n" } } };
 export async function save() {
@@ -8,8 +9,9 @@ export async function save() {
   if (workflow.saveError) throw Error(workflow.saveError);
   await workflow.onSave?.();
 }
-export async function saveSide() { workflow.calls.push("saveSide"); if (workflow.sideError) throw Error(workflow.sideError); }
+export async function saveSide() { workflow.calls.push("saveSide"); if (workflow.sideError) throw Error(workflow.sideError); await workflow.onSideSave?.(); }
 export const sideFocused = () => false;
+export const sideFile: string | null = null;
 export const listFiles = async () => [];
 export const settings = { compileOnSave: false, compileOnType: false };
 export const installLatex = async () => { workflow.calls.push("installLatex"); };

@@ -2,6 +2,12 @@
 
 Původní historie Scribe je v docs/upstream/CHANGELOG.md a v Git historii.
 
+## Jednotné uložení otevřených změn (2026-11-07)
+
+- Viditelné Uložit v hlavní liště; nabídka a Ctrl+S v obou editorech nyní ukládají hlavní i boční zdroj nezávisle na fokusu. Náhled v hlavním panelu neblokuje uložení bočního textu.
+- Průběh, potvrzení dokončení, zámek dvojího stisku, zachování neuložených změn při chybě nebo psaní během ukládání. Automatická kompilace navazuje až na úspěšné uložení obou editorů.
+- Lišta se v úzkém okně zalamuje; Vim :wq nezavře neuloženou práci ani soubor jiného projektu.
+
 ## Kompilace a uložení PDF jako dvě akce (2026-11-07)
 
 - Na upřesnění uživatele změněno Vytvořit PDF na Překompilovat: uloží otevřené změny a obnoví náhled. Samostatné Uložit PDF… ukládá zobrazený výsledek do počítače.

@@ -2,6 +2,8 @@
 
 ## Aktivní priorita — alfa a omega
 
+Další dokončený celek 2026-11-07: jednotné Uložit pro hlavní i boční editor, viditelné tlačítko a potvrzení. Navazuje zjednodušení a včasná validace průvodce novým dokumentem.
+
 Uživatel 2026-11-07 určil výhradní současné zaměření: **založit dokument → psát → uložit → získat PDF**. Ostatní níže uvedené funkční etapy jsou odložené. Každá další změna má tuto běžnou cestu zjednodušit nebo přímo podpořit její spolehlivost. Stav, akceptační scénáře a následující překážky jsou v [docs/UX_WORKFLOW.md](docs/UX_WORKFLOW.md).
 
 V rámci aktivní priority 2026-11-07 doplněno rozlišení uloženého textu a aktuálnosti PDF včetně změn během překladu. Dále prověřit dostupnost běžného uložení pro oba editory a průvodce novým dokumentem; osobní desktopový průchod zůstává otevřený.

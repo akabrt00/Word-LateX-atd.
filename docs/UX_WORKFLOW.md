@@ -34,6 +34,8 @@ Implementováno samostatné Neuložené změny / Otevřené změny uloženy a in
 
 ## Navazující práce výhradně v této prioritě
 
+Další automaticky ověřený celek: Uložit v liště, nabídce i obou editorech ukládá oba otevřené zdroje s potvrzením, nezávisle na fokusu. Ověřeny oba konflikty, částečné uložení, přepnutí projektu, dvojí stisk, další psaní i kompilace při uložení. Lišta se zalamuje v menším okně. Živý desktopový průchod zůstává na uživateli.
+
 1. Při osobním průchodu ověřit srozumitelnost nového rozlišení uloženého textu a aktuálnosti PDF.
 2. Prověřit dostupnost běžného uložení a jeho potvrzení pro hlavní i boční editor. Nevnášet nejasnost mezi uložením zdroje a uložením PDF.
 3. Projít název dokumentu versus název složky, srozumitelnost šablon, validaci a návrat v průvodci. Zachovávat vyplněné údaje a předvolby; osobní údaje neukládat do globální konfigurace.
